@@ -2,11 +2,11 @@
 
 namespace Database
 {
-    public class Class1
+    public class Database
     {
         public static void Test()
         {
-            Console.WriteLine(Core.Class1.TestMethod());
+            Console.WriteLine(Recipe.Test());
         }
     }
 }
