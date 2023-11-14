@@ -1,4 +1,4 @@
-﻿namespace Core
+﻿namespace Core.ValueObjects
 {
     public class Ingredient
     {
