@@ -29,7 +29,7 @@ namespace Database
 
             return command.ExecuteReader();
         }
-       
+
         public static void Test()
         {
             Console.WriteLine(Recipe.Test());
