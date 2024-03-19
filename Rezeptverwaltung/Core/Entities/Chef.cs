@@ -5,17 +5,17 @@ namespace Core.Entities;
 public class Chef : IEquatable<Chef>
 {
     public readonly Identifier Identifier;
-    public Name Name { get; }
+    public Name Username { get; }
     public Password Password { get; }
 
     private List<Identifier> CreatedRecipies { get; init; } = new List<Identifier>();
     private List<Identifier> CookBooks { get; init; } = new List<Identifier>();
     private List<Identifier> SavedRecipies { get; init; } = new List<Identifier>();
 
-    public Chef(Identifier identifier, Name name)
+    public Chef(Identifier identifier, Name username)
     {
         Identifier = identifier;
-        Name = name;
+        Username = username;
     }
 
     public virtual bool Equals(Chef? other)
