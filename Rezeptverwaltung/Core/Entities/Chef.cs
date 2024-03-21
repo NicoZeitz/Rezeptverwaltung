@@ -4,18 +4,15 @@ namespace Core.Entities;
 
 public class Chef : IEquatable<Chef>
 {
-    public readonly Identifier Identifier;
-    public Name Username { get; }
-    public Password Password { get; }
+    public Username Username { get; }
+    public Name Name { get; }
+    public HashedPassword HashedPassword { get; }
 
-    private List<Identifier> CreatedRecipies { get; init; } = new List<Identifier>();
-    private List<Identifier> CookBooks { get; init; } = new List<Identifier>();
-    private List<Identifier> SavedRecipies { get; init; } = new List<Identifier>();
-
-    public Chef(Identifier identifier, Name username)
+    public Chef(Username username, Name name, HashedPassword hashedPassword)
     {
-        Identifier = identifier;
         Username = username;
+        Name = name;
+        HashedPassword = hashedPassword;
     }
 
     public virtual bool Equals(Chef? other)
@@ -26,10 +23,10 @@ public class Chef : IEquatable<Chef>
         if (other is null)
             return false;
 
-        return Identifier == other.Identifier;
+        return Username == other.Username;
     }
 
-    public override int GetHashCode() => Identifier.GetHashCode();
+    public override int GetHashCode() => Username.GetHashCode();
 
     public override bool Equals(object? obj) => Equals(obj as Chef);
 

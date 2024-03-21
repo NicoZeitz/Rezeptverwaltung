@@ -1,5 +1,5 @@
 ﻿namespace Core.ValueObjects;
 
-public record class Duration(TimeSpan TimeSpan)
+public record struct Duration(TimeSpan TimeSpan)
 {
 }

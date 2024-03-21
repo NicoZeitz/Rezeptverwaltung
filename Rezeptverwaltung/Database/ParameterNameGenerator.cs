@@ -1,26 +1,35 @@
-﻿namespace Database;
+﻿using System.Text;
+
+namespace Database;
 
 internal class ParameterNameGenerator
 {
     private const string prefix = "$";
-    private string? lastParameterName = null;
+    private int index = 0;
+
+    public ParameterNameGenerator() : base() { }
 
     public string GetNextParameterName()
     {
         var next = GenerateNextParameterName();
-        lastParameterName = next;
-
         return $"{prefix}{next}";
     }
 
     private string GenerateNextParameterName()
     {
-        if (lastParameterName == null)
-        {
-            return "a";
-        }
-        
+        var stringBuilder = new StringBuilder();
 
-        return "TODO:";
+        int tempIndex = index;
+        do
+        {
+            int remainder = tempIndex % 26;
+            stringBuilder.Insert(0, (char)('a' + remainder));
+            tempIndex /= 26;
+        }
+        while (tempIndex > 0);
+
+        index += 1;
+
+        return stringBuilder.ToString();
     }
 }

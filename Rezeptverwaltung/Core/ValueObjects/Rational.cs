@@ -2,6 +2,4 @@
 
 namespace Core.ValueObjects;
 
-public record class Rational<T>(T Denominator, T Numerator) where T : IBinaryInteger<T>
-{
-}
+public record struct Rational<T>(T Numerator, T Denominator) where T : IBinaryInteger<T>;

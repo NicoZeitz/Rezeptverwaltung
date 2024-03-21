@@ -1,5 +1,5 @@
 ﻿namespace Core.ValueObjects;
 
-public record class Image
+public record struct Image
 {
 }

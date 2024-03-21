@@ -1,0 +1,55 @@
+<ul
+    class="grid w-full list-none grid-cols-[repeat(auto-fit,minmax(300px,1fr))] justify-items-center gap-5"
+>
+    {{ for recipe in recipes }}
+    <li class="contents">
+        <a
+            href="/recipe/{{ recipe.identifier }}"
+            class="relative overflow-clip rounded-lg bg-white shadow-lg"
+        >
+            <picture>
+                <img
+                    class="aspect-video object-cover"
+                    src="/assets/food.jpg"
+                    alt=""
+                />
+            </picture>
+            <div class="relative top-[-10px] grid transition-transform">
+                <div
+                    style="
+                        grid-area: 1 / 1 / span 1 / span 1;
+                        background-image: url(/assets/food.jpg);
+                    "
+                    class="bg-cover"
+                ></div>
+                <h2
+                    style="
+                        grid-area: 1 / 1 / span 1 / span 1;
+                        display: -webkit-box;
+                        max-width: 750px;
+                        -webkit-line-clamp: 1;
+                        -webkit-box-orient: vertical;
+                    "
+                    class="overflow-hidden rounded-t-md bg-white/95 px-2 py-1 align-middle text-xl backdrop-blur-3xl"
+                >
+                    {{ recipe.title | html.escape }}
+                </h2>
+            </div>
+            <div class="px-3 py-1">
+                <p
+                    style="
+                        display: -webkit-box;
+                        max-width: 400px;
+                        -webkit-line-clamp: 3;
+                        -webkit-box-orient: vertical;
+                        overflow: hidden;
+                    "
+                    class="h-[4.75rem]"
+                >
+                    {{ recipe.description | html.escape }}
+                </p>
+            </div>
+        </a>
+    </li>
+    {{ end }}
+</ul>

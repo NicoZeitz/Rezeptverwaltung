@@ -5,8 +5,19 @@ namespace Core.Entities;
 public class ShoppingList
 {
     public Identifier Identifier { get; }
-    public Identifier Creator { get;  } // TODO: KochIdentifier?
-    public List<PortionedRecipe> PortionedRecipes { get; }
+    public Text Title { get; }
+    public Visibility Visibility { get; }
+    public Username Creator { get; }
+    public IList<PortionedRecipe> PortionedRecipes { get; }
+
+    public ShoppingList(Identifier id, Text title, Visibility visibility, Username creator, IList<PortionedRecipe> portionedRecipes)
+    {
+        Identifier = id;
+        Title = title;
+        Visibility = visibility;
+        Creator = creator;
+        PortionedRecipes = portionedRecipes;
+    }
 
     public virtual bool Equals(ShoppingList? other)
     {

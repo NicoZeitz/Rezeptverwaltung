@@ -5,7 +5,13 @@ namespace Core.Entities;
 public class PreparationStep
 {
     public Identifier Identifier { get; }
-    public Text Description {  get; }
+    public Text Description { get; }
+
+    public PreparationStep(Identifier identifier, Text description)
+    {
+        Identifier = identifier;
+        Description = description;
+    }
 
     public virtual bool Equals(PreparationStep? other)
     {

@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Not Found</title>
+        <link rel="stylesheet" href="/assets/styles.css" />
+    </head>
+    <body class="flex h-dvh max-h-dvh flex-col overflow-clip">
+        <header
+            class="flex h-14 w-full items-center gap-5 overflow-clip px-2 py-2 shadow-xl sm:px-5"
+        >
+            <a href="/" class="hidden aspect-square h-full sm:inline-block">
+                <picture>
+                    <img src="/assets/logo.png" alt="" />
+                </picture>
+            </a>
+            <h1 class="text-3xl font-bold">
+                Rezeptverwaltung
+                <span class="hidden lg:inline"
+                    >– Diese Seite existiert nicht</span
+                >
+            </h1>
+        </header>
+        <main
+            class="mx-auto my-auto grid h-full max-w-[60ch] place-items-center content-center items-center justify-center justify-items-center gap-12"
+        >
+            <section class="text-9xl font-bold">:(</section>
+            <section
+                id="not-found-text"
+                class="min-h-24 text-center align-middle text-2xl"
+            >
+                <script>
+                    const options = [
+                        "Die Seite konnte leider nicht gefunden werden.",
+                        "Hoppla! Die Seite wurde nicht gefunden.",
+                        "Hier gibt es leider keine Rezepte zu finden.",
+                        "Kochen ist toll, aber hier gibt es nichts zu kochen.",
+                        "Auf der Suche nach den besten Rezepten haben Sie sich wohl verlaufen.",
+                        "Die Seite, die Sie suchen, ist nicht hier.",
+                        "Vielleicht finden Sie ja ein Rezept bei uns, das Ihnen schmeckt. Aber ganz gewiss nicht auf dieser Seite.",
+                    ];
+
+                    const element = document.getElementById("not-found-text");
+                    element.textContent =
+                        options[Math.floor(Math.random() * options.length)];
+                </script>
+                <noscript>
+                    Die Seite konnte leider nicht gefunden werden.
+                </noscript>
+            </section>
+            <a
+                href="/"
+                class="rounded-md bg-green-500 px-7 py-4 text-2xl font-bold text-white shadow-2xl"
+                >Zurück zur Hauptseite</a
+            >
+        </main>
+    </body>
+</html>

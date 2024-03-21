@@ -6,8 +6,18 @@ public class Cookbook
 {
     public Identifier Identifier { get; }
     public Text Title { get; }
-    public Identifier Creator { get; }
-    public List<Identifier> Recipes { get; }
+    public Text Description { get; }
+    public Username Creator { get; }
+    public Visibility Visibility { get; }
+
+    public Cookbook(Identifier id, Text title, Text description, Username creator, Visibility visibility)
+    {
+        Identifier = id;
+        Title = title;
+        Description = description;
+        Creator = creator;
+        Visibility = visibility;
+    }
 
     public virtual bool Equals(Cookbook? other)
     {

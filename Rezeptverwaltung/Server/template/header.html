@@ -1,0 +1,25 @@
+<header
+    class="flex h-14 w-full items-center gap-5 overflow-clip bg-white px-2 py-2 shadow-xl sm:px-5"
+>
+    <div class="mr-auto flex h-full gap-5">
+        <a href="/" class="hidden aspect-square h-full sm:inline-block">
+            <picture>
+                <img src="/assets/logo.png" alt="" />
+            </picture>
+        </a>
+        <h1 class="select-none text-3xl font-bold">Rezeptverwaltung</h1>
+    </div>
+    {{ if chef }}
+    <form
+        action="/logout"
+        method="post"
+        enctype="application/x-www-form-urlencoded"
+    >
+        <input type="hidden" name="csrf_token" value="{{ csrf_token }}" />
+        <button type="submit" class="text-red-500">Logout</button>
+    </form>
+    <div>Profile photo {{ chef.username }}</div>
+    {{ else }}
+    <a href="/login" class="text-green-500">Login</a>
+    {{ end }}
+</header>

@@ -5,26 +5,41 @@ namespace Core.Entities
     public class Recipe
     {
         public Identifier Identifier { get; }
-        public Identifier ChefId { get; }
+        public Username Chef { get; }
         public Text Title { get; }
         public Text Description { get; }
-        public List<Tag> Tags { get; }
+        public Visibility Visibility { get; }
         public Portion Portion { get; }
         public Duration PreparationTime { get; }
-        public List<PreparationStep> PreparationSteps { get; }
-        public List<WeightedIngredient> WeightedIngredients { get; }
+        public ISet<Tag> Tags { get; }
+        public IList<PreparationStep> PreparationSteps { get; }
+        public ISet<WeightedIngredient> WeightedIngredients { get; }
         public Image DishImage { get; }
 
-        public Recipe(Identifier chefId, Duration preparationTime)
+        public Recipe(
+            Identifier id,
+            Username chef,
+            Text title,
+            Text description,
+            Visibility visibility,
+            Portion portion,
+            Duration preparationTime,
+            IEnumerable<Tag> tags,
+            IList<PreparationStep> preparationSteps,
+            IEnumerable<WeightedIngredient> weightedIngredients,
+            Image dishImage)
         {
-            ChefId = chefId;
+            Identifier = id;
+            Chef = chef;
+            Title = title;
+            Description = description;
+            Visibility = visibility;
+            Portion = portion;
             PreparationTime = preparationTime;
-        }
-
-        public static string Test()
-        {
-            // TODO: Remove
-            return "Hello Nico & Fabian!";
+            Tags = tags.ToHashSet();
+            PreparationSteps = preparationSteps.ToList();
+            WeightedIngredients = weightedIngredients.ToHashSet();
+            DishImage = dishImage;
         }
 
         public virtual bool Equals(Recipe? other)

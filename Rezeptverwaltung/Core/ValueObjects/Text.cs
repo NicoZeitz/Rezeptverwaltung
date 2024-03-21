@@ -1,5 +1,6 @@
 ﻿namespace Core.ValueObjects;
 
-public record class Text(string Value)
+public record struct Text(string Value)
 {
+    public override string ToString() => Value.ToString();
 }

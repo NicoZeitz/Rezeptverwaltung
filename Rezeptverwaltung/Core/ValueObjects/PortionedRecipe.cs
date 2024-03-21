@@ -2,6 +2,4 @@
 
 namespace Core.ValueObjects;
 
-public record class PortionedRecipe(Recipe Recipe, Portion Portion)
-{
-}
+public sealed record class PortionedRecipe(Recipe Recipe, Portion Portion);

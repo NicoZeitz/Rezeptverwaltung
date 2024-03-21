@@ -1,5 +1,3 @@
 ﻿namespace Core.ValueObjects;
 
-public record class Tag(string Text)
-{
-}
+public record struct Tag(string Text);

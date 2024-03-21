@@ -2,7 +2,7 @@
 
 namespace Core.ValueObjects;
 
-public record class Name(string FirstName, string LastName) : IDisplayable
+public record struct Name(string FirstName, string LastName) : IDisplayable
 {
     public string display()
     {

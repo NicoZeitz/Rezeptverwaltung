@@ -10,7 +10,8 @@ internal class QueryInterpolatedStringHandler
     private readonly IDictionary<string, object?> parameters = new Dictionary<string, object?>();
     private readonly ParameterNameGenerator parameterNameGenerator = new ParameterNameGenerator();
 
-    public QueryInterpolatedStringHandler(int literalLength)
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Style", "IDE0060:Remove unused parameter", Justification = "Formatted Count is Needed for InterpolatedStringHandler")]
+    public QueryInterpolatedStringHandler(int literalLength, int _formattedCount)
     {
         query = new StringBuilder(literalLength);
     }
