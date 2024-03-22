@@ -16,7 +16,7 @@ public class PasswordLengthChecker : IPasswordConditionChecker
     {
         if (password.Phrase.Length < length)
         {
-            return PasswordConditionCheckerResult.NotSatisfied(new ErrorMessage($"Password must be at least {length} characters long."));
+            return PasswordConditionCheckerResult.NotSatisfied(new ErrorMessage($"Password muss mindestens {length} Zeichen lang sein."));
         }
         else
         {

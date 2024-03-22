@@ -8,7 +8,7 @@ public class ChefDatabase : ChefRepository
 {
     public ChefDatabase() : base() { }
 
-    public void add(Chef chef)
+    public void save(Chef chef)
     {
         var command = Database.Instance.CreateSqlCommand(@$"
             INSERT INTO chefs (

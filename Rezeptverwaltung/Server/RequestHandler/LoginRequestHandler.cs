@@ -60,9 +60,9 @@ public class LoginRequestHandler : IRequestHandler
         return HandlePost(request, response);
     }
 
-    public Task HandlePost(HttpListenerRequest request, HttpListenerResponse response)
+    private Task HandlePost(HttpListenerRequest request, HttpListenerResponse response)
     {
-        var usernameAndPassword = GetUserNameAndPasswordFromRequest(request);
+        var usernameAndPassword = ParsePostData(request);
         if (!usernameAndPassword.HasValue)
         {
             return RenderLoginPage(
@@ -124,7 +124,7 @@ public class LoginRequestHandler : IRequestHandler
         await response.OutputStream.WriteAsync(Encoding.UTF8.GetBytes(loginPage));
     }
 
-    private (Username, Password)? GetUserNameAndPasswordFromRequest(HttpListenerRequest request)
+    private (Username, Password)? ParsePostData(HttpListenerRequest request)
     {
         using var body = request.InputStream;
         using var reader = new StreamReader(body);

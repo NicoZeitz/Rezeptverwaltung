@@ -14,7 +14,7 @@ public class PasswordUppercaseChecker : IPasswordConditionChecker
         }
         else
         {
-            return PasswordConditionCheckerResult.NotSatisfied(new ErrorMessage("Password must contain at least one uppercase letter."));
+            return PasswordConditionCheckerResult.NotSatisfied(new ErrorMessage("Password muss mindestens einen Großbuchstaben enthalten."));
         }
     }
 }

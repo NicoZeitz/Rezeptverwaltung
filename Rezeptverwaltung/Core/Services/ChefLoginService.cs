@@ -8,7 +8,7 @@ namespace Core.Services;
 public class ChefLoginService
 {
     private readonly ChefRepository chefRepository;
-    public readonly IPasswordHasher passwordHasher;
+    private readonly IPasswordHasher passwordHasher;
 
     public ChefLoginService(ChefRepository chefRepository, IPasswordHasher passwordHasher)
     {

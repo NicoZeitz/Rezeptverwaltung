@@ -33,10 +33,13 @@ void configureServerRoutes(Server.Server server)
     // API
     var chefRepository = new ChefDatabase();
     var argonPasswordHasher = new Argon2PasswordHasher();
+    var allowedPasswordChecker = new AllowedPasswordChecker();
     var chefLoginService = new ChefLoginService(chefRepository, argonPasswordHasher);
+    var chefRegisterService = new ChefRegisterService(chefRepository, argonPasswordHasher, allowedPasswordChecker);
     var sessionService = new InMemorySessionService<Chef>();
 
     server.AddRequestHandler(new HomeRequestHandler(embeddedResourceLoader, sessionService));
+    server.AddRequestHandler(new RegisterRequestHandler(chefRegisterService, embeddedResourceLoader, sessionService));
     server.AddRequestHandler(new LoginRequestHandler(chefLoginService, embeddedResourceLoader, sessionService));
     server.AddRequestHandler(new LogoutRequestHandler(sessionService));
     server.AddRequestHandler(new AssetRequestHandler(assetResourceLoader));

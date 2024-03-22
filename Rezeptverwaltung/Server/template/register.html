@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Rezeptverwaltung – Registrierung</title>
+        <link rel="stylesheet" href="/assets/styles.css" />
+    </head>
+    <body>
+        {{ header }}
+        <div
+            class="grid h-[calc(100dvh-3.5rem)] w-full place-items-center overflow-clip"
+        >
+            <form
+                action="/register"
+                enctype="multipart/form-data"
+                method="post"
+                class="grid place-items-center gap-8"
+            >
+                <div class="flex flex-col gap-1">
+                    <label for="username">Benutzername:</label>
+                    <input
+                        class="w-64 rounded-md p-3 shadow-lg"
+                        type="text"
+                        name="username"
+                        id="username"
+                        value="{{ username }}"
+                        placeholder="Benutzername"
+                        required
+                    />
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label for="first_name">Vorname:</label>
+                    <input
+                        class="w-64 rounded-md p-3 shadow-lg"
+                        type="text"
+                        name="first_name"
+                        id="first_name"
+                        value="{{ first_name }}"
+                        placeholder="Vorname"
+                    />
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label for="last_name">Nachname:</label>
+                    <input
+                        class="w-64 rounded-md p-3 shadow-lg"
+                        type="text"
+                        name="last_name"
+                        id="last_name"
+                        placeholder="Nachname"
+                        value="{{ last_name }}"
+                    />
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label for="password">Password:</label>
+                    <input
+                        class="w-64 rounded-md p-3 shadow-lg"
+                        type="password"
+                        name="password"
+                        id="password"
+                        placeholder="Passwort"
+                        value="{{ password }}"
+                        required
+                    />
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label for="password_repeat">Password wiederholen:</label>
+                    <input
+                        class="w-64 rounded-md p-3 shadow-lg"
+                        type="password"
+                        name="password_repeat"
+                        id="password_repeat"
+                        placeholder="Passwort"
+                        required
+                    />
+                </div>
+                <div class="flex flex-col gap-1">
+                    <label for="profile_image">Profilbild:</label>
+                    <input
+                        class="w-64 rounded-md p-3 shadow-lg"
+                        type="file"
+                        name="profile_image"
+                        id="profile_image"
+                        accept="image/*"
+                    />
+                </div>
+                <div class="flex flex-col gap-1">
+                    {{ for error_message in error_messages }}
+                    <span class="text-red-500"> {{ error_message }} </span>
+                    {{ end }}
+                </div>
+                <button
+                    type="submit"
+                    class="rounded-md bg-green-500 px-16 py-3 text-white shadow-lg"
+                >
+                    Login
+                </button>
+            </form>
+        </div>
+    </body>
+</html>

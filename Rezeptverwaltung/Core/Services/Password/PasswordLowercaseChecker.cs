@@ -13,7 +13,7 @@ public class PasswordLowercaseChecker : IPasswordConditionChecker
         }
         else
         {
-            return PasswordConditionCheckerResult.NotSatisfied(new ErrorMessage("Password must contain at least one lowercase letter."));
+            return PasswordConditionCheckerResult.NotSatisfied(new ErrorMessage("Password muss mindestens einen Kleinbuchstaben enthalten."));
         }
     }
 }

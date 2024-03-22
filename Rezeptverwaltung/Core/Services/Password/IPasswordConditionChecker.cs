@@ -4,8 +4,8 @@ namespace Core.Services.Password;
 
 public sealed class PasswordConditionCheckerResult
 {
-    public bool IsSatisfied { get; }
-    public ErrorMessage? Message { get; }
+    public readonly bool IsSatisfied;
+    public readonly ErrorMessage? Message;
 
     public bool IsNotSatisfied => !IsSatisfied;
 

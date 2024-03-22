@@ -13,7 +13,7 @@ internal class PasswordDigitChecker : IPasswordConditionChecker
         }
         else
         {
-            return PasswordConditionCheckerResult.NotSatisfied(new ErrorMessage("Password must contain at least one number."));
+            return PasswordConditionCheckerResult.NotSatisfied(new ErrorMessage("Password muss mindestens eine Zahl enthalten."));
         }
     }
 }

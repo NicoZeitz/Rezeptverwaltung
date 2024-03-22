@@ -15,7 +15,7 @@ public class PasswordSpecialCharacterChecker : IPasswordConditionChecker
         }
         else
         {
-            return PasswordConditionCheckerResult.NotSatisfied(new ErrorMessage("Password must contain at least one special character."));
+            return PasswordConditionCheckerResult.NotSatisfied(new ErrorMessage("Password muss mindestens eine Spezialzeichen enthalten."));
         }
     }
 }
