@@ -25,7 +25,7 @@ server.Run(serverCancellationToken).GetAwaiter().GetResult();
 void configureServerRoutes(Server.Server server)
 {
     //var embeddedResourceLoader = new EmbeddedResourceLoader();
-    var embeddedResourceLoader = new FileSystemResourceLoader("C:\\Users\\nicoz\\Dev\\CSharp\\Rezeptverwaltung\\Rezeptverwaltung\\Server\\template\\");
+    var embeddedResourceLoader = new FileSystemResourceLoader("D:\\Dev\\CSharp\\Rezeptverwaltung\\Rezeptverwaltung\\Server\\template\\");
     var assetResourceLoader = new PrefixResourceLoader("assets", embeddedResourceLoader);
     //var fileSystemResourceLoader = new FileSystemResourceLoader("static.web");
     //server.AddRequestHandler(new RegisterRequestHandler(embeddedResourceLoader));
