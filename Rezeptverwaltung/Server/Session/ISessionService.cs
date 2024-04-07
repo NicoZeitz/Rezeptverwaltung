@@ -1,10 +1,13 @@
-﻿using Core.ValueObjects;
+﻿using Core.Entities;
+using System.Net;
 
 namespace Server.Session;
 
-public interface ISessionService<T> where T : class
+public interface ISessionService
 {
-    Identifier CreateSession(T chef, Duration? expiresAfter = null);
-    T? GetBySessionId(Identifier sessionId);
-    void RemoveSession(Identifier sessionId);
+    public Chef? GetCurrentChef(HttpListenerRequest request);
+
+    public void Login(HttpListenerRequest request, HttpListenerResponse response, Chef chef);
+
+    public void Logout(HttpListenerRequest request, HttpListenerResponse response);
 }

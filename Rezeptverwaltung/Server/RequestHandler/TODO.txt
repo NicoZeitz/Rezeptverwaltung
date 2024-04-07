@@ -1,0 +1,16 @@
+/chef/<id>
+
+/cookbook/create
+/cookbook/delete/<id>
+/cookbook/edit/<id>
+/cookbook/<id>
+
+/recipe/create
+/recipe/delete/<id>
+/recipe/edit/<id>
+/recipe/<id>
+
+/shoppinglist/create
+/shoppinglist/delete/<id>
+/shoppinglist/edit/<id>
+/shoppinglist/<id>

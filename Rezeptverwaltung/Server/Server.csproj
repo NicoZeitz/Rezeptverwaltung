@@ -15,12 +15,20 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="HttpMultipartParser" Version="8.3.0" />
     <PackageReference Include="Scriban" Version="5.9.1" />
     <PackageReference Include="System.Net.Http" Version="4.3.4" />
+    <PackageReference Include="System.Runtime.Caching" Version="8.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="RequestHandler\Chef\" />
+    <Folder Include="RequestHandler\Cookbook\" />
+    <Folder Include="RequestHandler\ShoppingList\" />
   </ItemGroup>
 
 </Project>

@@ -7,9 +7,9 @@ namespace Server.RequestHandler;
 
 public class LogoutRequestHandler : IRequestHandler
 {
-    private readonly ISessionService<Chef> sessionService;
+    private readonly ISessionService sessionService;
 
-    public LogoutRequestHandler(ISessionService<Chef> sessionService)
+    public LogoutRequestHandler(ISessionService sessionService)
     {
         this.sessionService = sessionService;
     }
@@ -21,19 +21,9 @@ public class LogoutRequestHandler : IRequestHandler
 
     public Task Handle(HttpListenerRequest request, HttpListenerResponse response)
     {
-        if (request.Cookies["session"] is Cookie cookie)
-        {
-            sessionService.RemoveSession(Identifier.Parse(cookie.Value));
-        };
+        sessionService.Logout(request, response);
 
-        response.SetCookie(new Cookie("session", "")
-        {
-            Expired = true,
-            HttpOnly = true,
-            Expires = DateTime.Now.AddYears(-1),
-        });
-        response.StatusCode = HttpStatus.SEE_OTHER.Code;
-        response.StatusDescription = HttpStatus.SEE_OTHER.Description;
+        response.StatusCode = (int)HttpStatusCode.SeeOther;
         response.RedirectLocation = "/";
         return Task.CompletedTask;
     }

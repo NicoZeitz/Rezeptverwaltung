@@ -52,8 +52,7 @@ public class Server
             }
         }
 
-        response.StatusCode = HttpStatus.NOT_FOUND.Code;
-        response.StatusDescription = HttpStatus.NOT_FOUND.Description;
+        response.StatusCode = (int)HttpStatusCode.NotFound;
         response.ContentType = MimeType.HTML;
         await response.OutputStream.WriteAsync(Encoding.UTF8.GetBytes("404 Not Found"));
         response.Close();

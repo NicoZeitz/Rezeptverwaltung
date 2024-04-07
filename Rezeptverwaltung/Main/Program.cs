@@ -12,8 +12,6 @@ using System.Net;
 //foreach (string resName in resNames)
 //    Console.WriteLine(resName);
 
-Database.Database.Instance.Initialize();
-
 var serverIp = IPAddress.Parse("127.0.0.1");
 var serverPort = 8080;
 var serverCancellationToken = new CancellationToken();
@@ -31,19 +29,20 @@ void configureServerRoutes(Server.Server server)
     //server.AddRequestHandler(new RegisterRequestHandler(embeddedResourceLoader));
     //server.AddRequestHandler(new LogoutRequestHandler(embeddedResourceLoader));
     // API
+    var dateTimeProvider = new DateTimeProvider();
     var chefRepository = new ChefDatabase();
     var argonPasswordHasher = new Argon2PasswordHasher();
     var allowedPasswordChecker = new AllowedPasswordChecker();
     var chefLoginService = new ChefLoginService(chefRepository, argonPasswordHasher);
     var chefRegisterService = new ChefRegisterService(chefRepository, argonPasswordHasher, allowedPasswordChecker);
-    var sessionService = new InMemorySessionService<Chef>();
+    var sessionService = new CookieSessionService(new InMemorySessionBackend<Chef>(dateTimeProvider), dateTimeProvider);
 
-    server.AddRequestHandler(new HomeRequestHandler(embeddedResourceLoader, sessionService));
+    server.AddRequestHandler(new HomeRequestHandler(embeddedResourceLoader, sessionService, new ShowRecipes(new RecipeDatabase())));
     server.AddRequestHandler(new RegisterRequestHandler(chefRegisterService, embeddedResourceLoader, sessionService));
     server.AddRequestHandler(new LoginRequestHandler(chefLoginService, embeddedResourceLoader, sessionService));
     server.AddRequestHandler(new LogoutRequestHandler(sessionService));
-    server.AddRequestHandler(new AssetRequestHandler(assetResourceLoader));
-    server.AddRequestHandler(new NotFoundHandler(embeddedResourceLoader));
+    server.AddRequestHandler(new StaticRequestHandler("assets/", assetResourceLoader));
+    server.AddRequestHandler(new NotFoundHandler(embeddedResourceLoader, sessionService));
 }
 
 

@@ -44,7 +44,7 @@ public class ChefRegisterService
         this.allowedPasswordChecker = allowedPasswordChecker;
     }
 
-    public ChefRegisterResult RegisterChef(Username username, Name name, ValueObjects.Password password)
+    public ChefRegisterResult RegisterChef(Username username, Name name, ValueObjects.Password password, Image image)
     {
         var existingChef = chefRepository.findByName(username);
         if (existingChef is not null)

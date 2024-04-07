@@ -7,21 +7,7 @@
         <link rel="stylesheet" href="/assets/styles.css" />
     </head>
     <body class="flex h-dvh max-h-dvh flex-col overflow-clip">
-        <header
-            class="flex h-14 w-full items-center gap-5 overflow-clip px-2 py-2 shadow-xl sm:px-5"
-        >
-            <a href="/" class="hidden aspect-square h-full sm:inline-block">
-                <picture>
-                    <img src="/assets/logo.png" alt="" />
-                </picture>
-            </a>
-            <h1 class="text-3xl font-bold">
-                Rezeptverwaltung
-                <span class="hidden lg:inline"
-                    >– Diese Seite existiert nicht</span
-                >
-            </h1>
-        </header>
+        {{ header }}
         <main
             class="mx-auto my-auto grid h-full max-w-[60ch] place-items-center content-center items-center justify-center justify-items-center gap-12"
         >

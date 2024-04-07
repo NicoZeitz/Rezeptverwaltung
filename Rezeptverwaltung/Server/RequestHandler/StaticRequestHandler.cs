@@ -3,12 +3,14 @@ using System.Net;
 
 namespace Server.RequestHandler;
 
-public class AssetRequestHandler : IRequestHandler
+public class StaticRequestHandler : IRequestHandler
 {
+    private readonly string prefix;
     public readonly IResourceLoader resourceLoader;
 
-    public AssetRequestHandler(IResourceLoader resourceLoader)
+    public StaticRequestHandler(string prefix, IResourceLoader resourceLoader)
     {
+        this.prefix = "/" + prefix;
         this.resourceLoader = resourceLoader;
     }
 
@@ -19,7 +21,7 @@ public class AssetRequestHandler : IRequestHandler
             return false;
         }
 
-        if (request.Url is null || !request.Url.AbsolutePath.StartsWith("/assets/"))
+        if (request.Url is null || !request.Url.AbsolutePath.StartsWith(prefix))
         {
             return false;
         }
@@ -39,8 +41,7 @@ public class AssetRequestHandler : IRequestHandler
         var path = TransformUrlToFilePath(request.Url)!;
         using var resource = resourceLoader.LoadResource(path)!;
 
-        response.StatusCode = HttpStatus.OK.Code;
-        response.StatusDescription = HttpStatus.OK.Description;
+        response.StatusCode = (int)HttpStatusCode.OK;
         response.ContentType = FileExtension.FromFileName(Path.GetFileName(path)).GetMimeType().Text;
 
         await resource.CopyToAsync(response.OutputStream);
@@ -53,7 +54,7 @@ public class AssetRequestHandler : IRequestHandler
             return null;
         }
 
-        var path = url.AbsolutePath[7..];
+        var path = url.AbsolutePath[(prefix.Length - 1)..];
         var lastPart = path[(path.LastIndexOf('/') + 1)..];
 
         if (lastPart.Contains('.'))

@@ -9,8 +9,7 @@ public interface IHTMLRequestHandler : IRequestHandler
     {
         var htmlFile = await HandleHtmlFileRequest(request);
 
-        response.StatusCode = HttpStatus.OK.Code;
-        response.StatusDescription = HttpStatus.OK.Description;
+        response.StatusCode = (int)HttpStatusCode.OK;
         response.ContentType = MimeType.HTML;
         response.OutputStream.Write(Encoding.UTF8.GetBytes(htmlFile));
     }

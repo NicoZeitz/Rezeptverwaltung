@@ -13,7 +13,7 @@ public class ShowRecipes
         this.recipeRepository = recipeRepository;
     }
 
-    public IEnumerable<Recipe> ShowRecipesForChef(Chef? chef)
+    public IEnumerable<Recipe> ShowRecipesVisibleTo(Chef? chef)
     {
         var recipes = recipeRepository.findAll();
 

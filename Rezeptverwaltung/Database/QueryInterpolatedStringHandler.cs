@@ -16,16 +16,31 @@ internal class QueryInterpolatedStringHandler
         query = new StringBuilder(literalLength);
     }
 
-    public void AppendLiteral(string s)
+    public void AppendLiteral(string literal)
     {
-        query.Append(s);
+        query.Append(literal);
     }
 
-    public void AppendFormatted<T>(T? t)
+    public void AppendFormatted<T>(T? parameter)
     {
-        var parameterName = parameterNameGenerator.GetNextParameterName();
-        parameters.Add(parameterName, t);
-        query.Append(parameterName);
+        if(parameter is IEnumerable<string> parameterList)
+        {
+            var parameterListNames = string.Join(",", parameterList.Select(parameter =>
+            {
+                var parameterName = parameterNameGenerator.GetNextParameterName();
+                parameters.Add(parameterName, parameter);
+                return parameterName;
+            }));
+
+            query.Append(parameterListNames);            
+        }
+        else
+        {
+            var parameterName = parameterNameGenerator.GetNextParameterName();
+            parameters.Add(parameterName, parameter);
+            query.Append(parameterName);
+        }
+
     }
 
     public string GetQuery() => query.ToString();

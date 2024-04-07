@@ -7,11 +7,11 @@ using System.Text.RegularExpressions;
 
 namespace Server.RequestHandler;
 
-public partial class RecipeHandler : IRequestHandler
+public partial class RecipeRequestHandler : IRequestHandler
 {
     private readonly IResourceLoader resourceLoader;
 
-    public RecipeHandler(IResourceLoader resourceLoader) : base()
+    public RecipeRequestHandler(IResourceLoader resourceLoader) : base()
     {
         this.resourceLoader = resourceLoader;
     }
@@ -31,9 +31,8 @@ public partial class RecipeHandler : IRequestHandler
         // TODO: load recipe from uuid
         Console.WriteLine($"Recipe UUID: {uuid}");
 
-        response.ContentType = "text/html";
-        response.StatusCode = 200;
-        response.StatusDescription = "Success";
+        response.ContentType = MimeType.HTML.Text;
+        response.StatusCode = (int)HttpStatusCode.OK;
 
         var template = Template.Parse("<h1>Hello {{name}}!</h1>");
         var result = template.Render(new { Name = recipeIdentifier }); // => "Hello World!" 

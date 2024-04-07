@@ -1,5 +1,3 @@
 ﻿namespace Core.ValueObjects;
 
-public record struct Image
-{
-}
+public record class Image(string ResourcePath);

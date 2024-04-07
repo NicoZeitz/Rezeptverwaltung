@@ -1,24 +1,25 @@
 ﻿using Core.Entities;
-using Scriban;
 using Server.ResourceLoader;
+using Server.Resources;
 
 namespace Server.Component;
 
 public class RecipeList
 {
-    private readonly IResourceLoader resourceLoader;
+    private readonly TemplateLoader templateLoader;
 
     public RecipeList(IResourceLoader resourceLoader)
     {
-        this.resourceLoader = resourceLoader;
+        templateLoader = new TemplateLoader(resourceLoader);
     }
 
     public ValueTask<string> RenderAsync(IEnumerable<Recipe> recipes)
     {
-        using var recipePreviewStream = resourceLoader.LoadResource("recipe_list.html")!;
-        var recipePreviewContent = new StreamReader(recipePreviewStream).ReadToEnd();
-        var recipePreviewTemplate = Template.Parse(recipePreviewContent);
-
-        return recipePreviewTemplate.RenderAsync(new { Recipes = recipes });
+        return templateLoader
+            .LoadTemplate("recipe_list.html")!
+            .RenderAsync(new
+            {
+                Recipes = recipes
+            });
     }
 }

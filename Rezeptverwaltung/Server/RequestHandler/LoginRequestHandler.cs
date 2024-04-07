@@ -4,31 +4,34 @@ using Core.ValueObjects;
 using Scriban;
 using Server.Component;
 using Server.ResourceLoader;
+using Server.ContentParser;
 using Server.Session;
 using System.Net;
 using System.Text;
-using System.Web;
+using Server.Resources;
 
 namespace Server.RequestHandler;
+record struct LoginData(Username Username, Password Password);
 
 public class LoginRequestHandler : IRequestHandler
 {
-    private const int EXPIRE_AFTER_HOURS = 3;
     private static readonly ErrorMessage INVALID_CREDENTIALS_ERROR_MESSAGE = new ErrorMessage("Benutzername und/oder Passwort falsch!");
 
     private readonly ChefLoginService chefLoginService;
     private readonly IResourceLoader resourceLoader;
-    private readonly ISessionService<Chef> sessionService;
+    private readonly ISessionService sessionService;
+    private readonly TemplateLoader templateLoader;
 
     public LoginRequestHandler(
       ChefLoginService chefLoginService,
       IResourceLoader resourceLoader,
-      ISessionService<Chef> sessionService
+      ISessionService sessionService
   )
     {
         this.chefLoginService = chefLoginService;
         this.resourceLoader = resourceLoader;
         this.sessionService = sessionService;
+        this.templateLoader = new TemplateLoader(resourceLoader);
     }
 
     public bool CanHandle(HttpListenerRequest request)
@@ -53,7 +56,7 @@ public class LoginRequestHandler : IRequestHandler
             return RenderLoginPage(
                 request,
                 response,
-                HttpStatus.OK
+                HttpStatusCode.OK
             );
         }
 
@@ -62,13 +65,13 @@ public class LoginRequestHandler : IRequestHandler
 
     private Task HandlePost(HttpListenerRequest request, HttpListenerResponse response)
     {
-        var usernameAndPassword = ParsePostData(request);
+        var usernameAndPassword = ParsePostContentData(request);
         if (!usernameAndPassword.HasValue)
         {
             return RenderLoginPage(
                 request,
                 response,
-                HttpStatus.UNAUTHORIZED,
+                HttpStatusCode.Unauthorized,
                 INVALID_CREDENTIALS_ERROR_MESSAGE
             );
         }
@@ -81,37 +84,22 @@ public class LoginRequestHandler : IRequestHandler
             return RenderLoginPage(
                 request,
                 response,
-                HttpStatus.FORBIDDEN,
+                HttpStatusCode.Forbidden,
                 INVALID_CREDENTIALS_ERROR_MESSAGE
             );
         }
 
-        var sessionId = sessionService.CreateSession(chef, new Duration(TimeSpan.FromHours(EXPIRE_AFTER_HOURS)));
-        var sessionCookie = new Cookie("session", sessionId.ToString())
-        {
-            HttpOnly = true,
-            Comment = "Session Cookie",
-            Expires = DateTime.Now.AddHours(EXPIRE_AFTER_HOURS),
-        };
+        sessionService.Login(request, response, chef);
 
-        response.SetCookie(sessionCookie);
-        response.StatusCode = HttpStatus.SEE_OTHER.Code;
-        response.StatusDescription = HttpStatus.SEE_OTHER.Description;
+        response.StatusCode = (int)HttpStatusCode.SeeOther;
         response.RedirectLocation = "/";
         return Task.CompletedTask;
     }
 
-    private async Task RenderLoginPage(HttpListenerRequest request, HttpListenerResponse response, HttpStatus httpStatus, ErrorMessage? errorMessage = null)
+    private async Task RenderLoginPage(HttpListenerRequest request, HttpListenerResponse response, HttpStatusCode httpStatus, ErrorMessage? errorMessage = null)
     {
-        Chef? currentChef = null;
-        if (request.Cookies["session"] is Cookie cookie && !cookie.Expired && cookie.Value is string sessionId)
-        {
-            currentChef = sessionService.GetBySessionId(Identifier.Parse(sessionId));
-        }
-
-        using var loginStream = resourceLoader.LoadResource("login.html")!;
-        var loginContent = new StreamReader(loginStream).ReadToEnd();
-        var loginTemplate = Template.Parse(loginContent);
+        var currentChef = sessionService.GetCurrentChef(request);
+        var loginTemplate = templateLoader.LoadTemplate("login.html")!;
 
         var loginPage = await loginTemplate.RenderAsync(new
         {
@@ -119,24 +107,33 @@ public class LoginRequestHandler : IRequestHandler
             Header = await new Header(resourceLoader).RenderAsync(currentChef),
         });
 
-        response.StatusCode = httpStatus.Code;
-        response.StatusDescription = httpStatus.Description;
+        response.StatusCode = (int)httpStatus;
         await response.OutputStream.WriteAsync(Encoding.UTF8.GetBytes(loginPage));
     }
 
-    private (Username, Password)? ParsePostData(HttpListenerRequest request)
+    private LoginData? ParsePostContentData(HttpListenerRequest request)
     {
-        using var body = request.InputStream;
-        using var reader = new StreamReader(body);
-        var bodyString = reader.ReadToEnd();
+        var contentParser = ContentParserFactory.CreateContentParser(request.ContentType);
 
-        var queryValues = HttpUtility.ParseQueryString(bodyString);
-
-        if (queryValues["username"] is null || queryValues["password"] is null)
+        if(!contentParser.CanParse(request))
         {
             return null;
         }
 
-        return (new Username(queryValues["username"]!), new Password(queryValues["password"]!));
+        var content = contentParser.ParseRequest(request);
+
+        if(!content.TryGetValue("username", out var username) && username!.IsText)
+        {
+            return null;
+        }
+        if(!content.TryGetValue("password", out var password) && password!.IsText)
+        {
+            return null;
+        }
+
+        return new LoginData(
+            new Username(username.TextValue!), 
+            new Password(password.TextValue!)
+        );   
     }
 }

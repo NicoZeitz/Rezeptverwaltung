@@ -1,33 +1,35 @@
-﻿using Core.Entities;
-using Core.Services;
+﻿using Core.Services;
 using Core.ValueObjects;
-using Scriban;
 using Server.Component;
 using Server.ResourceLoader;
+using Server.ContentParser;
 using Server.Session;
 using System.Net;
 using System.Text;
-using System.Web;
+using Server.Resources;
 
 namespace Server.RequestHandler;
 
+record struct RegisterData(Username Username, Name Name, Password Password, Password PasswordRepeat, ContentData profileImage);
+
 public class RegisterRequestHandler : IRequestHandler
 {
-    private const int EXPIRE_AFTER_HOURS = 3;
-
     private readonly ChefRegisterService chefRegisterService;
     private readonly IResourceLoader resourceLoader;
-    private readonly ISessionService<Chef> sessionService;
+    private readonly ISessionService sessionService;
+    private readonly TemplateLoader templateLoader;
+
 
     public RegisterRequestHandler(
       ChefRegisterService chefRegisterService,
       IResourceLoader resourceLoader,
-      ISessionService<Chef> sessionService
+      ISessionService sessionService
   )
     {
         this.chefRegisterService = chefRegisterService;
         this.resourceLoader = resourceLoader;
         this.sessionService = sessionService;
+        this.templateLoader = new TemplateLoader(resourceLoader);
     }
 
     public bool CanHandle(HttpListenerRequest request)
@@ -52,7 +54,7 @@ public class RegisterRequestHandler : IRequestHandler
             return RenderRegisterPage(
                 request,
                 response,
-                HttpStatus.OK,
+                HttpStatusCode.OK,
                 Enumerable.Empty<ErrorMessage>()
             );
         }
@@ -68,72 +70,69 @@ public class RegisterRequestHandler : IRequestHandler
             return RenderRegisterPage(
                 request,
                 response,
-                HttpStatus.BAD_REQUEST,
+                HttpStatusCode.BadRequest,
                 new ErrorMessage[] { new ErrorMessage("Es ist ein Fehler aufgetreten") }
             ); ;
         }
 
-        var (username, name, password, passwordRepeat) = postData.Value;
+        var (username, name, password, passwordRepeat, profileImage) = postData.Value;
 
         if (password != passwordRepeat)
         {
             return RenderRegisterPage(
                 request,
                 response,
-                HttpStatus.BAD_REQUEST,
+                HttpStatusCode.BadRequest,
                 new ErrorMessage[] { new ErrorMessage("Passwörter stimmen nicht überein") }
             );
         }
 
-        var registerResult = chefRegisterService.RegisterChef(username, name, password);
-        if (registerResult.IsError)
+        if(!MimeType.ALL_IMAGE_MIMETYPES.OfType<MimeType?>().Contains(profileImage.FileMimeType))
         {
             return RenderRegisterPage(
                 request,
                 response,
-                HttpStatus.BAD_REQUEST,
+                HttpStatusCode.BadRequest,
+                new ErrorMessage[] { new ErrorMessage($"Profilbild {profileImage.FileName} ist nicht erlaubt!") }
+            );
+        }
+
+        // TODO: save file service
+
+        var registerResult = chefRegisterService.RegisterChef(username, name, password, new Image(""));
+        if (registerResult.IsError)
+        {
+            // Remove file on error
+            return RenderRegisterPage(
+                request,
+                response,
+                HttpStatusCode.BadRequest,
                 registerResult.ErrorMessages
             );
         }
 
+
         var chef = registerResult.Chef!;
 
-        // TODO: move to service as it is duplicated
-        var sessionId = sessionService.CreateSession(chef, new Duration(TimeSpan.FromHours(EXPIRE_AFTER_HOURS)));
-        var sessionCookie = new Cookie("session", sessionId.ToString())
-        {
-            HttpOnly = true,
-            Comment = "Session Cookie",
-            Expires = DateTime.Now.AddHours(EXPIRE_AFTER_HOURS),
-        };
+        sessionService.Login(request, response, chef);
 
-        response.SetCookie(sessionCookie);
-        response.StatusCode = HttpStatus.SEE_OTHER.Code;
-        response.StatusDescription = HttpStatus.SEE_OTHER.Description;
+        response.StatusCode = (int)HttpStatusCode.SeeOther;
         response.RedirectLocation = "/";
         return Task.CompletedTask;
     }
 
-    private async Task RenderRegisterPage(HttpListenerRequest request, HttpListenerResponse response, HttpStatus httpStatus, IEnumerable<ErrorMessage> errorMessages)
+    private async Task RenderRegisterPage(HttpListenerRequest request, HttpListenerResponse response, HttpStatusCode httpStatus, IEnumerable<ErrorMessage> errorMessages)
     {
-        // TODO: move to service as it is duplicated
-        Chef? currentChef = null;
-        if (request.Cookies["session"] is Cookie cookie && !cookie.Expired && cookie.Value is string sessionId)
-        {
-            currentChef = sessionService.GetBySessionId(Identifier.Parse(sessionId));
-        }
-
+        var currentChef = sessionService.GetCurrentChef(request);
+        
         if (currentChef is not null)
         {
-            response.StatusCode = HttpStatus.SEE_OTHER.Code;
-            response.StatusDescription = HttpStatus.SEE_OTHER.Description;
+            response.StatusCode = (int) HttpStatusCode.SeeOther;
             response.Redirect("/");
             return;
         }
 
-        using var registerStream = resourceLoader.LoadResource("register.html")!;
-        var registerContent = new StreamReader(registerStream).ReadToEnd();
-        var registerTemplate = Template.Parse(registerContent);
+        var registerTemplate = templateLoader.LoadTemplate("register.html");
 
         var registerPage = await registerTemplate.RenderAsync(new
         {
@@ -141,34 +140,53 @@ public class RegisterRequestHandler : IRequestHandler
             Header = await new Header(resourceLoader).RenderAsync(null),
         });
 
-        response.StatusCode = httpStatus.Code;
-        response.StatusDescription = httpStatus.Description;
+        response.StatusCode = (int)httpStatus;
         await response.OutputStream.WriteAsync(Encoding.UTF8.GetBytes(registerPage));
     }
 
-    // TODO: change to struct type
-    private (Username, Name, Password, Password)? ParsePostData(HttpListenerRequest request)
+    private RegisterData? ParsePostData(HttpListenerRequest request)
     {
-        using var body = request.InputStream;
-        using var reader = new StreamReader(body);
-        var bodyString = reader.ReadToEnd();
-
-        var queryValues = HttpUtility.ParseQueryString(bodyString);
-
-        if (queryValues["username"] is null
-            || queryValues["first_name"] is null
-            || queryValues["last_name"] is null
-            || queryValues["password"] is null
-            || queryValues["password_repeat"] is null)
+        var contentParser = ContentParserFactory.CreateContentParser(request.ContentType);
+        if (!contentParser.CanParse(request))
         {
             return null;
         }
 
-        return (
-            new Username(queryValues["username"]!),
-            new Name(queryValues["first_name"]!, queryValues["last_name"]!),
-            new Password(queryValues["password"]!),
-            new Password(queryValues["password_repeat"]!)
+        var content = contentParser.ParseRequest(request);
+
+        if (!content.TryGetValue("username", out var username) && username!.IsText)
+        {
+            return null;
+        }
+        if (!content.TryGetValue("first_name", out var firstName) && firstName!.IsText)
+        {
+            return null;
+        }
+        if (!content.TryGetValue("last_name", out var lastName) && lastName!.IsText)
+        {
+            return null;
+        }
+        if (!content.TryGetValue("password", out var password) && password!.IsText)
+        {
+            return null;
+        }
+        if (!content.TryGetValue("password_repeat", out var passwordRepeated) && passwordRepeated!.IsText)
+        {
+            return null;
+        }
+        if (!content.TryGetValue("profile_image", out var profileImage) && profileImage!.IsFile)
+        {
+            return null;
+        }
+
+        return new RegisterData(
+            new Username(username.TextValue!),
+            new Name(firstName.TextValue!, lastName.TextValue!),
+            new Password(password.TextValue!),
+            new Password(passwordRepeated.TextValue!),
+            profileImage!
         );
     }
+
+
 }

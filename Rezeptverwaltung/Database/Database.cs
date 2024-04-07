@@ -4,7 +4,9 @@ namespace Database
 {
     public class Database
     {
-        public static readonly Database Instance = new Database();
+        public static Database Instance => _instance.Value;
+
+        private static readonly Lazy<Database> _instance = new(() => new Database());
         private readonly SqliteConnection connection;
 
         private Database()
@@ -17,10 +19,7 @@ namespace Database
             }.ToString();
 
             connection = new SqliteConnection(connectionString);
-        }
 
-        public void Initialize()
-        {
             connection.Open();
 
             // TODO: remove https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/types
@@ -158,11 +157,6 @@ namespace Database
                     ON UPDATE CASCADE    
                     ON DELETE CASCADE
             );").ExecuteNonQuery();
-        }
-
-        public void Disconnect()
-        {
-            connection.Close();
         }
 
         internal SqliteCommand CreateSqlCommand(QueryInterpolatedStringHandler builder)
