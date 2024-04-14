@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using Core.Interfaces;
 using Core.Repository;
 using Core.ValueObjects;
 using Microsoft.Data.Sqlite;

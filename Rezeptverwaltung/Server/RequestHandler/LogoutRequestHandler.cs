@@ -5,11 +5,11 @@ using System.Net;
 
 namespace Server.RequestHandler;
 
-public class LogoutRequestHandler : IRequestHandler
+public class LogoutRequestHandler : RequestHandler
 {
-    private readonly ISessionService sessionService;
+    private readonly SessionService sessionService;
 
-    public LogoutRequestHandler(ISessionService sessionService)
+    public LogoutRequestHandler(SessionService sessionService)
     {
         this.sessionService = sessionService;
     }

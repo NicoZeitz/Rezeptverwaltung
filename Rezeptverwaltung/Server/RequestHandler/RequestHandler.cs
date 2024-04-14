@@ -2,7 +2,7 @@
 
 namespace Server.RequestHandler;
 
-public interface IRequestHandler
+public interface RequestHandler
 {
     bool CanHandle(HttpListenerRequest request);
 

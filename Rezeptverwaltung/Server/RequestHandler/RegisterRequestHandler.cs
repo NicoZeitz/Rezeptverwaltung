@@ -12,18 +12,18 @@ namespace Server.RequestHandler;
 
 record struct RegisterData(Username Username, Name Name, Password Password, Password PasswordRepeat, ContentData profileImage);
 
-public class RegisterRequestHandler : IRequestHandler
+public class RegisterRequestHandler : RequestHandler
 {
     private readonly ChefRegisterService chefRegisterService;
-    private readonly IResourceLoader resourceLoader;
-    private readonly ISessionService sessionService;
+    private readonly ResourceLoader.ResourceLoader resourceLoader;
+    private readonly SessionService sessionService;
     private readonly TemplateLoader templateLoader;
 
 
     public RegisterRequestHandler(
       ChefRegisterService chefRegisterService,
-      IResourceLoader resourceLoader,
-      ISessionService sessionService
+      ResourceLoader.ResourceLoader resourceLoader,
+      SessionService sessionService
   )
     {
         this.chefRegisterService = chefRegisterService;

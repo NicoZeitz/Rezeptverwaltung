@@ -7,14 +7,14 @@ namespace Server;
 public class Server
 {
     private readonly HttpListener listener = new HttpListener();
-    private readonly IList<IRequestHandler> requestHandlers = new List<IRequestHandler>();
+    private readonly IList<RequestHandler.RequestHandler> requestHandlers = new List<RequestHandler.RequestHandler>();
 
     public Server(IPAddress iPAddress, int port)
     {
         listener.Prefixes.Add($"http://{iPAddress}:{port}/");
     }
 
-    public void AddRequestHandler(IRequestHandler handler) => requestHandlers.Add(handler);
+    public void AddRequestHandler(RequestHandler.RequestHandler handler) => requestHandlers.Add(handler);
 
     public async Task Run(CancellationToken cancellationToken)
     {

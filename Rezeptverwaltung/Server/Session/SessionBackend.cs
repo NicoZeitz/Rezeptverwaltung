@@ -2,7 +2,7 @@
 
 namespace Server.Session;
 
-public interface ISessionBackend<T> where T : class
+public interface SessionBackend<T> where T : class
 {
     Identifier CreateSession(T chef, Duration? expiresAfter = null);
     

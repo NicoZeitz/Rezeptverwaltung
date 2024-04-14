@@ -5,9 +5,9 @@ namespace Server.Resources;
 
 public class TemplateLoader
 {
-    private readonly IResourceLoader resourceLoader;
+    private readonly ResourceLoader.ResourceLoader resourceLoader;
 
-    public TemplateLoader(IResourceLoader resourceLoader)
+    public TemplateLoader(ResourceLoader.ResourceLoader resourceLoader)
     {
         this.resourceLoader = resourceLoader;
     }

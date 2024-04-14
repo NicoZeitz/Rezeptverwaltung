@@ -4,7 +4,7 @@ using System.Web;
 
 namespace Server.ContentParser;
 
-internal class QueryStringContentParser : IContentParser
+internal class QueryStringContentParser : ContentParser
 {
     public bool CanParse(HttpListenerRequest request)
     {

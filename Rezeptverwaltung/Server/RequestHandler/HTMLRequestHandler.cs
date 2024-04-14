@@ -3,9 +3,9 @@ using System.Text;
 
 namespace Server.RequestHandler;
 
-public interface IHTMLRequestHandler : IRequestHandler
+public interface HTMLRequestHandler : RequestHandler
 {
-    async Task IRequestHandler.Handle(HttpListenerRequest request, HttpListenerResponse response)
+    async Task RequestHandler.Handle(HttpListenerRequest request, HttpListenerResponse response)
     {
         var htmlFile = await HandleHtmlFileRequest(request);
 

@@ -3,12 +3,12 @@ using System.Net;
 
 namespace Server.RequestHandler;
 
-public class StaticRequestHandler : IRequestHandler
+public class StaticRequestHandler : RequestHandler
 {
     private readonly string prefix;
-    public readonly IResourceLoader resourceLoader;
+    public readonly ResourceLoader.ResourceLoader resourceLoader;
 
-    public StaticRequestHandler(string prefix, IResourceLoader resourceLoader)
+    public StaticRequestHandler(string prefix, ResourceLoader.ResourceLoader resourceLoader)
     {
         this.prefix = "/" + prefix;
         this.resourceLoader = resourceLoader;

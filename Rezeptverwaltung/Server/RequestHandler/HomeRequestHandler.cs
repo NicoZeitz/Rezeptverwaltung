@@ -7,14 +7,14 @@ using System.Net;
 
 namespace Server.RequestHandler;
 
-public class HomeRequestHandler : IHTMLRequestHandler
+public class HomeRequestHandler : HTMLRequestHandler
 {
-    private readonly IResourceLoader resourceLoader;
+    private readonly ResourceLoader.ResourceLoader resourceLoader;
     private readonly TemplateLoader templateLoader;
-    private readonly ISessionService sessionService;
+    private readonly SessionService sessionService;
     private readonly ShowRecipes showRecipes;
 
-    public HomeRequestHandler(IResourceLoader resourceLoader, ISessionService sessionService, ShowRecipes showRecipes)
+    public HomeRequestHandler(ResourceLoader.ResourceLoader resourceLoader, SessionService sessionService, ShowRecipes showRecipes)
     {
         this.resourceLoader = resourceLoader;
         this.templateLoader = new TemplateLoader(resourceLoader);

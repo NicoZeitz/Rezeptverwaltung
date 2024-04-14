@@ -4,7 +4,7 @@ using Isopoh.Cryptography.Argon2;
 // TODO: maybe database project?
 namespace Core.Services.Password;
 
-public class Argon2PasswordHasher : IPasswordHasher
+public class Argon2PasswordHasher : PasswordHasher
 {
     public Argon2PasswordHasher() : base() { }
 

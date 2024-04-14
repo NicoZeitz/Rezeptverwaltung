@@ -1,11 +1,11 @@
 ﻿namespace Server.ResourceLoader;
 
-public class PrefixResourceLoader : IResourceLoader
+public class PrefixResourceLoader : ResourceLoader
 {
     private readonly string prefix;
-    private readonly IResourceLoader innerResourceLoader;
+    private readonly ResourceLoader innerResourceLoader;
 
-    public PrefixResourceLoader(string prefix, IResourceLoader innerResourceLoader) : base()
+    public PrefixResourceLoader(string prefix, ResourceLoader innerResourceLoader) : base()
     {
         this.prefix = prefix;
         this.innerResourceLoader = innerResourceLoader;

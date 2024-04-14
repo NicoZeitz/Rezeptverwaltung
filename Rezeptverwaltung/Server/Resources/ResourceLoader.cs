@@ -1,6 +1,6 @@
 ﻿namespace Server.ResourceLoader;
 
-public interface IResourceLoader
+public interface ResourceLoader
 {
     Stream? LoadResource(string resourceName);
 }

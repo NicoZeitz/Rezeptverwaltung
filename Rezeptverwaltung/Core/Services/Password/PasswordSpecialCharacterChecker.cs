@@ -4,7 +4,7 @@ using Core.ValueObjects;
 
 namespace Core.Services.Password;
 
-public class PasswordSpecialCharacterChecker : IPasswordConditionChecker
+public class PasswordSpecialCharacterChecker : PasswordConditionChecker
 {
     public PasswordConditionCheckerResult CheckPassword(ValueObjects.Password password)
     {

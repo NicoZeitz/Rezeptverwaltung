@@ -3,7 +3,7 @@ using System.Net;
 
 namespace Server.Session;
 
-public interface ISessionService
+public interface SessionService
 {
     public Chef? GetCurrentChef(HttpListenerRequest request);
 

@@ -3,7 +3,7 @@ using Core.ValueObjects;
 
 namespace Core.Services.Password;
 
-public class PasswordLengthChecker : IPasswordConditionChecker
+public class PasswordLengthChecker : PasswordConditionChecker
 {
     private readonly int length;
 

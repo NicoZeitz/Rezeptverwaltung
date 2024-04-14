@@ -13,19 +13,19 @@ using Server.Resources;
 namespace Server.RequestHandler;
 record struct LoginData(Username Username, Password Password);
 
-public class LoginRequestHandler : IRequestHandler
+public class LoginRequestHandler : RequestHandler
 {
     private static readonly ErrorMessage INVALID_CREDENTIALS_ERROR_MESSAGE = new ErrorMessage("Benutzername und/oder Passwort falsch!");
 
     private readonly ChefLoginService chefLoginService;
-    private readonly IResourceLoader resourceLoader;
-    private readonly ISessionService sessionService;
+    private readonly ResourceLoader.ResourceLoader resourceLoader;
+    private readonly SessionService sessionService;
     private readonly TemplateLoader templateLoader;
 
     public LoginRequestHandler(
       ChefLoginService chefLoginService,
-      IResourceLoader resourceLoader,
-      ISessionService sessionService
+      ResourceLoader.ResourceLoader resourceLoader,
+      SessionService sessionService
   )
     {
         this.chefLoginService = chefLoginService;

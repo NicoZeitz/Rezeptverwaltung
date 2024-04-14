@@ -1,6 +1,6 @@
 ﻿namespace Server.ResourceLoader;
 
-public class FileSystemResourceLoader : IResourceLoader
+public class FileSystemResourceLoader : ResourceLoader
 {
     // TODO: Directory value object
     public string RootDirectory { get; }

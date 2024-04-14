@@ -7,11 +7,11 @@ using System.Text.RegularExpressions;
 
 namespace Server.RequestHandler;
 
-public partial class RecipeRequestHandler : IRequestHandler
+public partial class RecipeRequestHandler : RequestHandler
 {
-    private readonly IResourceLoader resourceLoader;
+    private readonly ResourceLoader.ResourceLoader resourceLoader;
 
-    public RecipeRequestHandler(IResourceLoader resourceLoader) : base()
+    public RecipeRequestHandler(ResourceLoader.ResourceLoader resourceLoader) : base()
     {
         this.resourceLoader = resourceLoader;
     }

@@ -3,7 +3,7 @@ using Core.ValueObjects;
 
 namespace Core.Services.Password;
 
-public class PasswordUppercaseChecker : IPasswordConditionChecker
+public class PasswordUppercaseChecker : PasswordConditionChecker
 {
     public PasswordConditionCheckerResult CheckPassword(ValueObjects.Password password)
     {

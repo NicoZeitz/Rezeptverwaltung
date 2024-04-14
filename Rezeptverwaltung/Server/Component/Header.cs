@@ -8,7 +8,7 @@ public class Header
 {
     private readonly TemplateLoader templateLoader;
 
-    public Header(IResourceLoader resourceLoader)
+    public Header(ResourceLoader.ResourceLoader resourceLoader)
     {
         templateLoader = new TemplateLoader(resourceLoader);
     }

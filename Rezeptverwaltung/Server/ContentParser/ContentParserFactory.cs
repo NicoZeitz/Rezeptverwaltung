@@ -4,7 +4,7 @@ namespace Server.ContentParser;
 
 internal class ContentParserFactory
 {
-    public static IContentParser CreateContentParser(string? contentType)
+    public static ContentParser CreateContentParser(string? contentType)
     {
         if(contentType is null)
         {

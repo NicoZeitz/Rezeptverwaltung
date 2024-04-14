@@ -2,7 +2,7 @@
 
 namespace Server.ResourceLoader;
 
-public class EmbeddedResourceLoader : IResourceLoader
+public class EmbeddedResourceLoader : ResourceLoader
 {
     public EmbeddedResourceLoader() : base() { }
 

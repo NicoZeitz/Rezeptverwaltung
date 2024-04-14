@@ -29,7 +29,7 @@ void configureServerRoutes(Server.Server server)
     //server.AddRequestHandler(new RegisterRequestHandler(embeddedResourceLoader));
     //server.AddRequestHandler(new LogoutRequestHandler(embeddedResourceLoader));
     // API
-    var dateTimeProvider = new DateTimeProvider();
+    var dateTimeProvider = new DefaultDateTimeProvider();
     var chefRepository = new ChefDatabase();
     var argonPasswordHasher = new Argon2PasswordHasher();
     var allowedPasswordChecker = new AllowedPasswordChecker();

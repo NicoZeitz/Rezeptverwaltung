@@ -2,7 +2,7 @@
 
 namespace Core.Services.Password;
 
-public class PasswordLowercaseChecker : IPasswordConditionChecker
+public class PasswordLowercaseChecker : PasswordConditionChecker
 {
     public PasswordConditionCheckerResult CheckPassword(ValueObjects.Password password)
     {

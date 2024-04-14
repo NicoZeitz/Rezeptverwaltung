@@ -26,7 +26,7 @@ public sealed class PasswordConditionCheckerResult
     }
 }
 
-public interface IPasswordConditionChecker
+public interface PasswordConditionChecker
 {
     PasswordConditionCheckerResult CheckPassword(ValueObjects.Password password);
 }

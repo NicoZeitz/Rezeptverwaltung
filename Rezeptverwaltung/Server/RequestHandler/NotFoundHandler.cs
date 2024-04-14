@@ -8,15 +8,15 @@ using System.Net;
 
 namespace Server.RequestHandler;
 
-public class NotFoundHandler : IHTMLRequestHandler
+public class NotFoundHandler : HTMLRequestHandler
 {
-    private readonly IResourceLoader resourceLoader;
-    private readonly ISessionService sessionService;
+    private readonly ResourceLoader.ResourceLoader resourceLoader;
+    private readonly SessionService sessionService;
     private readonly TemplateLoader templateLoader;
 
     public NotFoundHandler(
-        IResourceLoader resourceLoader,
-        ISessionService sessionService
+        ResourceLoader.ResourceLoader resourceLoader,
+        SessionService sessionService
     ) : base()
     {
         this.resourceLoader = resourceLoader;

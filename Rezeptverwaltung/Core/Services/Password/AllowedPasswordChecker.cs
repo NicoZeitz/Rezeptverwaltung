@@ -4,11 +4,11 @@ namespace Core.Services.Password;
 
 public class AllowedPasswordChecker
 {
-    private readonly IEnumerable<IPasswordConditionChecker> passwordConditionCheckers;
+    private readonly IEnumerable<PasswordConditionChecker> passwordConditionCheckers;
 
     public AllowedPasswordChecker() : base()
     {
-        passwordConditionCheckers = new IPasswordConditionChecker[]
+        passwordConditionCheckers = new PasswordConditionChecker[]
         {
             new PasswordLengthChecker(8),
             new PasswordUppercaseChecker(),

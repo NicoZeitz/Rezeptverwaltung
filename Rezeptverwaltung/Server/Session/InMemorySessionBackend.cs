@@ -3,12 +3,12 @@ using System.Runtime.Caching;
 
 namespace Server.Session;
 
-public class InMemorySessionBackend<T> : ISessionBackend<T> where T : class
+public class InMemorySessionBackend<T> : SessionBackend<T> where T : class
 {
     private readonly MemoryCache sessions = new MemoryCache("sessions");
-    private readonly IDateTimeProvider dateTimeProvider;
+    private readonly DateTimeProvider dateTimeProvider;
 
-    public InMemorySessionBackend(IDateTimeProvider dateTimeProvider)
+    public InMemorySessionBackend(DateTimeProvider dateTimeProvider)
     {
         this.dateTimeProvider = dateTimeProvider;
     }

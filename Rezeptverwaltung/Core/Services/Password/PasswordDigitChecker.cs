@@ -2,7 +2,7 @@
 
 namespace Core.Services.Password;
 
-internal class PasswordDigitChecker : IPasswordConditionChecker
+internal class PasswordDigitChecker : PasswordConditionChecker
 {
     public PasswordConditionCheckerResult CheckPassword(ValueObjects.Password password)
     {

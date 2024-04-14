@@ -34,10 +34,10 @@ public sealed class ChefRegisterResult
 public class ChefRegisterService
 {
     private readonly ChefRepository chefRepository;
-    private readonly IPasswordHasher passwordHasher;
+    private readonly PasswordHasher passwordHasher;
     private readonly AllowedPasswordChecker allowedPasswordChecker;
 
-    public ChefRegisterService(ChefRepository chefRepository, IPasswordHasher passwordHasher, AllowedPasswordChecker allowedPasswordChecker)
+    public ChefRegisterService(ChefRepository chefRepository, PasswordHasher passwordHasher, AllowedPasswordChecker allowedPasswordChecker)
     {
         this.chefRepository = chefRepository;
         this.passwordHasher = passwordHasher;

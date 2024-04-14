@@ -2,7 +2,7 @@
 
 namespace Core.Services.Password;
 
-public interface IPasswordHasher
+public interface PasswordHasher
 {
     HashedPassword HashPassword(ValueObjects.Password password);
 

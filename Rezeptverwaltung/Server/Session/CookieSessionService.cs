@@ -4,15 +4,15 @@ using System.Net;
 
 namespace Server.Session;
 
-public class CookieSessionService : ISessionService
+public class CookieSessionService : SessionService
 {
     private static readonly string SESSION_COOKIE_NAME = "session";
     private static readonly Duration REFRESH_LOGIN_TIMEOUT = new Duration(TimeSpan.FromHours(3));
 
-    private readonly ISessionBackend<Chef> sessionBackend;
-    private readonly IDateTimeProvider dateTimeProvider;
+    private readonly SessionBackend<Chef> sessionBackend;
+    private readonly DateTimeProvider dateTimeProvider;
 
-    public CookieSessionService(ISessionBackend<Chef> sessionBackend, IDateTimeProvider dateTimeProvider)
+    public CookieSessionService(SessionBackend<Chef> sessionBackend, DateTimeProvider dateTimeProvider)
     {
         this.sessionBackend = sessionBackend;
         this.dateTimeProvider = dateTimeProvider;

@@ -4,7 +4,7 @@ using System.Net;
 
 namespace Server.ContentParser;
 
-internal class MultipartContentParser : IContentParser
+internal class MultipartContentParser : ContentParser
 {
     public bool CanParse(HttpListenerRequest request)
     {

@@ -1,6 +1,6 @@
 ﻿namespace Core.Interfaces;
 
-public interface IDisplayable
+public interface Displayable
 {
     public string display();
 }

@@ -8,7 +8,7 @@ public class RecipeList
 {
     private readonly TemplateLoader templateLoader;
 
-    public RecipeList(IResourceLoader resourceLoader)
+    public RecipeList(ResourceLoader.ResourceLoader resourceLoader)
     {
         templateLoader = new TemplateLoader(resourceLoader);
     }
