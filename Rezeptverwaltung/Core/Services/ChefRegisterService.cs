@@ -61,7 +61,7 @@ public class ChefRegisterService
         var hashedPassword = passwordHasher.HashPassword(password);
 
         var chef = new Chef(username, name, hashedPassword);
-        chefRepository.save(chef);
+        chefRepository.add(chef);
 
         return ChefRegisterResult.Successful(chef);
     }

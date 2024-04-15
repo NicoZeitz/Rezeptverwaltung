@@ -1,4 +1,5 @@
 ﻿using Core.Interfaces;
+using Core.Services;
 
 namespace Core.ValueObjects.MeasurementUnits;
 
@@ -16,27 +17,40 @@ public record struct Weight(int Amount) : MeasurementUnit
 
     public static Weight FromGram(int gram) => new Weight(gram);
 
+    // TODO: Dry Verletzung und Magic Number
     public static Weight FromKilogram(double kilogram) => new Weight((int)(kilogram * 1000));
 
-    public SerializedMeasurementUnit Serialize()
+    public static SerializedMeasurementUnit Serialize(Weight measurementUnit)
     {
         return new SerializedMeasurementUnit(
             nameof(Weight),
-            Amount.ToString(),
+            measurementUnit.Amount.ToString(),
             nameof(WeightUnit.G)
         );
     }
 
-    public static MeasurementUnit Deserialize(SerializedMeasurementUnit serializedMeasurementUnit)
+    public static Weight Deserialize(SerializedMeasurementUnit serializedMeasurementUnit)
     {
-        switch(serializedMeasurementUnit.Unit)
+        switch (serializedMeasurementUnit.Unit)
         {
             case nameof(WeightUnit.KG):
                 return FromKilogram(double.Parse(serializedMeasurementUnit.Amount));
             case nameof(WeightUnit.G):
             default:
                 return FromGram(int.Parse(serializedMeasurementUnit.Amount));
+        }
+    }
 
+    public string display()
+    {
+        if (Amount < 1000)
+        {
+            return $"{Amount} g";
+        }
+        else
+        {
+            // TODO: Dry Verletzung und Magic Number
+            return $"{Amount / 1000} kg";
         }
     }
 }

@@ -5,7 +5,9 @@ namespace Core.Repository;
 
 public interface ChefRepository
 {
-    void save(Chef chef);
+    void add(Chef chef);
+
+    void remove(Chef chef);
 
     Chef? findByName(Username username);
 }

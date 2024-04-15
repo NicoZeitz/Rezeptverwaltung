@@ -8,7 +8,7 @@ public class ShowRecipes
 {
     private readonly RecipeRepository recipeRepository;
 
-    public ShowRecipes(in RecipeRepository recipeRepository) : base()
+    public ShowRecipes(RecipeRepository recipeRepository) : base()
     {
         this.recipeRepository = recipeRepository;
     }
@@ -28,4 +28,9 @@ public class ShowRecipes
 
         return recipes.OrderBy(recipe => recipe.Title);
     }
+
+    //public int test()
+    //{
+    //    ShowRecipes.ForChef(null).VisibleTo(null)
+    //}
 }

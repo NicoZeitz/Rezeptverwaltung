@@ -1,7 +1,26 @@
-﻿namespace Core.ValueObjects.MeasurementUnits;
+﻿using Core.Interfaces;
+using Core.Services;
 
+namespace Core.ValueObjects.MeasurementUnits;
 
-// TODO: how to deal with eggs? (always pieces but large, small, ...)
-public record class Piece(int Amount)
+public record class Piece(int Amount) : MeasurementUnit
 {
+    public static Piece Deserialize(SerializedMeasurementUnit serializedMeasurementUnit)
+    {
+        return new Piece(int.Parse(serializedMeasurementUnit.Amount));
+    }
+
+    public static SerializedMeasurementUnit Serialize(Piece measurementUnit)
+    {
+        return new SerializedMeasurementUnit(
+            nameof(Piece),
+            measurementUnit.Amount.ToString(),
+            string.Empty
+        );
+    }
+
+    public string display()
+    {
+        return $"{Amount} Stück";
+    }
 }

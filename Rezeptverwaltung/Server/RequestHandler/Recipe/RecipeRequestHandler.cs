@@ -1,6 +1,4 @@
 ﻿using Core.ValueObjects;
-using Scriban;
-using Server.ResourceLoader;
 using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;

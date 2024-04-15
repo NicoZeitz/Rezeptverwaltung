@@ -103,13 +103,13 @@ public class RecipeDatabase : RecipeRepository
 
     private Recipe CreateRecipeFromReader(SqliteDataReader reader)
     {
-        var recipeId = new Identifier(reader.GetGuid("id"));   
+        var recipeId = new Identifier(reader.GetGuid("id"));
         var chefUsername = new Username(reader.GetString("chef"));
         var title = new Text(reader.GetString("title"));
         var description = new Text(reader.GetString("description"));
         var visibility = VisibilityExtensions.FromString(reader.GetString("visibility"));
         var portion = new Portion(new Rational<int>(
-            reader.GetInt32("portion_numerator"), 
+            reader.GetInt32("portion_numerator"),
             reader.GetInt32("portion_denominator")
         ));
         var preparationTime = new Duration(TimeSpan.Parse(reader.GetString("preparation_time")));
@@ -200,7 +200,7 @@ public class RecipeDatabase : RecipeRepository
                 stepNumber
             ));
         }
-    }   
+    }
 
     private void AddWeightedIngredientsToRecipes(IList<Recipe> recipes)
     {
@@ -219,7 +219,7 @@ public class RecipeDatabase : RecipeRepository
         while (reader.Read())
         {
             var recipe = GetRecipeFromReader(reader, recipes);
-            if(recipe is null)
+            if (recipe is null)
             {
                 continue;
             }
@@ -242,5 +242,30 @@ public class RecipeDatabase : RecipeRepository
     {
         var recipeId = new Identifier(reader.GetGuid(columnName));
         return recipes.FirstOrDefault(recipe => recipe.Identifier == recipeId);
+    }
+
+    public void remove(Recipe recipe)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Recipe? findByIdentifier(Identifier identifier)
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEnumerable<Recipe> findByTitle(Text title)
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEnumerable<Recipe> findForCookbook(Cookbook cookbook)
+    {
+        throw new NotImplementedException();
+    }
+
+    public IEnumerable<Recipe> findForShoppingList(ShoppingList shoppingList)
+    {
+        throw new NotImplementedException();
     }
 }

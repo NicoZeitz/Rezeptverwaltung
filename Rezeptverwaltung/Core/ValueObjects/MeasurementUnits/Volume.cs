@@ -1,4 +1,5 @@
 ﻿using Core.Interfaces;
+using Core.Services;
 
 namespace Core.ValueObjects.MeasurementUnits;
 
@@ -10,13 +11,39 @@ public enum VolumeUnit
 
 public record class Volume(int Amount) : MeasurementUnit
 {
-    public static MeasurementUnit Deserialize(string unit, string amount)
+    public static Volume Deserialize(SerializedMeasurementUnit serializedMeasurementUnit)
     {
-        throw new NotImplementedException();
+        switch (serializedMeasurementUnit.Unit)
+        {
+            case nameof(VolumeUnit.L):
+                return new Volume(int.Parse(serializedMeasurementUnit.Amount));
+            case nameof(VolumeUnit.ML):
+            default:
+                // TODO: Dry Verletzung und Magic Number
+                return new Volume(int.Parse(serializedMeasurementUnit.Amount) / 1000);
+        }
     }
 
-    public (string, string) Serialize()
+    public static SerializedMeasurementUnit Serialize(Volume measurementUnit)
     {
-        throw new NotImplementedException();
+        return new SerializedMeasurementUnit(
+            nameof(Volume),
+            measurementUnit.Amount.ToString(),
+            nameof(VolumeUnit.ML)
+        );
+    }
+
+    public string display()
+    {
+        // TODO: Dry Verletzung und Magic Number
+        if (Amount < 1000)
+        {
+            return $"{Amount} ml";
+        }
+        else
+        {
+            // TODO: Dry Verletzung und Magic Number
+            return $"{Amount / 1000} l";
+        }
     }
 }

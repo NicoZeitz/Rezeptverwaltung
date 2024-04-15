@@ -1,5 +1,4 @@
 ﻿using Core.ValueObjects;
-using System.Runtime.Caching;
 
 namespace Server.Session;
 
@@ -17,19 +16,19 @@ public class InMemorySessionBackend<T> : SessionBackend<T> where T : class
     {
         var sessionId = Identifier.NewId();
 
-        if(expiresAfter.HasValue)
-        {           
+        if (expiresAfter.HasValue)
+        {
             sessions.Set(
-                sessionId.ToString(), 
-                userObject, 
+                sessionId.ToString(),
+                userObject,
                 dateTimeProvider.OffsetNow.Add(expiresAfter.Value.TimeSpan)
             );
         }
         else
         {
             sessions.Set(
-                sessionId.ToString(), 
-                userObject, 
+                sessionId.ToString(),
+                userObject,
                 new CacheItemPolicy() { AbsoluteExpiration = ObjectCache.InfiniteAbsoluteExpiration }
             );
         }
@@ -44,6 +43,6 @@ public class InMemorySessionBackend<T> : SessionBackend<T> where T : class
 
     public void RemoveSession(Identifier sessionId)
     {
-        sessions.Remove(sessionId.ToString());  
+        sessions.Remove(sessionId.ToString());
     }
 }
