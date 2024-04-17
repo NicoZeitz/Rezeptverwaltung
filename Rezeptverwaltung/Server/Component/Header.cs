@@ -1,5 +1,4 @@
 ﻿using Core.Entities;
-using Server.ResourceLoader;
 using Server.Resources;
 
 namespace Server.Component;
@@ -17,8 +16,9 @@ public class Header
     {
         return templateLoader
             .LoadTemplate("header.html")!
-            .RenderAsync(new { 
-                Chef = currentChef 
+            .RenderAsync(new
+            {
+                Chef = currentChef
             });
     }
 }

@@ -14,7 +14,6 @@ namespace Core.Entities
         public ISet<Tag> Tags { get; }
         public IList<PreparationStep> PreparationSteps { get; }
         public ISet<WeightedIngredient> WeightedIngredients { get; }
-        public Image DishImage { get; }
 
         public Recipe(
             Identifier id,
@@ -26,8 +25,7 @@ namespace Core.Entities
             Duration preparationTime,
             IEnumerable<Tag> tags,
             IList<PreparationStep> preparationSteps,
-            IEnumerable<WeightedIngredient> weightedIngredients,
-            Image dishImage)
+            IEnumerable<WeightedIngredient> weightedIngredients)
         {
             Identifier = id;
             Chef = chef;
@@ -39,7 +37,6 @@ namespace Core.Entities
             Tags = tags.ToHashSet();
             PreparationSteps = preparationSteps.ToList();
             WeightedIngredients = weightedIngredients.ToHashSet();
-            DishImage = dishImage;
         }
 
         public virtual bool Equals(Recipe? other)

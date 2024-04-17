@@ -18,7 +18,7 @@ public class ChefLoginService
 
     public Chef? LoginChef(Username username, ValueObjects.Password password)
     {
-        var chef = chefRepository.findByName(username);
+        var chef = chefRepository.FindByUsername(username);
         if (chef is null)
         {
             return null;

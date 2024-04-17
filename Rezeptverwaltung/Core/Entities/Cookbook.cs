@@ -9,14 +9,16 @@ public class Cookbook
     public Text Description { get; }
     public Username Creator { get; }
     public Visibility Visibility { get; }
+    public ISet<Identifier> Recipes { get; }
 
-    public Cookbook(Identifier id, Text title, Text description, Username creator, Visibility visibility)
+    public Cookbook(Identifier id, Text title, Text description, Username creator, Visibility visibility, IEnumerable<Identifier> recipes)
     {
         Identifier = id;
         Title = title;
         Description = description;
         Creator = creator;
         Visibility = visibility;
+        Recipes = recipes.ToHashSet();
     }
 
     public virtual bool Equals(Cookbook? other)

@@ -5,9 +5,9 @@ namespace Core.Repository;
 
 public interface ShoppingListRepository
 {
-    void add(ShoppingList shoppingList);
+    void Add(ShoppingList shoppingList);
 
-    void remove(ShoppingList shoppingList);
+    void Remove(ShoppingList shoppingList);
 
-    ShoppingList? findByIdentifier(Identifier identifier);
+    ShoppingList? FindByIdentifier(Identifier identifier);
 }

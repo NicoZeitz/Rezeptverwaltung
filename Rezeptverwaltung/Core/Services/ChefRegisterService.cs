@@ -46,7 +46,7 @@ public class ChefRegisterService
 
     public ChefRegisterResult RegisterChef(Username username, Name name, ValueObjects.Password password, Image image)
     {
-        var existingChef = chefRepository.findByName(username);
+        var existingChef = chefRepository.FindByUsername(username);
         if (existingChef is not null)
         {
             return ChefRegisterResult.Error(new[] { new ErrorMessage("Benutzername bereits vergeben!") });
@@ -61,7 +61,7 @@ public class ChefRegisterService
         var hashedPassword = passwordHasher.HashPassword(password);
 
         var chef = new Chef(username, name, hashedPassword);
-        chefRepository.add(chef);
+        chefRepository.Add(chef);
 
         return ChefRegisterResult.Successful(chef);
     }

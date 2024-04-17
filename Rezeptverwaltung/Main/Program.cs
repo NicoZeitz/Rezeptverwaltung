@@ -23,7 +23,7 @@ server.Run(serverCancellationToken).GetAwaiter().GetResult();
 void configureServerRoutes(Server.Server server)
 {
     //var embeddedResourceLoader = new EmbeddedResourceLoader();
-    var embeddedResourceLoader = new FileSystemResourceLoader("D:\\Dev\\CSharp\\Rezeptverwaltung\\Rezeptverwaltung\\Server\\template\\");
+    var embeddedResourceLoader = new FileSystemResourceLoader("C:\\Users\\nicoz\\Dev\\CSharp\\Rezeptverwaltung\\Rezeptverwaltung\\Server\\template\\");
     var assetResourceLoader = new PrefixResourceLoader("assets", embeddedResourceLoader);
     //var fileSystemResourceLoader = new FileSystemResourceLoader("static.web");
     //server.AddRequestHandler(new RegisterRequestHandler(embeddedResourceLoader));
@@ -36,8 +36,9 @@ void configureServerRoutes(Server.Server server)
     var chefLoginService = new ChefLoginService(chefRepository, argonPasswordHasher);
     var chefRegisterService = new ChefRegisterService(chefRepository, argonPasswordHasher, allowedPasswordChecker);
     var sessionService = new CookieSessionService(new InMemorySessionBackend<Chef>(dateTimeProvider), dateTimeProvider);
+    var measurementUnitManager = new MeasurementUnitManager();
 
-    server.AddRequestHandler(new HomeRequestHandler(embeddedResourceLoader, sessionService, new ShowRecipes(new RecipeDatabase())));
+    server.AddRequestHandler(new HomeRequestHandler(embeddedResourceLoader, sessionService, new ShowRecipes(new RecipeDatabase(measurementUnitManager))));
     server.AddRequestHandler(new RegisterRequestHandler(chefRegisterService, embeddedResourceLoader, sessionService));
     server.AddRequestHandler(new LoginRequestHandler(chefLoginService, embeddedResourceLoader, sessionService));
     server.AddRequestHandler(new LogoutRequestHandler(sessionService));

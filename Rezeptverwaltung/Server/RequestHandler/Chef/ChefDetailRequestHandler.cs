@@ -31,7 +31,7 @@ public partial class ChefDetailRequestHandler : HTMLRequestHandler
 
         return await chefDetailTemplate.RenderAsync(new
         {
-            Header = await new Header(ResourceLoader).RenderAsync(currentChef)
+            Header = await new Header(resourceLoader).RenderAsync(currentChef)
         });
     }
 }

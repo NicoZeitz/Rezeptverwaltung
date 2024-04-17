@@ -21,6 +21,10 @@ public record class Piece(int Amount) : MeasurementUnit
 
     public string display()
     {
-        return $"{Amount} Stück";
+        if (Amount == 1)
+        {
+            return $"{Amount} Stück";
+        }
+        return $"{Amount} Stücke";
     }
 }

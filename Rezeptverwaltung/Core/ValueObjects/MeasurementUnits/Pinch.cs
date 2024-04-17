@@ -19,8 +19,21 @@ public record class Pinch(int Number) : MeasurementUnit
         );
     }
 
+    public MeasurementUnit Combine(MeasurementUnit other)
+    {
+        if (other is Pinch pinch)
+        {
+            return new Pinch(Number + pinch.Number);
+        }
+        return ((MeasurementUnit)this).Combine(other);
+    }
+
     public string display()
     {
-        return $"{Number} Prise";
+        if (Number == 1)
+        {
+            return $"{Number} Prise";
+        }
+        return $"{Number} Prisen";
     }
 }

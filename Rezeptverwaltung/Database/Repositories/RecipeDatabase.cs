@@ -1,6 +1,6 @@
 ﻿using Core.Entities;
-using Core.Interfaces;
 using Core.Repository;
+using Core.Services;
 using Core.ValueObjects;
 using Microsoft.Data.Sqlite;
 using System.Data;
@@ -9,9 +9,17 @@ namespace Database.Repositories;
 
 public class RecipeDatabase : RecipeRepository
 {
-    public void add(Recipe recipe)
+    private readonly MeasurementUnitManager measurementUnitManager;
+
+    public RecipeDatabase(MeasurementUnitManager measurementUnitManager)
     {
-        var command = Database.Instance.CreateSqlCommand(@$"
+        this.measurementUnitManager = measurementUnitManager;
+    }
+
+    public void Add(Recipe recipe)
+    {
+        // Recipe
+        Database.Instance.CreateSqlCommand(@$"
             INSERT INTO recipes (
                 id,
                 chef,
@@ -21,29 +29,90 @@ public class RecipeDatabase : RecipeRepository
                 portion_numerator,
                 portion_denominator,
                 preparation_time,
-                dish_image
             ) VALUES (
-                {recipe.Identifier},
+                {recipe.Identifier.Id},
                 {recipe.Chef.Name},
-                {recipe.Title},
-                {recipe.Description},
+                {recipe.Title.Value},
+                {recipe.Description.Value},
                 {recipe.Visibility},
                 {recipe.Portion.Amount.Numerator},
                 {recipe.Portion.Amount.Denominator},
-                {recipe.PreparationTime},
-                {recipe.DishImage}
+                {recipe.PreparationTime.TimeSpan},
             )
-        ");
+        ").ExecuteNonQuery();
 
-        command.ExecuteNonQuery();
+        // m:n relationships
+        // Tags
+        Database.Instance.CreateSqlCommand(@$"
+            INSERT OR IGNORE INTO tags(name)
+            VALUES ({recipe.Tags.Select(tag => tag.Text)});
+        ").ExecuteNonQuery();
+        foreach (var tag in recipe.Tags)
+        {
+            Database.Instance.CreateSqlCommand(@$"
+                INSERT INTO recipe_tags(recipe_id, tag)
+                VALUES ({recipe.Identifier.Id}, {tag.Text});
+            ");
+        }
 
-        // TODO: m:n relationships
+        // Preparation steps
+        for (var i = 0; i < recipe.PreparationSteps.Count; ++i)
+        {
+            var preparationStep = recipe.PreparationSteps[i];
+            Database.Instance.CreateSqlCommand(@$"
+                INSERT INTO preparation_steps(recipe_id, step_number, description)
+                VALUES (
+                    {recipe.Identifier.Id},
+                    {i}
+                    {preparationStep.Description.Value},
+                )
+            ").ExecuteNonQuery();
+        }
+
+        // Weighted ingredients
+        foreach (var weightedIngredient in recipe.WeightedIngredients)
+        {
+            Database.Instance.CreateSqlCommand(@$"
+                INSERT OR IGNORE INTO ingredients(name)
+                VALUES ({weightedIngredient.Ingredient.Value});
+            ");
+
+            var serializedMeasurementUnit = measurementUnitManager.SerializeInto(weightedIngredient.PreparationQuantity);
+            var reader = Database.Instance.CreateSqlCommand(@$"
+                INSERT OR IGNORE INTO measurement_units(id, discriminator, amount, unit)
+                VALUES (
+                    {Identifier.NewId().Id},
+                    {serializedMeasurementUnit.Name},
+                    {serializedMeasurementUnit.Amount},
+                    {serializedMeasurementUnit.Unit}
+                )
+                RETURNING id
+            ").ExecuteReader();
+            reader.Read();
+
+            Database.Instance.CreateSqlCommand(@$"
+                INSERT INTO weighted_ingredients(recipe_id, preparation_quantity, ingredient_name)
+                VALUES (
+                    {recipe.Identifier.Id},
+                    {reader.GetGuid(0)},
+                    {weightedIngredient.Ingredient.Value}
+                )
+            ").ExecuteNonQuery();
+        }
     }
 
-    public IEnumerable<Recipe> findAll()
+    public void Remove(Recipe recipe)
+    {
+        Database.Instance.CreateSqlCommand(@$"
+            DELETE FROM recipes
+            WHERE id = {recipe.Identifier.Id}
+        ").ExecuteNonQuery();
+    }
+
+    public IEnumerable<Recipe> FindAll()
     {
         var command = Database.Instance.CreateSqlCommand(@$"
-            SELECT 
+            SELECT
                 id,
                 chef,
                 title,
@@ -51,11 +120,112 @@ public class RecipeDatabase : RecipeRepository
                 visibility,
                 portion_numerator,
                 portion_denominator,
-                preparation_time,
-                dish_image
+                preparation_time
             FROM recipes
         ");
+        return GetRecipesFromSqlCommand(command);
+    }
 
+    public IEnumerable<Recipe> FindForChef(Chef chef)
+    {
+        var command = Database.Instance.CreateSqlCommand(@$"
+            SELECT
+                id,
+                chef,
+                title,
+                description,
+                visibility,
+                portion_numerator,
+                portion_denominator,
+                preparation_time
+            FROM recipes
+            WHERE chef = {chef.Username.Name}
+        ");
+        return GetRecipesFromSqlCommand(command);
+    }
+
+    public Recipe? FindByIdentifier(Identifier identifier)
+    {
+        var command = Database.Instance.CreateSqlCommand(@$"
+            SELECT
+                id,
+                chef,
+                title,
+                description,
+                visibility,
+                portion_numerator,
+                portion_denominator,
+                preparation_time
+            FROM recipes
+            WHERE id = {identifier.Id}
+        ");
+        return GetRecipesFromSqlCommand(command).FirstOrDefault();
+    }
+
+    public IEnumerable<Recipe> FindByTitle(Text title)
+    {
+        var command = Database.Instance.CreateSqlCommand(@$"
+            SELECT
+                id,
+                chef,
+                title,
+                description,
+                visibility,
+                portion_numerator,
+                portion_denominator,
+                preparation_time
+            FROM recipes
+            WHERE title = {title.Value}
+        ");
+        return GetRecipesFromSqlCommand(command);
+    }
+
+    public IEnumerable<Recipe> FindForCookbook(Cookbook cookbook)
+    {
+        var command = Database.Instance.CreateSqlCommand(@$"
+            SELECT
+                id,
+                chef,
+                title,
+                description,
+                visibility,
+                portion_numerator,
+                portion_denominator,
+                preparation_time
+            FROM recipes
+            WHERE id IN (
+                SELECT recipe_id
+                FROM cookbook_recipes
+                WHERE cookbook_id = {cookbook.Identifier.Id}
+            )
+        ");
+        return GetRecipesFromSqlCommand(command);
+    }
+
+    public IEnumerable<Recipe> FindForShoppingList(ShoppingList shoppingList)
+    {
+        var command = Database.Instance.CreateSqlCommand(@$"
+            SELECT
+                id,
+                chef,
+                title,
+                description,
+                visibility,
+                portion_numerator,
+                portion_denominator,
+                preparation_time
+            FROM recipes
+            WHERE id IN (
+                SELECT recipe_id
+                FROM shopping_list_recipes
+                WHERE shopping_list_id = {shoppingList.Identifier.Id}
+            )
+        ");
+        return GetRecipesFromSqlCommand(command);
+    }
+
+    private IEnumerable<Recipe> GetRecipesFromSqlCommand(SqliteCommand command)
+    {
         using var reader = command.ExecuteReader();
         var recipes = new List<Recipe>();
 
@@ -66,40 +236,8 @@ public class RecipeDatabase : RecipeRepository
         }
 
         AddRelationshipsToRecipes(recipes);
-
         return recipes;
     }
-
-    public IEnumerable<Recipe> findForChef(Chef chef)
-    {
-        var command = Database.Instance.CreateSqlCommand(@$"
-            SELECT 
-                id,
-                chef,
-                title,
-                description,
-                visibility,
-                portion_numerator,
-                portion_denominator,
-                preparation_time,
-                dish_image
-            FROM recipes
-            WHERE chef = {chef.Username.Name}
-        ");
-
-        using var reader = command.ExecuteReader();
-        while (reader.Read())
-        {
-            var chefId = new Identifier(reader.GetGuid(0));
-            var preparationTime = new Duration(reader.GetTimeSpan(1));
-
-            //var recipe = new Recipe(chefId, preparationTime);
-            //yield return recipe;
-        }
-
-        return Enumerable.Empty<Recipe>();
-    }
-
 
     private Recipe CreateRecipeFromReader(SqliteDataReader reader)
     {
@@ -113,7 +251,6 @@ public class RecipeDatabase : RecipeRepository
             reader.GetInt32("portion_denominator")
         ));
         var preparationTime = new Duration(TimeSpan.Parse(reader.GetString("preparation_time")));
-        var dishImage = new Image(reader.GetStream("dish_image"));
 
         var tags = new List<Tag>();
         var preparationSteps = new List<PreparationStep>();
@@ -129,13 +266,15 @@ public class RecipeDatabase : RecipeRepository
             preparationTime,
             tags,
             preparationSteps,
-            weightedIngredients,
-            dishImage
+            weightedIngredients
         );
     }
 
     private void AddRelationshipsToRecipes(IList<Recipe> recipes)
     {
+        if (recipes.Count == 0)
+            return;
+
         AddTagsToRecipes(recipes);
         AddPreparationStepsToRecipes(recipes);
         AddWeightedIngredientsToRecipes(recipes);
@@ -144,24 +283,24 @@ public class RecipeDatabase : RecipeRepository
     private void AddTagsToRecipes(IList<Recipe> recipes)
     {
         var command = Database.Instance.CreateSqlCommand(@$"
-            SELECT 
+            SELECT
                 recipe_id,
-                tag
+                tag_name
             FROM recipe_tags
-            WHERE recipe_id IN ({recipes.Select(recipe => recipe.Identifier)})
+            WHERE recipe_id IN ({recipes.Select(recipe => recipe.Identifier.Id)})
         ");
 
         using var reader = command.ExecuteReader();
 
         while (reader.Read())
         {
-            var recipe = GetRecipeFromReader(reader, recipes);
+            var recipe = ExtractRecipeFittingToReader(reader, recipes);
             if (recipe is null)
             {
                 continue;
             }
 
-            var tag = new Tag(reader.GetString("tag"));
+            var tag = new Tag(reader.GetString("tag_name"));
 
             recipe.Tags.Add(tag);
         }
@@ -170,47 +309,45 @@ public class RecipeDatabase : RecipeRepository
     private void AddPreparationStepsToRecipes(IList<Recipe> recipes)
     {
         var command = Database.Instance.CreateSqlCommand(@$"
-            SELECT 
+            SELECT
                 recipe_id,
-                id,
-                description,
-                step_number
+                step_number,
+                description
             FROM preparation_steps
             WHERE recipe_id IN ({recipes.Select(recipe => recipe.Identifier)})
+            ORDER BY step_number ASC
         ");
 
         using var reader = command.ExecuteReader();
 
         while (reader.Read())
         {
-            var recipe = GetRecipeFromReader(reader, recipes);
+            var recipe = ExtractRecipeFittingToReader(reader, recipes);
             if (recipe is null)
             {
                 continue;
             }
 
-            var preparationStepId = new Identifier(reader.GetGuid("id"));
             var description = new Text(reader.GetString("description"));
-            var stepNumber = reader.GetInt32("step_number");
-
-            recipe.PreparationSteps.Add(new PreparationStep(
-                preparationStepId,
-                description,
-                recipeId,
-                stepNumber
-            ));
+            var preparationStep = new PreparationStep(description);
+            recipe.PreparationSteps.Add(preparationStep);
         }
     }
 
     private void AddWeightedIngredientsToRecipes(IList<Recipe> recipes)
     {
         var command = Database.Instance.CreateSqlCommand(@$"
-            SELECT 
-                id,
+            SELECT
                 recipe_id,
                 preparation_quantity,
-                ingredient_name
+                ingredient_name,
+                id as measurement_unit_id,
+                discriminator as measurement_unit_discriminator,
+                amount as measurement_unit_amount,
+                unit as measurement_unit_unit
             FROM weighted_ingredients
+            INNER JOIN measurement_units
+            ON weighted_ingredients.preparation_quantity = measurement_units.id
             WHERE recipe_id IN ({recipes.Select(recipe => recipe.Identifier)})
         ");
 
@@ -218,54 +355,36 @@ public class RecipeDatabase : RecipeRepository
 
         while (reader.Read())
         {
-            var recipe = GetRecipeFromReader(reader, recipes);
+            var recipe = ExtractRecipeFittingToReader(reader, recipes);
             if (recipe is null)
             {
                 continue;
             }
 
-            var weightedIngredientId = new Identifier(reader.GetGuid("id"));
-
-            var preparationQuantity = new MeasurementUnit(reader.GetString("preparation_quantity"));
             var ingredientName = new Text(reader.GetString("ingredient_name"));
+            var serializedMeasurementUnit = new SerializedMeasurementUnit(
+                reader.GetString("measurement_unit_discriminator"),
+                reader.GetString("measurement_unit_amount"),
+                reader.GetString("measurement_unit_unit")
+            );
+            var measurementUnit = measurementUnitManager.DeserializeFrom(serializedMeasurementUnit);
+            if (measurementUnit is null)
+            {
+                continue;
+            }
 
-
-            recipe.WeightedIngredients.Add(new WeightedIngredient(
-                weightedIngredientId,
-                preparationQuantity,
+            var weightedIngredient = new WeightedIngredient(
+                measurementUnit,
                 ingredientName
-            ));
+            );
+
+            recipe.WeightedIngredients.Add(weightedIngredient);
         }
     }
 
-    private Recipe? GetRecipeFromReader(SqliteDataReader reader, IEnumerable<Recipe> recipes, string columnName = "recipe_id")
+    private Recipe? ExtractRecipeFittingToReader(SqliteDataReader reader, IEnumerable<Recipe> recipes, string columnName = "recipe_id")
     {
         var recipeId = new Identifier(reader.GetGuid(columnName));
         return recipes.FirstOrDefault(recipe => recipe.Identifier == recipeId);
-    }
-
-    public void remove(Recipe recipe)
-    {
-        throw new NotImplementedException();
-    }
-
-    public Recipe? findByIdentifier(Identifier identifier)
-    {
-        throw new NotImplementedException();
-    }
-
-    public IEnumerable<Recipe> findByTitle(Text title)
-    {
-        throw new NotImplementedException();
-    }
-
-    public IEnumerable<Recipe> findForCookbook(Cookbook cookbook)
-    {
-        throw new NotImplementedException();
-    }
-
-    public IEnumerable<Recipe> findForShoppingList(ShoppingList shoppingList)
-    {
-        throw new NotImplementedException();
     }
 }

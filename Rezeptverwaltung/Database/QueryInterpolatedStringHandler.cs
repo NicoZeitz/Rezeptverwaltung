@@ -5,7 +5,7 @@ namespace Database;
 
 [InterpolatedStringHandler]
 internal class QueryInterpolatedStringHandler
-{ 
+{
     private readonly StringBuilder query;
     private readonly IDictionary<string, object?> parameters = new Dictionary<string, object?>();
     private readonly ParameterNameGenerator parameterNameGenerator = new ParameterNameGenerator();
@@ -23,16 +23,17 @@ internal class QueryInterpolatedStringHandler
 
     public void AppendFormatted<T>(T? parameter)
     {
-        if(parameter is IEnumerable<string> parameterList)
+        var parameterList = parameter as System.Collections.IEnumerable;
+        if (parameter is not string && parameterList is not null)
         {
-            var parameterListNames = string.Join(",", parameterList.Select(parameter =>
+            var parameterNames = new List<string>();
+            foreach (var parameterItem in parameterList)
             {
                 var parameterName = parameterNameGenerator.GetNextParameterName();
                 parameters.Add(parameterName, parameter);
-                return parameterName;
-            }));
-
-            query.Append(parameterListNames);            
+                parameterNames.Add(parameterName);
+            }
+            query.Append(string.Join(",", parameterNames));
         }
         else
         {
@@ -40,7 +41,6 @@ internal class QueryInterpolatedStringHandler
             parameters.Add(parameterName, parameter);
             query.Append(parameterName);
         }
-
     }
 
     public string GetQuery() => query.ToString();

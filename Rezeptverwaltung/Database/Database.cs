@@ -22,8 +22,6 @@ namespace Database
 
             connection.Open();
 
-            // TODO: remove https://learn.microsoft.com/en-us/dotnet/standard/data/sqlite/types
-            // TODO: cascading deletes
             CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS chefs (
                 username TEXT PRIMARY KEY,
                 first_name TEXT,
@@ -37,12 +35,78 @@ namespace Database
                 title TEXT NOT NULL,
                 description TEXT,
                 visibility TEXT NOT NULL CHECK(visibility IN ('public', 'private')),
+                preparation_time TEXT NOT NULL,
                 portion_numerator INTEGER NOT NULL,
                 portion_denominator INTEGER NOT NULL CHECK(portion_denominator <> 0),
-                preparation_time TEXT NOT NULL,
-                dish_image BLOB,
 
-                FOREIGN KEY(chef) REFERENCES chefs(username)
+                FOREIGN KEY(chef)
+                    REFERENCES chefs(username)
+                    ON UPDATE CASCADE
+                    ON DELETE CASCADE
+            );").ExecuteNonQuery();
+
+            CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS tags (
+                name TEXT PRIMARY KEY
+            );").ExecuteNonQuery();
+
+            CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS recipe_tags (
+                recipe_id TEXT NOT NULL,
+                tag_name TEXT NOT NULL,
+
+                PRIMARY KEY(recipe_id, tag_name),
+                FOREIGN KEY(recipe_id)
+                    REFERENCES recipes(id)
+                    ON UPDATE CASCADE
+                    ON DELETE CASCADE,
+                FOREIGN KEY(tag_name)
+                    REFERENCES tags(name)
+                    ON UPDATE CASCADE
+                    ON DELETE CASCADE
+            );").ExecuteNonQuery();
+
+            CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS preparation_steps (
+                recipe_id TEXT NOT NULL,
+                step_number INTEGER NOT NULL,
+                description TEXT NOT NULL,
+
+                PRIMARY KEY(recipe_id, step_number),
+                FOREIGN KEY(recipe_id)
+                    REFERENCES recipes(id)
+                    ON UPDATE CASCADE
+                    ON DELETE CASCADE
+            );").ExecuteNonQuery();
+
+            CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS ingredients (
+                name TEXT PRIMARY KEY
+            );").ExecuteNonQuery();
+
+            CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS measurement_units (
+                id TEXT PRIMARY KEY,
+                discriminator TEXT NOT NULL,
+                amount TEXT NOT NULL,
+                unit TEXT NOT NULL,
+
+                UNIQUE(discriminator, amount, unit)
+            );").ExecuteNonQuery();
+
+            CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS weighted_ingredients (
+                recipe_id TEXT NOT NULL,
+                preparation_quantity TEXT NOT NULL,
+                ingredient_name TEXT NOT NULL,
+
+                PRIMARY KEY(recipe_id, preparation_quantity, ingredient_name),
+                FOREIGN KEY(recipe_id)
+                    REFERENCES recipes(id)
+                    ON UPDATE CASCADE
+                    ON DELETE CASCADE,
+                FOREIGN KEY(preparation_quantity)
+                    REFERENCES measurement_units(id)
+                    ON UPDATE CASCADE
+                    ON DELETE CASCADE,
+                FOREIGN KEY(ingredient_name)
+                    REFERENCES ingredients(name)
+                    ON UPDATE CASCADE
+                    ON DELETE CASCADE
             );").ExecuteNonQuery();
 
             CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS cookbooks (
@@ -55,45 +119,30 @@ namespace Database
                 FOREIGN KEY(creator) REFERENCES chefs(username)
             );").ExecuteNonQuery();
 
-            CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS preparation_steps (
-                id TEXT PRIMARY KEY,
-                description TEXT NOT NULL,
-                recipe_id TEXT NOT NULL,
-                step_number INTEGER NOT NULL,
-
-                UNIQUE(recipe_id, step_number),
-                FOREIGN KEY(recipe_id) REFERENCES recipes(id)
-            );").ExecuteNonQuery();
-
             CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS shopping_list (
                 id TEXT PRIMARY KEY,
                 title TEXT NOT NULL,
                 visibility TEXT NOT NULL CHECK(visibility IN ('public', 'private')),
                 creator TEXT NOT NULL,
-    
-                FOREIGN KEY(creator) REFERENCES chefs(username) 
+
+                FOREIGN KEY(creator) REFERENCES chefs(username)
             );").ExecuteNonQuery();
 
-            CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS ingredients (
-                name TEXT PRIMARY KEY
-            );").ExecuteNonQuery();
+            CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS shopping_list_recipes (
+                recipe_id TEXT NOT NULL,
+                shopping_list_id TEXT NOT NULL,
+                portion_numerator INTEGER NOT NULL,
+                portion_denominator INTEGER NOT NULL CHECK(portion_denominator <> 0),
 
-            CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS measurement_units (
-                id TEXT PRIMARY KEY,
-                discriminator TEXT NOT NULL,
-                amount BLOB NOT NULL,
-                unit TEXT NOT NULL,
-
-                UNIQUE(discriminator, amount, unit)
-            );").ExecuteNonQuery();
-
-            CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS weighted_ingredients (
-                id TEXT PRIMARY KEY,
-                preparation_quantity TEXT NOT NULL,
-                ingredient_name TEXT NOT NULL,
-
-                FOREIGN KEY(preparation_quantity) REFERENCES measurement_units(id),
-                FOREIGN KEY(ingredient_name) REFERENCES ingredients(name)   
+                PRIMARY KEY(recipe_id, shopping_list_id),
+                FOREIGN KEY(recipe_id)
+                    REFERENCES recipes(id)
+                    ON UPDATE CASCADE
+                    ON DELETE CASCADE,
+                FOREIGN KEY(shopping_list_id)
+                    REFERENCES shopping_list(id)
+                    ON UPDATE CASCADE
+                    ON DELETE CASCADE
             );").ExecuteNonQuery();
 
             // m:n relationships
@@ -102,13 +151,13 @@ namespace Database
                 recipe_id TEXT NOT NULL,
 
                 PRIMARY KEY(chef_username, recipe_id),
-                FOREIGN KEY(chef_username) 
+                FOREIGN KEY(chef_username)
                     REFERENCES chefs(username)
-                    ON UPDATE CASCADE    
+                    ON UPDATE CASCADE
                     ON DELETE CASCADE,
-                FOREIGN KEY(recipe_id) 
+                FOREIGN KEY(recipe_id)
                     REFERENCES recipes(id)
-                    ON UPDATE CASCADE   
+                    ON UPDATE CASCADE
                     ON DELETE CASCADE
             );").ExecuteNonQuery();
 
@@ -117,15 +166,16 @@ namespace Database
                 recipe_id TEXT NOT NULL,
 
                 PRIMARY KEY(chef_username, recipe_id),
-                FOREIGN KEY(chef_username) 
+                FOREIGN KEY(chef_username)
                     REFERENCES chefs(username)
-                    ON UPDATE CASCADE    
+                    ON UPDATE CASCADE
                     ON DELETE CASCADE,
-                FOREIGN KEY(recipe_id) 
+                FOREIGN KEY(recipe_id)
                     REFERENCES recipes(id)
-                    ON UPDATE CASCADE    
+                    ON UPDATE CASCADE
                     ON DELETE CASCADE
             );").ExecuteNonQuery();
+
 
             CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS recipe_ingredients (
                 recipe_id TEXT NOT NULL,
@@ -133,13 +183,13 @@ namespace Database
                 quantity TEXT NOT NULL,
 
                 PRIMARY KEY(recipe_id, ingredient_id),
-                FOREIGN KEY(recipe_id) 
+                FOREIGN KEY(recipe_id)
                     REFERENCES recipes(id)
-                    ON UPDATE CASCADE    
+                    ON UPDATE CASCADE
                     ON DELETE CASCADE,
-                FOREIGN KEY(ingredient_id) 
+                FOREIGN KEY(ingredient_id)
                     REFERENCES ingredients(name)
-                    ON UPDATE CASCADE    
+                    ON UPDATE CASCADE
                     ON DELETE CASCADE
             );").ExecuteNonQuery();
 
@@ -148,13 +198,13 @@ namespace Database
                 recipe_id TEXT NOT NULL,
 
                 PRIMARY KEY(cookbook_id, recipe_id),
-                FOREIGN KEY(cookbook_id) 
+                FOREIGN KEY(cookbook_id)
                     REFERENCES cookbooks(id)
                     ON UPDATE CASCADE
                     ON DELETE CASCADE,
-                FOREIGN KEY(recipe_id) 
+                FOREIGN KEY(recipe_id)
                     REFERENCES recipes(id)
-                    ON UPDATE CASCADE    
+                    ON UPDATE CASCADE
                     ON DELETE CASCADE
             );").ExecuteNonQuery();
         }

@@ -1,6 +1,7 @@
 ﻿using Core.Entities;
 using Core.Repository;
 using Core.ValueObjects;
+using System.Data;
 
 namespace Database.Repositories;
 
@@ -8,13 +9,13 @@ public class ChefDatabase : ChefRepository
 {
     public ChefDatabase() : base() { }
 
-    public void add(Chef chef)
+    public void Add(Chef chef)
     {
         var command = Database.Instance.CreateSqlCommand(@$"
             INSERT INTO chefs (
-                username, 
-                first_name, 
-                last_name, 
+                username,
+                first_name,
+                last_name,
                 password
             ) VALUES (
                 {chef.Username.Name},
@@ -26,11 +27,20 @@ public class ChefDatabase : ChefRepository
         command.ExecuteNonQuery();
     }
 
-    public Chef? findByName(Username username)
+    public void Remove(Chef chef)
     {
         var command = Database.Instance.CreateSqlCommand(@$"
-            SELECT first_name, last_name, password 
-            FROM chefs 
+            DELETE FROM chefs
+            WHERE username = {chef.Username.Name}
+        ");
+        command.ExecuteNonQuery();
+    }
+
+    public Chef? FindByUsername(Username username)
+    {
+        var command = Database.Instance.CreateSqlCommand(@$"
+            SELECT first_name, last_name, password
+            FROM chefs
             WHERE username = {username.Name}
         ");
 
@@ -40,9 +50,10 @@ public class ChefDatabase : ChefRepository
             return null;
         }
 
-        var name = new Name(reader.GetString(0), reader.GetString(1));
-        var password = new HashedPassword(reader.GetString(2));
+        var name = new Name(reader.GetString("first_name"), reader.GetString("last_name"));
+        var password = new HashedPassword(reader.GetString("password"));
 
         return new Chef(username, name, password);
     }
+
 }

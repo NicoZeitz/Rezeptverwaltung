@@ -15,7 +15,7 @@ public class ShowRecipes
 
     public IEnumerable<Recipe> ShowRecipesVisibleTo(Chef? chef)
     {
-        var recipes = recipeRepository.findAll();
+        var recipes = recipeRepository.FindAll();
 
         if (chef is null)
         {

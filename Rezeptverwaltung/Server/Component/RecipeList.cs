@@ -1,5 +1,4 @@
 ﻿using Core.Entities;
-using Server.ResourceLoader;
 using Server.Resources;
 
 namespace Server.Component;

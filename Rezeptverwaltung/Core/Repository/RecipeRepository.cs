@@ -5,19 +5,19 @@ namespace Core.Repository;
 
 public interface RecipeRepository
 {
-    void add(Recipe recipe);
+    void Add(Recipe recipe);
 
-    void remove(Recipe recipe);
+    void Remove(Recipe recipe);
 
-    Recipe? findByIdentifier(Identifier identifier);
+    Recipe? FindByIdentifier(Identifier identifier);
 
-    IEnumerable<Recipe> findByTitle(Text title);
+    IEnumerable<Recipe> FindByTitle(Text title);
 
-    IEnumerable<Recipe> findAll();
+    IEnumerable<Recipe> FindAll();
 
-    IEnumerable<Recipe> findForChef(Chef chef);
+    IEnumerable<Recipe> FindForChef(Chef chef);
 
-    IEnumerable<Recipe> findForCookbook(Cookbook cookbook);
+    IEnumerable<Recipe> FindForCookbook(Cookbook cookbook);
 
-    IEnumerable<Recipe> findForShoppingList(ShoppingList shoppingList);
+    IEnumerable<Recipe> FindForShoppingList(ShoppingList shoppingList);
 }
