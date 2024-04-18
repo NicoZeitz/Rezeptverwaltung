@@ -15,8 +15,8 @@ public static class VisibilityExtensions
     {
         return visibility switch
         {
-            nameof(Visibility.PRIVATE) => Visibility.PRIVATE,
-            nameof(Visibility.PUBLIC) => Visibility.PUBLIC,
+            "0" => Visibility.PRIVATE,
+            "1" => Visibility.PUBLIC,
             _ => throw new ArgumentException($"Unknown visibility: {visibility}")
         };
     }    

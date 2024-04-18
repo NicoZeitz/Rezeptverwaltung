@@ -341,7 +341,7 @@ public class RecipeDatabase : RecipeRepository
                 step_number,
                 description
             FROM preparation_steps
-            WHERE recipe_id IN ({recipes.Select(recipe => recipe.Identifier)})
+            WHERE recipe_id IN ({recipes.Select(recipe => recipe.Identifier.Id)})
             ORDER BY step_number ASC
         ");
 
@@ -375,7 +375,7 @@ public class RecipeDatabase : RecipeRepository
             FROM weighted_ingredients
             INNER JOIN measurement_units
             ON weighted_ingredients.preparation_quantity = measurement_units.id
-            WHERE recipe_id IN ({recipes.Select(recipe => recipe.Identifier)})
+            WHERE recipe_id IN ({recipes.Select(recipe => recipe.Identifier.Id)})
         ");
 
         using var reader = command.ExecuteReader();
