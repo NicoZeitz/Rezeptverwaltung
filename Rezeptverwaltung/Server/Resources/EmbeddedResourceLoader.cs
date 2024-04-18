@@ -8,7 +8,7 @@ public class EmbeddedResourceLoader : ResourceLoader
 
     public Stream? LoadResource(string resourceName)
     {
-        resourceName = $"Server/template/{resourceName}".Replace("/", ".");
+        resourceName = $"Server/Components/template/{resourceName}".Replace("/", ".");
 
         return Assembly.GetExecutingAssembly()!.GetManifestResourceStream(resourceName);
     }

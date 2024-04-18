@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>🧑‍🍳 {{ chef.username }} — Rezeptverwaltung</title>
+        <link rel="stylesheet" href="/assets/styles.css" />
+    </head>
+    <body>
+        {{ header }}
+        <main class="relative">
+            <div
+                class="-z-10 h-80 scale-105 bg-cover bg-center blur-xl"
+                style="background-image: url({{ chef_image }})"
+            ></div>
+            <div
+                class="min-h-50 relative -top-14 -mb-32 grid place-items-center content-start justify-center bg-white pt-10 sm:gap-10"
+            >
+                <section
+                    class="col-span-1 col-start-1 row-start-2 place-self-start pb-32 sm:row-start-1 sm:pb-0"
+                >
+                    <h1 class="mb-2 text-3xl">{{ chef.username }}</h1>
+                    <h2>Vorname: {{ chef.name.first_name }}</h2>
+                    <h2>Nachname: {{ chef.name.last_name }}</h2>
+                </section>
+                <div
+                    class="h-50 w-50 relative -top-28 col-span-1 -mb-20 block aspect-square rounded-xl bg-white p-2 sm:col-start-2 sm:mb-0"
+                >
+                    <picture class="contents">
+                        <img
+                            class="h-full w-full rounded-xl object-cover"
+                            src="{{ chef_image }}"
+                            alt="Bild von {{ chef.username }}"
+                        />
+                    </picture>
+                </div>
+            </div>
+        </main>
+        <div class="isolate flex flex-col gap-10 px-10">
+            <section>
+                <h2 class="mb-3 text-2xl font-bold">Rezepte</h2>
+                {{ chef_recipes }}
+            </section>
+            <section>
+                <h2 class="mb-3 text-2xl font-bold">Kochbücher</h2>
+                {{ chef_cooking_books }}
+            </section>
+            <section>
+                <h2 class="mb-3 text-2xl font-bold">Einkaufslisten</h2>
+                {{ chef_shopping_lists }}
+            </section>
+        </div>
+    </body>
+</html>

@@ -1,5 +1,4 @@
 ﻿using Scriban;
-using Server.ResourceLoader;
 
 namespace Server.Resources;
 
@@ -17,5 +16,5 @@ public class TemplateLoader
         using var templateStream = resourceLoader.LoadResource(templateName)!;
         var templateContent = new StreamReader(templateStream).ReadToEnd();
         return Template.Parse(templateContent);
-    }   
+    }
 }

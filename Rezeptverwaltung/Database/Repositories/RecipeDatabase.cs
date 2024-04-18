@@ -9,17 +9,19 @@ namespace Database.Repositories;
 
 public class RecipeDatabase : RecipeRepository
 {
-    private readonly MeasurementUnitManager measurementUnitManager;
+    private readonly MeasurementUnitSerializationManager measurementUnitManager;
+    private readonly Database database;
 
-    public RecipeDatabase(MeasurementUnitManager measurementUnitManager)
+    public RecipeDatabase(Database database, MeasurementUnitSerializationManager measurementUnitManager) : base()
     {
+        this.database = database;
         this.measurementUnitManager = measurementUnitManager;
     }
 
     public void Add(Recipe recipe)
     {
         // Recipe
-        Database.Instance.CreateSqlCommand(@$"
+        database.CreateSqlCommand(@$"
             INSERT INTO recipes (
                 id,
                 chef,
@@ -43,13 +45,13 @@ public class RecipeDatabase : RecipeRepository
 
         // m:n relationships
         // Tags
-        Database.Instance.CreateSqlCommand(@$"
+        database.CreateSqlCommand(@$"
             INSERT OR IGNORE INTO tags(name)
             VALUES ({recipe.Tags.Select(tag => tag.Text)});
         ").ExecuteNonQuery();
         foreach (var tag in recipe.Tags)
         {
-            Database.Instance.CreateSqlCommand(@$"
+            database.CreateSqlCommand(@$"
                 INSERT INTO recipe_tags(recipe_id, tag)
                 VALUES ({recipe.Identifier.Id}, {tag.Text});
             ");
@@ -59,7 +61,7 @@ public class RecipeDatabase : RecipeRepository
         for (var i = 0; i < recipe.PreparationSteps.Count; ++i)
         {
             var preparationStep = recipe.PreparationSteps[i];
-            Database.Instance.CreateSqlCommand(@$"
+            database.CreateSqlCommand(@$"
                 INSERT INTO preparation_steps(recipe_id, step_number, description)
                 VALUES (
                     {recipe.Identifier.Id},
@@ -72,13 +74,13 @@ public class RecipeDatabase : RecipeRepository
         // Weighted ingredients
         foreach (var weightedIngredient in recipe.WeightedIngredients)
         {
-            Database.Instance.CreateSqlCommand(@$"
+            database.CreateSqlCommand(@$"
                 INSERT OR IGNORE INTO ingredients(name)
                 VALUES ({weightedIngredient.Ingredient.Value});
             ");
 
             var serializedMeasurementUnit = measurementUnitManager.SerializeInto(weightedIngredient.PreparationQuantity);
-            var reader = Database.Instance.CreateSqlCommand(@$"
+            var reader = database.CreateSqlCommand(@$"
                 INSERT OR IGNORE INTO measurement_units(id, discriminator, amount, unit)
                 VALUES (
                     {Identifier.NewId().Id},
@@ -90,7 +92,7 @@ public class RecipeDatabase : RecipeRepository
             ").ExecuteReader();
             reader.Read();
 
-            Database.Instance.CreateSqlCommand(@$"
+            database.CreateSqlCommand(@$"
                 INSERT INTO weighted_ingredients(recipe_id, preparation_quantity, ingredient_name)
                 VALUES (
                     {recipe.Identifier.Id},
@@ -103,7 +105,7 @@ public class RecipeDatabase : RecipeRepository
 
     public void Remove(Recipe recipe)
     {
-        Database.Instance.CreateSqlCommand(@$"
+        database.CreateSqlCommand(@$"
             DELETE FROM recipes
             WHERE id = {recipe.Identifier.Id}
         ").ExecuteNonQuery();
@@ -111,7 +113,7 @@ public class RecipeDatabase : RecipeRepository
 
     public IEnumerable<Recipe> FindAll()
     {
-        var command = Database.Instance.CreateSqlCommand(@$"
+        var command = database.CreateSqlCommand(@$"
             SELECT
                 id,
                 chef,
@@ -128,7 +130,7 @@ public class RecipeDatabase : RecipeRepository
 
     public IEnumerable<Recipe> FindForChef(Chef chef)
     {
-        var command = Database.Instance.CreateSqlCommand(@$"
+        var command = database.CreateSqlCommand(@$"
             SELECT
                 id,
                 chef,
@@ -146,7 +148,7 @@ public class RecipeDatabase : RecipeRepository
 
     public Recipe? FindByIdentifier(Identifier identifier)
     {
-        var command = Database.Instance.CreateSqlCommand(@$"
+        var command = database.CreateSqlCommand(@$"
             SELECT
                 id,
                 chef,
@@ -164,7 +166,7 @@ public class RecipeDatabase : RecipeRepository
 
     public IEnumerable<Recipe> FindByTitle(Text title)
     {
-        var command = Database.Instance.CreateSqlCommand(@$"
+        var command = database.CreateSqlCommand(@$"
             SELECT
                 id,
                 chef,
@@ -182,7 +184,7 @@ public class RecipeDatabase : RecipeRepository
 
     public IEnumerable<Recipe> FindForCookbook(Cookbook cookbook)
     {
-        var command = Database.Instance.CreateSqlCommand(@$"
+        var command = database.CreateSqlCommand(@$"
             SELECT
                 id,
                 chef,
@@ -204,7 +206,7 @@ public class RecipeDatabase : RecipeRepository
 
     public IEnumerable<Recipe> FindForShoppingList(ShoppingList shoppingList)
     {
-        var command = Database.Instance.CreateSqlCommand(@$"
+        var command = database.CreateSqlCommand(@$"
             SELECT
                 id,
                 chef,
@@ -282,7 +284,7 @@ public class RecipeDatabase : RecipeRepository
 
     private void AddTagsToRecipes(IList<Recipe> recipes)
     {
-        var command = Database.Instance.CreateSqlCommand(@$"
+        var command = database.CreateSqlCommand(@$"
             SELECT
                 recipe_id,
                 tag_name
@@ -308,7 +310,7 @@ public class RecipeDatabase : RecipeRepository
 
     private void AddPreparationStepsToRecipes(IList<Recipe> recipes)
     {
-        var command = Database.Instance.CreateSqlCommand(@$"
+        var command = database.CreateSqlCommand(@$"
             SELECT
                 recipe_id,
                 step_number,
@@ -336,7 +338,7 @@ public class RecipeDatabase : RecipeRepository
 
     private void AddWeightedIngredientsToRecipes(IList<Recipe> recipes)
     {
-        var command = Database.Instance.CreateSqlCommand(@$"
+        var command = database.CreateSqlCommand(@$"
             SELECT
                 recipe_id,
                 preparation_quantity,

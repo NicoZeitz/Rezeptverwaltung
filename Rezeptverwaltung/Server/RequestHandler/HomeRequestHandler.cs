@@ -1,7 +1,4 @@
 ﻿using Core.Services;
-using Server.Component;
-using Server.ResourceLoader;
-using Server.Resources;
 using Server.Session;
 using System.Net;
 
@@ -10,16 +7,16 @@ namespace Server.RequestHandler;
 public class HomeRequestHandler : HTMLRequestHandler
 {
     private readonly ResourceLoader.ResourceLoader resourceLoader;
-    private readonly TemplateLoader templateLoader;
     private readonly SessionService sessionService;
     private readonly ShowRecipes showRecipes;
+    private readonly ImageUrlService imageUrlService;
 
-    public HomeRequestHandler(ResourceLoader.ResourceLoader resourceLoader, SessionService sessionService, ShowRecipes showRecipes)
+    public HomeRequestHandler(ResourceLoader.ResourceLoader resourceLoader, SessionService sessionService, ShowRecipes showRecipes, ImageUrlService imageUrlService)
     {
         this.resourceLoader = resourceLoader;
-        this.templateLoader = new TemplateLoader(resourceLoader);
         this.sessionService = sessionService;
         this.showRecipes = showRecipes;
+        this.imageUrlService = imageUrlService;
     }
 
     public bool CanHandle(HttpListenerRequest request)
@@ -32,16 +29,20 @@ public class HomeRequestHandler : HTMLRequestHandler
         return request.Url!.AbsolutePath is "/" or "/index.html";
     }
 
-    public async Task<string> HandleHtmlFileRequest(HttpListenerRequest request)
+    public Task<string> HandleHtmlFileRequest(HttpListenerRequest request)
     {
         var currentChef = sessionService.GetCurrentChef(request);
-        var homeTemplate = templateLoader.LoadTemplate("home.html")!;
-        var recipies = showRecipes.ShowRecipesVisibleTo(currentChef);
+        var recipes = showRecipes.ShowRecipesVisibleTo(currentChef);
 
-        return await homeTemplate.RenderAsync(new
+        var component = new Components.HomePage(resourceLoader)
         {
-            Header = await new Header(resourceLoader).RenderAsync(currentChef),
-            RecipeList = await new RecipeList(resourceLoader).RenderAsync(recipies)
-        });
+            SlottedChildren = new Dictionary<string, Components.Component>
+            {
+                { "Header", new Components.Header(resourceLoader) { CurrentChef = currentChef } },
+                { "RecipeList", new Components.RecipeList(resourceLoader, imageUrlService) { Recipes = recipes } }
+            }
+        };
+
+        return component.RenderAsync();
     }
 }

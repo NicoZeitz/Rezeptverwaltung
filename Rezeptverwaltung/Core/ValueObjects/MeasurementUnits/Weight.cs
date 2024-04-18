@@ -53,4 +53,6 @@ public record struct Weight(int Amount) : MeasurementUnit
             return $"{Amount / 1000} kg";
         }
     }
+
+    public override string ToString() => display();
 }

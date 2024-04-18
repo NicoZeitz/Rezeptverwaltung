@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>
+            {{ recipe.title }} von {{ recipe.chef }} — Rezeptverwaltung
+        </title>
+        <link rel="stylesheet" href="/assets/styles.css" />
+    </head>
+    <body>
+        {{ header }}
+        <main class="px-2 pt-3">
+            <div
+                class="mb-10 grid grid-cols-1 grid-rows-[1fr_auto] rounded-l-xl shadow-lg sm:mx-8 sm:grid-cols-[40%_1fr] sm:grid-rows-1 sm:gap-5"
+            >
+                <picture class="aspect-[4/3] h-full w-full">
+                    <img
+                        class="h-full w-full rounded-t-xl object-cover sm:rounded-l-xl sm:rounded-r-none"
+                        src="{{ recipe_image }}"
+                        alt="Bild von {{ recipe.title }}"
+                    />
+                </picture>
+                <div class="flex flex-col gap-1 p-2">
+                    <h1 class="text-3xl">{{ recipe.title }}</h1>
+                    <p class="mb-3 text-lg text-gray-500">
+                        von
+                        <a href="/chef/{{ recipe.chef }}">{{ recipe.chef }}</a>
+                        | für {{ recipe.portion }} Portionen | Zubereitungszeit:
+                        {{ recipe.preparation_time }}
+                    </p>
+                    <pre class="flex-grow whitespace-pre-wrap text-lg">
+{{ recipe.description }}</pre
+                    >
+                    <ul class="flex flex-wrap gap-1">
+                        {{ for tag in recipe.tags }}
+                        <li class="contents">
+                            <a
+                                href="/tag/{{ tag }}"
+                                class="inline-block rounded-full bg-green-500 px-2 py-1 text-white"
+                                >{{ tag }}</a
+                            >
+                        </li>
+                        {{ end }}
+                    </ul>
+                </div>
+            </div>
+        </main>
+        <div
+            class="flex flex-col items-center gap-6 sm:mx-8 sm:flex-row sm:items-start"
+        >
+            <table
+                style="width: fit-content; height: fit-content"
+                class="grid flex-shrink-0 grid-cols-2 gap-x-2"
+            >
+                <thead class="contents">
+                    <tr class="col-span-2 grid grid-cols-subgrid">
+                        <th class="col-span-1 col-start-1 p-1">Menge</th>
+                        <th class="col-span-1 col-start-2 p-1">Zutat</th>
+                    </tr>
+                </thead>
+                <tbody class="contents">
+                    {{ for weighted_ingredient in recipe.weighted_ingredients }}
+                    <tr class="col-span-2 grid grid-cols-subgrid">
+                        <td class="col-span-1 col-start-1 p-1 text-right">
+                            {{ weighted_ingredient.preparation_quantity }}
+                        </td>
+                        <td class="col-span-1 col-start-2 p-1">
+                            {{ weighted_ingredient.ingredient }}
+                        </td>
+                    </tr>
+                    {{ end }}
+                </tbody>
+            </table>
+            <section class="flex-shrink flex-grow">
+                {{ for step in recipe.preparation_steps }}
+                <pre class="mb-5 whitespace-pre-wrap">
+{{ step.description }}</pre
+                >
+                {{ end}}
+            </section>
+        </div>
+    </body>
+</html>

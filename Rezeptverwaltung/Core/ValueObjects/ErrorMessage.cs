@@ -1,6 +1,10 @@
-﻿namespace Core.ValueObjects;
+﻿using Core.Interfaces;
 
-public record struct ErrorMessage(string Message)
+namespace Core.ValueObjects;
+
+public record struct ErrorMessage(string Message) : Displayable
 {
+    public string display() => Message;
+
     public override string ToString() => Message;
 }

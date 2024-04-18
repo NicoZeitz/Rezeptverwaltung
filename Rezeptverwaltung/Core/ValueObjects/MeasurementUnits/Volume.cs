@@ -46,4 +46,6 @@ public record class Volume(int Amount) : MeasurementUnit
             return $"{Amount / 1000} l";
         }
     }
+
+    public override string ToString() => display();
 }

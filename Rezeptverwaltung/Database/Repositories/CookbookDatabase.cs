@@ -1,16 +1,23 @@
-﻿using System.Data;
-using Core.Entities;
+﻿using Core.Entities;
 using Core.Repository;
 using Core.ValueObjects;
 using Microsoft.Data.Sqlite;
+using System.Data;
 
 namespace Database.Repositories;
 
 public class CookbookDatabase : CookbookRepository
 {
+    private readonly Database database;
+
+    public CookbookDatabase(Database database) : base()
+    {
+        this.database = database;
+    }
+
     public void add(Cookbook cookbook)
     {
-        var command = Database.Instance.CreateSqlCommand(@$"
+        var command = database.CreateSqlCommand(@$"
             INSERT INTO cookbooks (id, title, description, visibility, creator)
             VALUES ({cookbook.Identifier.Id}, {cookbook.Title.Value}, {cookbook.Description.Value}, {cookbook.Visibility}, {cookbook.Creator.Name});
         ");
@@ -18,7 +25,7 @@ public class CookbookDatabase : CookbookRepository
 
         foreach (var recipeId in cookbook.Recipes)
         {
-            Database.Instance.CreateSqlCommand(@$"
+            database.CreateSqlCommand(@$"
                 INSERT INTO cookbook_recipes (cookbook_id, recipe_id)
                 VALUES ({cookbook.Identifier.Id}, {recipeId.Id});
             ").ExecuteNonQuery();
@@ -27,7 +34,7 @@ public class CookbookDatabase : CookbookRepository
 
     public void remove(Cookbook cookbook)
     {
-        var command = Database.Instance.CreateSqlCommand(@$"
+        var command = database.CreateSqlCommand(@$"
             DELETE FROM cookbooks
             WHERE id = {cookbook.Identifier.Id};
         ");
@@ -36,7 +43,7 @@ public class CookbookDatabase : CookbookRepository
 
     public Cookbook? findByIdentifier(Identifier identifier)
     {
-        var command = Database.Instance.CreateSqlCommand(@$"
+        var command = database.CreateSqlCommand(@$"
             SELECT
                 id,
                 title,
@@ -54,7 +61,7 @@ public class CookbookDatabase : CookbookRepository
 
     public IEnumerable<Cookbook> findForChef(Chef chef)
     {
-        var command = Database.Instance.CreateSqlCommand(@$"
+        var command = database.CreateSqlCommand(@$"
             SELECT
                 id,
                 title,

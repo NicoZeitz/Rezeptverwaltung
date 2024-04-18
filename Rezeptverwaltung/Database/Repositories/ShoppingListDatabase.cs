@@ -1,15 +1,22 @@
-﻿using System.Data;
-using Core.Entities;
+﻿using Core.Entities;
 using Core.Repository;
 using Core.ValueObjects;
+using System.Data;
 
 namespace Database.Repositories;
 
 public class ShoppingListDatabase : ShoppingListRepository
 {
+    private readonly Database database;
+
+    public ShoppingListDatabase(Database database)
+    {
+        this.database = database;
+    }
+
     public void Add(ShoppingList shoppingList)
     {
-        var command = Database.Instance.CreateSqlCommand(@$"
+        var command = database.CreateSqlCommand(@$"
             INSERT INTO shopping_lists (id, title, visibility, creator)
             VALUES ({shoppingList.Identifier.Id}, {shoppingList.Title.Value}, {shoppingList.Visibility}, {shoppingList.Creator.Name});
         ");
@@ -17,7 +24,7 @@ public class ShoppingListDatabase : ShoppingListRepository
 
         foreach (var portionedRecipe in shoppingList.PortionedRecipes)
         {
-            Database.Instance.CreateSqlCommand(@$"
+            database.CreateSqlCommand(@$"
                 INSERT INTO shopping_list_recipes (recipe_id, shopping_list_id, portion)
                 VALUES ({portionedRecipe.RecipeIdentifier.Id}, {shoppingList.Identifier.Id}, {portionedRecipe.Portion.Amount});
             ").ExecuteNonQuery();
@@ -26,7 +33,7 @@ public class ShoppingListDatabase : ShoppingListRepository
 
     public void Remove(ShoppingList shoppingList)
     {
-        var command = Database.Instance.CreateSqlCommand(@$"
+        var command = database.CreateSqlCommand(@$"
             DELETE FROM shopping_lists
             WHERE id = {shoppingList.Identifier.Id};
         ");
@@ -35,7 +42,7 @@ public class ShoppingListDatabase : ShoppingListRepository
 
     public ShoppingList? FindByIdentifier(Identifier identifier)
     {
-        var command = Database.Instance.CreateSqlCommand(@$"
+        var command = database.CreateSqlCommand(@$"
             SELECT
                 id,
                 title,

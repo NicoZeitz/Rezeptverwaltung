@@ -5,14 +5,17 @@ namespace Core.ValueObjects.MeasurementUnits;
 
 public enum SpoonSize
 {
-    LARGE,
+    TEA,
+    DESSERT,
+    TABLE,
+    SERVING,
 }
 
 public record class Spoon(int Amount, SpoonSize Size) : MeasurementUnit
 {
     public static Spoon Deserialize(SerializedMeasurementUnit serializedMeasurementUnit)
     {
-        return new Spoon(int.Parse(serializedMeasurementUnit.Amount), SpoonSize.LARGE);
+        return new Spoon(int.Parse(serializedMeasurementUnit.Amount), SpoonSize.TABLE);
     }
 
     public static SerializedMeasurementUnit Serialize(Spoon measurementUnit)
@@ -22,7 +25,10 @@ public record class Spoon(int Amount, SpoonSize Size) : MeasurementUnit
             measurementUnit.Amount.ToString(),
             measurementUnit.Size switch
             {
-                SpoonSize.LARGE => nameof(SpoonSize.LARGE),
+                SpoonSize.TEA => nameof(SpoonSize.TEA),
+                SpoonSize.DESSERT => nameof(SpoonSize.DESSERT),
+                SpoonSize.TABLE => nameof(SpoonSize.TABLE),
+                SpoonSize.SERVING => nameof(SpoonSize.SERVING),
             }
         );
     }
@@ -31,7 +37,12 @@ public record class Spoon(int Amount, SpoonSize Size) : MeasurementUnit
     {
         return Size switch
         {
-            SpoonSize.LARGE => $"{Amount} Löffel",
+            SpoonSize.TEA => $"{Amount} Teelöffel",
+            SpoonSize.DESSERT => $"{Amount} Dessertlöffel",
+            SpoonSize.TABLE => $"{Amount} Löffel",
+            SpoonSize.SERVING => $"{Amount} Schöpfkellen",
         };
     }
+
+    public override string ToString() => display();
 }

@@ -1,14 +1,10 @@
-﻿using Core.Entities;
-using Core.Services;
+﻿using Core.Services;
 using Core.ValueObjects;
-using Scriban;
-using Server.Component;
-using Server.ResourceLoader;
 using Server.ContentParser;
+using Server.Resources;
 using Server.Session;
 using System.Net;
 using System.Text;
-using Server.Resources;
 
 namespace Server.RequestHandler;
 record struct LoginData(Username Username, Password Password);
@@ -104,7 +100,7 @@ public class LoginRequestHandler : RequestHandler
         var loginPage = await loginTemplate.RenderAsync(new
         {
             ErrorMessage = errorMessage,
-            Header = await new Header(resourceLoader).RenderAsync(currentChef),
+            Header = await new Components.Header(resourceLoader) { CurrentChef = currentChef }.RenderAsync(),
         });
 
         response.StatusCode = (int)httpStatus;
@@ -115,25 +111,25 @@ public class LoginRequestHandler : RequestHandler
     {
         var contentParser = ContentParserFactory.CreateContentParser(request.ContentType);
 
-        if(!contentParser.CanParse(request))
+        if (!contentParser.CanParse(request))
         {
             return null;
         }
 
         var content = contentParser.ParseRequest(request);
 
-        if(!content.TryGetValue("username", out var username) && username!.IsText)
+        if (!content.TryGetValue("username", out var username) && username!.IsText)
         {
             return null;
         }
-        if(!content.TryGetValue("password", out var password) && password!.IsText)
+        if (!content.TryGetValue("password", out var password) && password!.IsText)
         {
             return null;
         }
 
         return new LoginData(
-            new Username(username.TextValue!), 
+            new Username(username.TextValue!),
             new Password(password.TextValue!)
-        );   
+        );
     }
 }

@@ -1,5 +1,4 @@
-﻿using Server.ResourceLoader;
-using System.Net;
+﻿using System.Net;
 
 namespace Server.RequestHandler;
 
@@ -16,6 +15,10 @@ public class StaticRequestHandler : RequestHandler
 
     public bool CanHandle(HttpListenerRequest request)
     {
+
+        Console.WriteLine(request.Url);
+
+
         if (request.HttpMethod != "GET")
         {
             return false;

@@ -36,4 +36,6 @@ public record class Pinch(int Number) : MeasurementUnit
         }
         return $"{Number} Prisen";
     }
+
+    public override string ToString() => display();
 }

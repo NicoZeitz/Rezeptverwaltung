@@ -7,11 +7,16 @@ namespace Database.Repositories;
 
 public class ChefDatabase : ChefRepository
 {
-    public ChefDatabase() : base() { }
+    private readonly Database database;
+
+    public ChefDatabase(Database database) : base()
+    {
+        this.database = database;
+    }
 
     public void Add(Chef chef)
     {
-        var command = Database.Instance.CreateSqlCommand(@$"
+        var command = database.CreateSqlCommand(@$"
             INSERT INTO chefs (
                 username,
                 first_name,
@@ -29,7 +34,7 @@ public class ChefDatabase : ChefRepository
 
     public void Remove(Chef chef)
     {
-        var command = Database.Instance.CreateSqlCommand(@$"
+        var command = database.CreateSqlCommand(@$"
             DELETE FROM chefs
             WHERE username = {chef.Username.Name}
         ");
@@ -38,7 +43,7 @@ public class ChefDatabase : ChefRepository
 
     public Chef? FindByUsername(Username username)
     {
-        var command = Database.Instance.CreateSqlCommand(@$"
+        var command = database.CreateSqlCommand(@$"
             SELECT first_name, last_name, password
             FROM chefs
             WHERE username = {username.Name}

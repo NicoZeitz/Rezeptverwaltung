@@ -1,35 +1,10 @@
-﻿using Core.Entities;
+﻿using Core.Data;
+using Core.Entities;
 using Core.Repository;
 using Core.Services.Password;
 using Core.ValueObjects;
 
 namespace Core.Services;
-
-public sealed class ChefRegisterResult
-{
-    public readonly bool IsSuccessful;
-    public readonly Chef? Chef;
-    public readonly IEnumerable<ErrorMessage> ErrorMessages;
-
-    public bool IsError => !IsSuccessful;
-
-    private ChefRegisterResult(bool isSuccessful, Chef? chef, IEnumerable<ErrorMessage> errorMessages)
-    {
-        IsSuccessful = isSuccessful;
-        Chef = chef;
-        ErrorMessages = errorMessages;
-    }
-
-    public static ChefRegisterResult Successful(Chef chef)
-    {
-        return new ChefRegisterResult(true, chef, Enumerable.Empty<ErrorMessage>());
-    }
-
-    public static ChefRegisterResult Error(IEnumerable<ErrorMessage> errorMessages)
-    {
-        return new ChefRegisterResult(false, null, errorMessages);
-    }
-}
 
 public class ChefRegisterService
 {
@@ -44,18 +19,18 @@ public class ChefRegisterService
         this.allowedPasswordChecker = allowedPasswordChecker;
     }
 
-    public ChefRegisterResult RegisterChef(Username username, Name name, ValueObjects.Password password, Image image)
+    public Result<Chef> RegisterChef(Username username, Name name, ValueObjects.Password password, Image image)
     {
         var existingChef = chefRepository.FindByUsername(username);
         if (existingChef is not null)
         {
-            return ChefRegisterResult.Error(new[] { new ErrorMessage("Benutzername bereits vergeben!") });
+            return Result<Chef>.Error(new[] { new ErrorMessage("Benutzername bereits vergeben!") });
         }
 
         var passwordErrors = allowedPasswordChecker.CheckPassword(password);
         if (passwordErrors.Count() > 0)
         {
-            return ChefRegisterResult.Error(passwordErrors);
+            return Result<Chef>.Error(passwordErrors);
         }
 
         var hashedPassword = passwordHasher.HashPassword(password);
@@ -63,6 +38,6 @@ public class ChefRegisterService
         var chef = new Chef(username, name, hashedPassword);
         chefRepository.Add(chef);
 
-        return ChefRegisterResult.Successful(chef);
+        return Result<Chef>.Successful(chef);
     }
 }

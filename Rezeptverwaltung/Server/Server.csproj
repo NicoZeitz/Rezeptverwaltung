@@ -7,11 +7,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-	<EmbeddedResource Include="template\**" />
+	<EmbeddedResource Include="Components\template\*.html" />
+	<EmbeddedResource Include="Components\template\assets\**" />
   </ItemGroup>
 
   <ItemGroup>
-	<None Remove="template\**" />
+	<None Remove="Components\template\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -24,10 +25,4 @@
   <ItemGroup>
     <ProjectReference Include="..\Core\Core.csproj" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="RequestHandler\Cookbook\" />
-    <Folder Include="RequestHandler\ShoppingList\" />
-  </ItemGroup>
-
 </Project>

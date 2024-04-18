@@ -5,9 +5,9 @@ namespace Core.Services;
 
 public record SerializedMeasurementUnit(string Name, string Unit, string Amount);
 
-public class MeasurementUnitManager
+public class MeasurementUnitSerializationManager
 {
-    public MeasurementUnitManager()
+    public MeasurementUnitSerializationManager()
     {
     }
 

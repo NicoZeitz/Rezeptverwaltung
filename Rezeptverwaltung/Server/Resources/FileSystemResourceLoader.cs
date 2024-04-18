@@ -26,8 +26,6 @@ public class FileSystemResourceLoader : ResourceLoader
 
             try
             {
-
-
                 return new FileStream(
                     path,
                     FileMode.Open,

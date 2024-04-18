@@ -27,4 +27,6 @@ public record class Piece(int Amount) : MeasurementUnit
         }
         return $"{Amount} Stücke";
     }
+
+    public override string ToString() => display();
 }
