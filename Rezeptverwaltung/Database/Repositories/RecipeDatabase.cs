@@ -30,7 +30,7 @@ public class RecipeDatabase : RecipeRepository
                 visibility,
                 portion_numerator,
                 portion_denominator,
-                preparation_time,
+                preparation_time
             ) VALUES (
                 {recipe.Identifier.Id},
                 {recipe.Chef.Name},
@@ -39,22 +39,23 @@ public class RecipeDatabase : RecipeRepository
                 {recipe.Visibility},
                 {recipe.Portion.Amount.Numerator},
                 {recipe.Portion.Amount.Denominator},
-                {recipe.PreparationTime.TimeSpan},
+                {recipe.PreparationTime.TimeSpan}
             )
         ").ExecuteNonQuery();
 
         // m:n relationships
         // Tags
         database.CreateSqlCommand(@$"
-            INSERT OR IGNORE INTO tags(name)
-            VALUES ({recipe.Tags.Select(tag => tag.Text)});
+            INSERT INTO tags(name)
+            VALUES {recipe.Tags.Select(tag => tag.Text)}
+            ON CONFLICT(name) DO NOTHING;
         ").ExecuteNonQuery();
         foreach (var tag in recipe.Tags)
         {
             database.CreateSqlCommand(@$"
-                INSERT INTO recipe_tags(recipe_id, tag)
+                INSERT INTO recipe_tags(recipe_id, tag_name)
                 VALUES ({recipe.Identifier.Id}, {tag.Text});
-            ");
+            ").ExecuteNonQuery();
         }
 
         // Preparation steps
@@ -65,8 +66,8 @@ public class RecipeDatabase : RecipeRepository
                 INSERT INTO preparation_steps(recipe_id, step_number, description)
                 VALUES (
                     {recipe.Identifier.Id},
-                    {i}
-                    {preparationStep.Description.Value},
+                    {i},
+                    {preparationStep.Description.Value}
                 )
             ").ExecuteNonQuery();
         }
@@ -75,28 +76,51 @@ public class RecipeDatabase : RecipeRepository
         foreach (var weightedIngredient in recipe.WeightedIngredients)
         {
             database.CreateSqlCommand(@$"
-                INSERT OR IGNORE INTO ingredients(name)
-                VALUES ({weightedIngredient.Ingredient.Value});
-            ");
+                INSERT INTO ingredients(name)
+                VALUES ({weightedIngredient.Ingredient.Value})
+                ON CONFLICT(name) DO NOTHING;
+            ").ExecuteNonQuery();
 
             var serializedMeasurementUnit = measurementUnitManager.SerializeInto(weightedIngredient.PreparationQuantity);
+            var measurementUnitId = Identifier.NewId();
             var reader = database.CreateSqlCommand(@$"
-                INSERT OR IGNORE INTO measurement_units(id, discriminator, amount, unit)
+                INSERT INTO measurement_units(id, discriminator, amount, unit)
                 VALUES (
-                    {Identifier.NewId().Id},
+                    {measurementUnitId.Id},
                     {serializedMeasurementUnit.Name},
                     {serializedMeasurementUnit.Amount},
                     {serializedMeasurementUnit.Unit}
                 )
+                ON CONFLICT(discriminator, amount, unit) DO NOTHING
                 RETURNING id
             ").ExecuteReader();
-            reader.Read();
+            if(reader.HasRows)
+            {
+                reader.Read();
+                measurementUnitId = new Identifier(reader.GetGuid(0));
+                reader.DisposeAsync();
+            } 
+            else
+            {
+                reader.DisposeAsync();
+                reader = database.CreateSqlCommand(@$"
+                    SELECT id
+                    FROM measurement_units
+                    WHERE discriminator = {serializedMeasurementUnit.Name}
+                    AND amount = {serializedMeasurementUnit.Amount}
+                    AND unit = {serializedMeasurementUnit.Unit};
+                ").ExecuteReader();
+                reader.Read();
+                measurementUnitId = new Identifier(reader.GetGuid(0));
+                reader.DisposeAsync();
+            }
+           
 
             database.CreateSqlCommand(@$"
                 INSERT INTO weighted_ingredients(recipe_id, preparation_quantity, ingredient_name)
                 VALUES (
                     {recipe.Identifier.Id},
-                    {reader.GetGuid(0)},
+                    {measurementUnitId.Id},
                     {weightedIngredient.Ingredient.Value}
                 )
             ").ExecuteNonQuery();

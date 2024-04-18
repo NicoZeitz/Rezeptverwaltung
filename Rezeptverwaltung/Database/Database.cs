@@ -34,7 +34,7 @@ namespace Database
                 chef TEXT NOT NULL,
                 title TEXT NOT NULL,
                 description TEXT,
-                visibility TEXT NOT NULL CHECK(visibility IN ('public', 'private')),
+                visibility TEXT NOT NULL,
                 preparation_time TEXT NOT NULL,
                 portion_numerator INTEGER NOT NULL,
                 portion_denominator INTEGER NOT NULL CHECK(portion_denominator <> 0),
@@ -113,7 +113,7 @@ namespace Database
                 id TEXT PRIMARY KEY,
                 title TEXT NOT NULL,
                 description TEXT,
-                visibility TEXT NOT NULL CHECK(visibility IN ('public', 'private')),
+                visibility TEXT NOT NULL,
                 creator TEXT NOT NULL,
 
                 FOREIGN KEY(creator) REFERENCES chefs(username)
@@ -122,7 +122,7 @@ namespace Database
             CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS shopping_list (
                 id TEXT PRIMARY KEY,
                 title TEXT NOT NULL,
-                visibility TEXT NOT NULL CHECK(visibility IN ('public', 'private')),
+                visibility TEXT NOT NULL,
                 creator TEXT NOT NULL,
 
                 FOREIGN KEY(creator) REFERENCES chefs(username)
@@ -145,7 +145,6 @@ namespace Database
                     ON DELETE CASCADE
             );").ExecuteNonQuery();
 
-            // m:n relationships
             CreateSqlCommand($@"CREATE TABLE IF NOT EXISTS chef_recipes (
                 chef_username TEXT NOT NULL,
                 recipe_id TEXT NOT NULL,
@@ -176,23 +175,6 @@ namespace Database
                     ON DELETE CASCADE
             );").ExecuteNonQuery();
 
-
-            CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS recipe_ingredients (
-                recipe_id TEXT NOT NULL,
-                ingredient_id TEXT NOT NULL,
-                quantity TEXT NOT NULL,
-
-                PRIMARY KEY(recipe_id, ingredient_id),
-                FOREIGN KEY(recipe_id)
-                    REFERENCES recipes(id)
-                    ON UPDATE CASCADE
-                    ON DELETE CASCADE,
-                FOREIGN KEY(ingredient_id)
-                    REFERENCES ingredients(name)
-                    ON UPDATE CASCADE
-                    ON DELETE CASCADE
-            );").ExecuteNonQuery();
-
             CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS cookbook_recipes (
                 cookbook_id TEXT NOT NULL,
                 recipe_id TEXT NOT NULL,
@@ -216,7 +198,7 @@ namespace Database
 
             var command = connection.CreateCommand();
 
-            Console.WriteLine(query);
+            Console.WriteLine($"Executing SQL: {query} -- Parameters: [{string.Join(", ", parameters.Select(p => $"{p.Key}='{p.Value}'"))}]");
 
             command.CommandText = query;
             foreach (var parameter in parameters)

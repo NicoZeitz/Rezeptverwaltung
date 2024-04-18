@@ -30,8 +30,8 @@ internal class QueryInterpolatedStringHandler
             foreach (var parameterItem in parameterList)
             {
                 var parameterName = parameterNameGenerator.GetNextParameterName();
-                parameters.Add(parameterName, parameter);
-                parameterNames.Add(parameterName);
+                parameters.Add(parameterName, parameterItem);
+                parameterNames.Add($"({parameterName})");
             }
             query.Append(string.Join(",", parameterNames));
         }
@@ -43,7 +43,7 @@ internal class QueryInterpolatedStringHandler
         }
     }
 
-    public string GetQuery() => query.ToString();
+    public string GetQuery() => query.ToString().Trim();
 
     public IDictionary<string, object?> GetParameters() => parameters;
 }
