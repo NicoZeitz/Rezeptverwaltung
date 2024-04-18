@@ -1,4 +1,4 @@
-﻿namespace Persistence;
+﻿namespace Persistence.FS;
 
 public class FileSystem
 {
@@ -7,12 +7,12 @@ public class FileSystem
         throw new NotImplementedException();
     }
 
-    public byte[] Load(string fileName)
+    public Stream Load(string fileName)
     {
         throw new NotImplementedException();
     }
 
-    public void Save(string fileName, byte[] data)
+    public void Save(string fileName, Stream data)
     {
         throw new NotImplementedException();
     }

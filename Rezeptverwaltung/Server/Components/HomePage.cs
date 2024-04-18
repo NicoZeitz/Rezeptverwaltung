@@ -1,10 +1,11 @@
-﻿namespace Server.Components;
+﻿using Server.Resources;
+
+namespace Server.Components;
 
 public class HomePage : ContainerComponent
 {
-    public HomePage(
-        ResourceLoader.ResourceLoader resourceLoader)
-        : base(resourceLoader)
+    public HomePage(TemplateLoader templateLoader)
+        : base(templateLoader)
     {
     }
 

@@ -2,7 +2,7 @@
 using Core.Services;
 using Core.ValueObjects;
 
-namespace Persistence;
+namespace Persistence.FS;
 
 public class FileSystemImageService : ImageService
 {

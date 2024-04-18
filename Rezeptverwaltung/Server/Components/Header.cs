@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using Server.Resources;
 
 namespace Server.Components;
 
@@ -6,8 +7,8 @@ public class Header : TemplateComponent
 {
     public Chef? CurrentChef { get; set; }
 
-    public Header(ResourceLoader.ResourceLoader resourceLoader)
-        : base(resourceLoader)
+    public Header(TemplateLoader templateLoader)
+        : base(templateLoader)
     {
     }
 

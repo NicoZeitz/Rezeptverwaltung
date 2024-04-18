@@ -1,4 +1,5 @@
 ﻿using Core.Entities;
+using Server.Resources;
 
 namespace Server.Components;
 
@@ -10,8 +11,8 @@ public class RecipeList : TemplateComponent
 
     private readonly ImageUrlService imageUrlService;
 
-    public RecipeList(ResourceLoader.ResourceLoader resourceLoader, ImageUrlService imageUrlService)
-        : base(resourceLoader)
+    public RecipeList(TemplateLoader templateLoader, ImageUrlService imageUrlService)
+        : base(templateLoader)
     {
         this.imageUrlService = imageUrlService;
     }

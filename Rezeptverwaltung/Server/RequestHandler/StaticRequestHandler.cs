@@ -5,12 +5,14 @@ namespace Server.RequestHandler;
 public class StaticRequestHandler : RequestHandler
 {
     private readonly string prefix;
-    public readonly ResourceLoader.ResourceLoader resourceLoader;
+    private readonly ResourceLoader.ResourceLoader resourceLoader;
+    private readonly MimeTypeDeterminer mimeTypeDeterminer;
 
-    public StaticRequestHandler(string prefix, ResourceLoader.ResourceLoader resourceLoader)
+    public StaticRequestHandler(string prefix, ResourceLoader.ResourceLoader resourceLoader, MimeTypeDeterminer mimeTypeDeterminer)
     {
         this.prefix = "/" + prefix;
         this.resourceLoader = resourceLoader;
+        this.mimeTypeDeterminer = mimeTypeDeterminer;
     }
 
     public bool CanHandle(HttpListenerRequest request)
@@ -45,7 +47,7 @@ public class StaticRequestHandler : RequestHandler
         using var resource = resourceLoader.LoadResource(path)!;
 
         response.StatusCode = (int)HttpStatusCode.OK;
-        response.ContentType = FileExtension.FromFileName(Path.GetFileName(path)).GetMimeType().Text;
+        response.ContentType = mimeTypeDeterminer.GetMimeTypeFromExtension(FileExtension.FromFileName(path)).Text;
 
         await resource.CopyToAsync(response.OutputStream);
     }

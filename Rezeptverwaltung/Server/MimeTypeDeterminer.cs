@@ -1,6 +1,6 @@
 ﻿namespace Server;
 
-internal class MimeTypeDeterminer
+public class MimeTypeDeterminer
 {
     public MimeTypeDeterminer() : base() { }
 
@@ -18,6 +18,6 @@ internal class MimeTypeDeterminer
             "webp" => MimeType.WEBP,
             "ico" => MimeType.ICO,
             _ => MimeType.OCTET_STREAM,
-        } ;
+        };
     }
 }

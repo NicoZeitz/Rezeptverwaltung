@@ -8,10 +8,16 @@ namespace Server.RequestHandler.Register;
 public class RegisterPostDataParser
 {
     private static readonly ErrorMessage errorMessage = new ErrorMessage("Es ist ein Fehler aufgetreten.");
+    private readonly ContentParserFactory contentParserFactory;
+
+    public RegisterPostDataParser(ContentParserFactory contentParserFactory)
+    {
+        this.contentParserFactory = contentParserFactory;
+    }
 
     public Result<RegisterData> ParsePostData(HttpListenerRequest request)
     {
-        var contentParser = ContentParserFactory.CreateContentParser(request.ContentType);
+        var contentParser = contentParserFactory.CreateContentParser(request.ContentType);
         if (!contentParser.CanParse(request))
         {
             return Result<RegisterData>.Error(errorMessage);

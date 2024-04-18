@@ -1,11 +1,13 @@
 ﻿
 
+using Server.Resources;
+
 namespace Server.Components;
 
 public class RegisterPage : ContainerComponent
 {
-    public RegisterPage(ResourceLoader.ResourceLoader resourceLoader)
-        : base(resourceLoader)
+    public RegisterPage(TemplateLoader templateLoader)
+        : base(templateLoader)
     {
     }
 

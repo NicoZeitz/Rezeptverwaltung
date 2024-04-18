@@ -1,5 +1,6 @@
 ﻿
 using Core.Entities;
+using Server.Resources;
 
 namespace Server.Components;
 
@@ -7,8 +8,8 @@ public class ChefDetailPage : ContainerComponent
 {
     public Chef? Chef { get; set; }
 
-    public ChefDetailPage(ResourceLoader.ResourceLoader resourceLoader)
-        : base(resourceLoader)
+    public ChefDetailPage(TemplateLoader templateLoader)
+        : base(templateLoader)
     {
     }
 

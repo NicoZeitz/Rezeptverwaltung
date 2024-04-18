@@ -8,9 +8,9 @@ public class Server
     private readonly HttpListener listener = new HttpListener();
     private readonly IList<RequestHandler.RequestHandler> requestHandlers = new List<RequestHandler.RequestHandler>();
 
-    public Server(IPAddress iPAddress, int port)
+    public Server(ServerConfiguration configuration)
     {
-        listener.Prefixes.Add($"http://{iPAddress}:{port}/");
+        listener.Prefixes.Add($"http://{configuration.IPAddress}:{configuration.Port}/");
     }
 
     public void AddRequestHandler(RequestHandler.RequestHandler handler) => requestHandlers.Add(handler);

@@ -1,11 +1,13 @@
 ﻿
 
+using Server.Resources;
+
 namespace Server.Components;
 
 public class LoginPage : ContainerComponent
 {
-    public LoginPage(ResourceLoader.ResourceLoader resourceLoader)
-        : base(resourceLoader)
+    public LoginPage(TemplateLoader templateLoader)
+        : base(templateLoader)
     {
     }
 

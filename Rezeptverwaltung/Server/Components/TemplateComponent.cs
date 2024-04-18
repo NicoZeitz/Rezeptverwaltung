@@ -6,9 +6,9 @@ public abstract class TemplateComponent : Component
 {
     protected readonly TemplateLoader templateLoader;
 
-    public TemplateComponent(ResourceLoader.ResourceLoader resourceLoader)
+    public TemplateComponent(TemplateLoader templateLoader)
     {
-        templateLoader = new TemplateLoader(resourceLoader);
+        this.templateLoader = templateLoader;
     }
 
     public abstract Task<string> RenderAsync();

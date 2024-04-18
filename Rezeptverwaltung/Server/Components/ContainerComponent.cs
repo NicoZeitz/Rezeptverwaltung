@@ -1,12 +1,14 @@
-﻿namespace Server.Components;
+﻿using Server.Resources;
+
+namespace Server.Components;
 
 public abstract class ContainerComponent : TemplateComponent
 {
     public IEnumerable<Component> Children { get; set; } = Enumerable.Empty<Component>();
     public IDictionary<string, Component> SlottedChildren { get; set; } = new Dictionary<string, Component>();
 
-    public ContainerComponent(ResourceLoader.ResourceLoader resourceLoader)
-        : base(resourceLoader)
+    public ContainerComponent(TemplateLoader templateLoader)
+        : base(templateLoader)
     {
     }
 

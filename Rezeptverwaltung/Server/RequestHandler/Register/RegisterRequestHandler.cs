@@ -12,18 +12,27 @@ public class RegisterRequestHandler : RequestHandler
     private readonly ResourceLoader.ResourceLoader resourceLoader;
     private readonly SessionService sessionService;
     private readonly DuplicatePasswordChecker duplicatePasswordChecker;
+    private readonly MimeTypeToImageType mimeTypeToImageType;
+    private readonly RegisterPageRenderer registerPageRenderer;
+    private readonly RegisterPostDataParser registerPostDataParser;
 
     public RegisterRequestHandler(
       ChefRegisterService chefRegisterService,
       ResourceLoader.ResourceLoader resourceLoader,
       SessionService sessionService,
-      DuplicatePasswordChecker duplicatePasswordChecker
+      DuplicatePasswordChecker duplicatePasswordChecker,
+      MimeTypeToImageType mimeTypeToImageType,
+      RegisterPageRenderer registerPageRenderer,
+      RegisterPostDataParser registerPostDataParser
   )
     {
         this.chefRegisterService = chefRegisterService;
         this.resourceLoader = resourceLoader;
         this.sessionService = sessionService;
         this.duplicatePasswordChecker = duplicatePasswordChecker;
+        this.mimeTypeToImageType = mimeTypeToImageType;
+        this.registerPageRenderer = registerPageRenderer;
+        this.registerPostDataParser = registerPostDataParser;
     }
 
     public bool CanHandle(HttpListenerRequest request)
@@ -45,8 +54,7 @@ public class RegisterRequestHandler : RequestHandler
     {
         if (request.HttpMethod == "GET")
         {
-            return new RegisterPageRenderer().RenderPage(
-                resourceLoader,
+            return registerPageRenderer.RenderPage(
                 response,
                 HttpStatusCode.OK,
                 sessionService.GetCurrentChef(request)
@@ -58,11 +66,10 @@ public class RegisterRequestHandler : RequestHandler
 
     private Task HandlePost(HttpListenerRequest request, HttpListenerResponse response)
     {
-        var postData = new RegisterPostDataParser().ParsePostData(request);
+        var postData = registerPostDataParser.ParsePostData(request);
         if (postData.IsError)
         {
-            return new RegisterPageRenderer().RenderPage(
-                resourceLoader,
+            return registerPageRenderer.RenderPage(
                 response,
                 HttpStatusCode.BadRequest,
                 sessionService.GetCurrentChef(request),
@@ -74,8 +81,7 @@ public class RegisterRequestHandler : RequestHandler
 
         if (!duplicatePasswordChecker.IsSamePassword(password, passwordRepeat))
         {
-            return new RegisterPageRenderer().RenderPage(
-                resourceLoader,
+            return registerPageRenderer.RenderPage(
                 response,
                 HttpStatusCode.BadRequest,
                 sessionService.GetCurrentChef(request),
@@ -87,8 +93,7 @@ public class RegisterRequestHandler : RequestHandler
 
         if (!MimeType.ALL_IMAGE_MIMETYPES.OfType<MimeType?>().Contains(profileImage.FileMimeType))
         {
-            return new RegisterPageRenderer().RenderPage(
-                resourceLoader,
+            return registerPageRenderer.RenderPage(
                 response,
                 HttpStatusCode.BadRequest,
                 sessionService.GetCurrentChef(request),
@@ -98,13 +103,15 @@ public class RegisterRequestHandler : RequestHandler
             );
         }
 
-        // TODO: save file service
+        var image = new Image(
+            profileImage.FileData!,
+            mimeTypeToImageType.ConvertMimeTypeToImageType(profileImage.FileMimeType!.Value)!.Value
+        );
+        var registerResult = chefRegisterService.RegisterChef(username, name, password, image);
 
-        var registerResult = chefRegisterService.RegisterChef(username, name, password);
         if (registerResult.IsError)
         {
-            return new RegisterPageRenderer().RenderPage(
-                resourceLoader,
+            return registerPageRenderer.RenderPage(
                 response,
                 HttpStatusCode.BadRequest,
                 sessionService.GetCurrentChef(request),

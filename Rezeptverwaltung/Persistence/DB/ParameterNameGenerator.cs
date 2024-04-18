@@ -1,8 +1,8 @@
 ﻿using System.Text;
 
-namespace Database;
+namespace Persistence.DB;
 
-internal class ParameterNameGenerator
+public class ParameterNameGenerator
 {
     private const string prefix = "$";
     private int index = 0;

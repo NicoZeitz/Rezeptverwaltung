@@ -1,22 +1,22 @@
-﻿using System.Net.Mime;
+﻿namespace Server.ContentParser;
 
-namespace Server.ContentParser;
-
-internal class ContentParserFactory
+public class ContentParserFactory
 {
-    public static ContentParser CreateContentParser(string? contentType)
+    public ContentParserFactory() : base() { }
+
+    public ContentParser CreateContentParser(string? contentType)
     {
-        if(contentType is null)
+        if (contentType is null)
         {
             return new EmptyContentParser();
         }
-        
+
         if (contentType.StartsWith(MimeType.FORM.Text))
         {
             return new QueryStringContentParser();
         }
 
-        if(contentType.StartsWith(MimeType.MULTIPART.Text))
+        if (contentType.StartsWith(MimeType.MULTIPART.Text))
         {
             return new MultipartContentParser();
         }

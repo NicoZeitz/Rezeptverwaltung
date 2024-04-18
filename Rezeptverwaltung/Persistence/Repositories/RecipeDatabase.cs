@@ -3,9 +3,10 @@ using Core.Repository;
 using Core.Services;
 using Core.ValueObjects;
 using Microsoft.Data.Sqlite;
+using Persistence.DB;
 using System.Data;
 
-namespace Database.Repositories;
+namespace Persistence.Repositories;
 
 public class RecipeDatabase : RecipeRepository
 {

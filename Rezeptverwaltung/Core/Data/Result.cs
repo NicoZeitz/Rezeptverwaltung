@@ -27,7 +27,7 @@ public sealed class Result<T> : IEquatable<Result<T>>
         return new Result<T>(false, default, new[] { errorMessage });
     }
 
-    public static Result<T> Error(IEnumerable<ErrorMessage> errorMessages)
+    public static Result<T> Errors(IEnumerable<ErrorMessage> errorMessages)
     {
         return new Result<T>(false, default, errorMessages);
     }

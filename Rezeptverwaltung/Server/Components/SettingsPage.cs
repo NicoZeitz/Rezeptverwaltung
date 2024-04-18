@@ -1,11 +1,13 @@
 ﻿
 
+using Server.Resources;
+
 namespace Server.Components;
 
 public class SettingsPage : ContainerComponent
 {
-    public SettingsPage(ResourceLoader.ResourceLoader resourceLoader)
-        : base(resourceLoader)
+    public SettingsPage(TemplateLoader templateLoader)
+        : base(templateLoader)
     {
     }
 

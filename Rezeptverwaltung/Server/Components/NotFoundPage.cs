@@ -1,12 +1,14 @@
 ﻿
 
 
+using Server.Resources;
+
 namespace Server.Components;
 
 public class NotFoundPage : ContainerComponent
 {
-    public NotFoundPage(ResourceLoader.ResourceLoader resourceLoader)
-        : base(resourceLoader)
+    public NotFoundPage(TemplateLoader templateLoader)
+        : base(templateLoader)
     {
     }
 

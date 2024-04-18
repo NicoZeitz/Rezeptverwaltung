@@ -1,6 +1,6 @@
 ﻿namespace Server;
 
-internal struct FileExtension : IEquatable<FileExtension>
+public struct FileExtension : IEquatable<FileExtension>
 {
     public string Extension { get; init; }
 
@@ -11,9 +11,9 @@ internal struct FileExtension : IEquatable<FileExtension>
 
     public static FileExtension FromFileName(string filename)
     {
-       return new FileExtension(Path.GetExtension(filename));
+        return new FileExtension(Path.GetExtension(filename));
     }
-     
+
     public MimeType GetMimeType()
     {
         var determiner = new MimeTypeDeterminer();

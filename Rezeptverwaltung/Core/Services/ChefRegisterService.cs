@@ -11,12 +11,19 @@ public class ChefRegisterService
     private readonly ChefRepository chefRepository;
     private readonly PasswordHasher passwordHasher;
     private readonly AllowedPasswordChecker allowedPasswordChecker;
+    private readonly ImageService imageService;
 
-    public ChefRegisterService(ChefRepository chefRepository, PasswordHasher passwordHasher, AllowedPasswordChecker allowedPasswordChecker)
+    public ChefRegisterService(
+        ChefRepository chefRepository,
+        PasswordHasher passwordHasher,
+        AllowedPasswordChecker allowedPasswordChecker,
+        ImageService imageService)
+        : base()
     {
         this.chefRepository = chefRepository;
         this.passwordHasher = passwordHasher;
         this.allowedPasswordChecker = allowedPasswordChecker;
+        this.imageService = imageService;
     }
 
     public Result<Chef> RegisterChef(Username username, Name name, ValueObjects.Password password, Image image)
@@ -24,19 +31,21 @@ public class ChefRegisterService
         var existingChef = chefRepository.FindByUsername(username);
         if (existingChef is not null)
         {
-            return Result<Chef>.Error(new[] { new ErrorMessage("Benutzername bereits vergeben!") });
+            return Result<Chef>.Error(new ErrorMessage("Benutzername bereits vergeben!"));
         }
 
         var passwordErrors = allowedPasswordChecker.CheckPassword(password);
         if (passwordErrors.Count() > 0)
         {
-            return Result<Chef>.Error(passwordErrors);
+            return Result<Chef>.Errors(passwordErrors);
         }
 
         var hashedPassword = passwordHasher.HashPassword(password);
 
         var chef = new Chef(username, name, hashedPassword);
+
         chefRepository.Add(chef);
+        imageService.SaveImage(chef, image);
 
         return Result<Chef>.Successful(chef);
     }

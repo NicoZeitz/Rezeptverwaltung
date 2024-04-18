@@ -1,11 +1,13 @@
 ﻿
 
+using Server.Resources;
+
 namespace Server.Components;
 
 public class NewCookbookPage : ContainerComponent
 {
-    public NewCookbookPage(ResourceLoader.ResourceLoader resourceLoader)
-        : base(resourceLoader)
+    public NewCookbookPage(TemplateLoader templateLoader)
+        : base(templateLoader)
     {
     }
 

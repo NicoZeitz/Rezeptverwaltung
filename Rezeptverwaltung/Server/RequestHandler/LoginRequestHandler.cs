@@ -14,20 +14,21 @@ public class LoginRequestHandler : RequestHandler
     private static readonly ErrorMessage INVALID_CREDENTIALS_ERROR_MESSAGE = new ErrorMessage("Benutzername und/oder Passwort falsch!");
 
     private readonly ChefLoginService chefLoginService;
-    private readonly ResourceLoader.ResourceLoader resourceLoader;
     private readonly SessionService sessionService;
     private readonly TemplateLoader templateLoader;
+    private readonly ContentParserFactory contentParserFactory;
 
     public LoginRequestHandler(
       ChefLoginService chefLoginService,
-      ResourceLoader.ResourceLoader resourceLoader,
-      SessionService sessionService
+      TemplateLoader templateLoader,
+      SessionService sessionService,
+      ContentParserFactory contentParserFactory
   )
     {
         this.chefLoginService = chefLoginService;
-        this.resourceLoader = resourceLoader;
+        this.templateLoader = templateLoader;
         this.sessionService = sessionService;
-        this.templateLoader = new TemplateLoader(resourceLoader);
+        this.contentParserFactory = contentParserFactory;
     }
 
     public bool CanHandle(HttpListenerRequest request)
@@ -100,7 +101,7 @@ public class LoginRequestHandler : RequestHandler
         var loginPage = await loginTemplate.RenderAsync(new
         {
             ErrorMessage = errorMessage,
-            Header = await new Components.Header(resourceLoader) { CurrentChef = currentChef }.RenderAsync(),
+            Header = await new Components.Header(templateLoader) { CurrentChef = currentChef }.RenderAsync(),
         });
 
         response.StatusCode = (int)httpStatus;
@@ -109,7 +110,7 @@ public class LoginRequestHandler : RequestHandler
 
     private LoginData? ParsePostContentData(HttpListenerRequest request)
     {
-        var contentParser = ContentParserFactory.CreateContentParser(request.ContentType);
+        var contentParser = contentParserFactory.CreateContentParser(request.ContentType);
 
         if (!contentParser.CanParse(request))
         {

@@ -1,11 +1,13 @@
 ﻿
 
+using Server.Resources;
+
 namespace Server.Components;
 
 public class NewRecipePage : ContainerComponent
 {
-    public NewRecipePage(ResourceLoader.ResourceLoader resourceLoader)
-        : base(resourceLoader)
+    public NewRecipePage(TemplateLoader templateLoader)
+        : base(templateLoader)
     {
     }
 

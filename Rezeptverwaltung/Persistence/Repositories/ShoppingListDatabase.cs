@@ -1,9 +1,10 @@
 ﻿using Core.Entities;
 using Core.Repository;
 using Core.ValueObjects;
+using Persistence.DB;
 using System.Data;
 
-namespace Database.Repositories;
+namespace Persistence.Repositories;
 
 public class ShoppingListDatabase : ShoppingListRepository
 {

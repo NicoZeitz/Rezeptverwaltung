@@ -1,11 +1,13 @@
 ﻿
 
+using Server.Resources;
+
 namespace Server.Components;
 
 public class NewShoppingListPage : ContainerComponent
 {
-    public NewShoppingListPage(ResourceLoader.ResourceLoader resourceLoader)
-        : base(resourceLoader)
+    public NewShoppingListPage(TemplateLoader templateLoader)
+        : base(templateLoader)
     {
     }
 

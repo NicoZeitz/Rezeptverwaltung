@@ -2,7 +2,7 @@
 
 namespace Core.Services;
 
-public class MeasurmentUnitCombiner
+public class MeasurementUnitCombiner
 {
     public static MeasurementUnit? Combine(IEnumerable<MeasurementUnit> measurementUnits)
     {

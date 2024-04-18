@@ -32,4 +32,4 @@ public static class ImageTypeExtensions
     }
 }
 
-public record struct Image(byte[] Data, ImageType imageType);
+public record struct Image(Stream Data, ImageType imageType);

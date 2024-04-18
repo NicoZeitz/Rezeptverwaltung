@@ -1,7 +1,7 @@
 ﻿using System.Runtime.CompilerServices;
 using System.Text;
 
-namespace Database;
+namespace Persistence.DB;
 
 [InterpolatedStringHandler]
 internal class QueryInterpolatedStringHandler

@@ -1,19 +1,20 @@
-﻿using Server.Session;
+﻿using Server.Resources;
+using Server.Session;
 using System.Net;
 
 namespace Server.RequestHandler;
 
 public class NotFoundRequestHandler : HTMLRequestHandler
 {
-    private readonly ResourceLoader.ResourceLoader resourceLoader;
+    private readonly TemplateLoader templateLoader;
     private readonly SessionService sessionService;
 
     public NotFoundRequestHandler(
-        ResourceLoader.ResourceLoader resourceLoader,
+        TemplateLoader templateLoader,
         SessionService sessionService
     ) : base()
     {
-        this.resourceLoader = resourceLoader;
+        this.templateLoader = templateLoader;
         this.sessionService = sessionService;
     }
 
@@ -23,11 +24,11 @@ public class NotFoundRequestHandler : HTMLRequestHandler
     {
         var currentChef = sessionService.GetCurrentChef(request);
 
-        var component = new Components.NotFoundPage(resourceLoader)
+        var component = new Components.NotFoundPage(templateLoader)
         {
             SlottedChildren = new Dictionary<string, Components.Component>
             {
-                { "Header", new Components.Header(resourceLoader) { CurrentChef = currentChef } }
+                { "Header", new Components.Header(templateLoader) { CurrentChef = currentChef } }
             }
         };
 
