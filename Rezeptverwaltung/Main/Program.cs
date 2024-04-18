@@ -2,6 +2,7 @@
 using Core.Repository;
 using Core.Services;
 using Core.Services.Password;
+using Core.ValueObjects;
 using Database.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using Server.Components;

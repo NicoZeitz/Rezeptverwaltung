@@ -94,12 +94,12 @@ public class RecipeDatabase : RecipeRepository
                 ON CONFLICT(discriminator, amount, unit) DO NOTHING
                 RETURNING id
             ").ExecuteReader();
-            if(reader.HasRows)
+            if (reader.HasRows)
             {
                 reader.Read();
                 measurementUnitId = new Identifier(reader.GetGuid(0));
                 reader.DisposeAsync();
-            } 
+            }
             else
             {
                 reader.DisposeAsync();
@@ -114,7 +114,7 @@ public class RecipeDatabase : RecipeRepository
                 measurementUnitId = new Identifier(reader.GetGuid(0));
                 reader.DisposeAsync();
             }
-           
+
 
             database.CreateSqlCommand(@$"
                 INSERT INTO weighted_ingredients(recipe_id, preparation_quantity, ingredient_name)

@@ -1,8 +1,9 @@
-﻿using Core.ValueObjects;
+﻿using Core.Interfaces;
+using Core.ValueObjects;
 
 namespace Core.Entities
 {
-    public class Recipe
+    public class Recipe : UniqueIdentity, IEquatable<Recipe>
     {
         public Identifier Identifier { get; }
         public Username Chef { get; }
@@ -38,6 +39,8 @@ namespace Core.Entities
             PreparationSteps = preparationSteps.ToList();
             WeightedIngredients = weightedIngredients.ToHashSet();
         }
+
+        public string GetUniqueIdentity() => Identifier.Id.ToString();
 
         public virtual bool Equals(Recipe? other)
         {

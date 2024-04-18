@@ -8,6 +8,7 @@ public class AllowedPasswordChecker
 
     public AllowedPasswordChecker() : base()
     {
+        // TODO: move to main
         passwordConditionCheckers = new PasswordConditionChecker[]
         {
             new PasswordLengthChecker(8),

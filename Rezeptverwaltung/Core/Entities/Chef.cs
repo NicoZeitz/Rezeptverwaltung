@@ -1,8 +1,9 @@
-﻿using Core.ValueObjects;
+﻿using Core.Interfaces;
+using Core.ValueObjects;
 
 namespace Core.Entities;
 
-public class Chef : IEquatable<Chef>
+public class Chef : IEquatable<Chef>, UniqueIdentity
 {
     public Username Username { get; }
     public Name Name { get; }
@@ -14,6 +15,8 @@ public class Chef : IEquatable<Chef>
         Name = name;
         HashedPassword = hashedPassword;
     }
+
+    public string GetUniqueIdentity() => Username.Name;
 
     public virtual bool Equals(Chef? other)
     {

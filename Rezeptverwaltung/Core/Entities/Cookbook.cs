@@ -1,8 +1,9 @@
-﻿using Core.ValueObjects;
+﻿using Core.Interfaces;
+using Core.ValueObjects;
 
 namespace Core.Entities;
 
-public class Cookbook
+public class Cookbook : IEquatable<Cookbook>, UniqueIdentity
 {
     public Identifier Identifier { get; }
     public Text Title { get; }
@@ -20,6 +21,8 @@ public class Cookbook
         Visibility = visibility;
         Recipes = recipes.ToHashSet();
     }
+
+    public string GetUniqueIdentity() => Identifier.Id.ToString();
 
     public virtual bool Equals(Cookbook? other)
     {

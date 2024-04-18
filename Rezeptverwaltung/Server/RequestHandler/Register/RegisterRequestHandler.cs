@@ -1,8 +1,8 @@
 ﻿using Core.Services;
+using Core.Services.Password;
 using Core.ValueObjects;
 using Server.Session;
 using System.Net;
-using Core.Services.Password;
 
 namespace Server.RequestHandler.Register;
 
@@ -100,7 +100,7 @@ public class RegisterRequestHandler : RequestHandler
 
         // TODO: save file service
 
-        var registerResult = chefRegisterService.RegisterChef(username, name, password, new Image(""));
+        var registerResult = chefRegisterService.RegisterChef(username, name, password);
         if (registerResult.IsError)
         {
             return new RegisterPageRenderer().RenderPage(

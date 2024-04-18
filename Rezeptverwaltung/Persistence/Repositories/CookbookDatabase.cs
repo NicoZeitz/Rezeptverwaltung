@@ -15,7 +15,7 @@ public class CookbookDatabase : CookbookRepository
         this.database = database;
     }
 
-    public void add(Cookbook cookbook)
+    public void Add(Cookbook cookbook)
     {
         var command = database.CreateSqlCommand(@$"
             INSERT INTO cookbooks (id, title, description, visibility, creator)
@@ -32,7 +32,7 @@ public class CookbookDatabase : CookbookRepository
         }
     }
 
-    public void remove(Cookbook cookbook)
+    public void Remove(Cookbook cookbook)
     {
         var command = database.CreateSqlCommand(@$"
             DELETE FROM cookbooks
@@ -41,7 +41,7 @@ public class CookbookDatabase : CookbookRepository
         command.ExecuteNonQuery();
     }
 
-    public Cookbook? findByIdentifier(Identifier identifier)
+    public Cookbook? FindByIdentifier(Identifier identifier)
     {
         var command = database.CreateSqlCommand(@$"
             SELECT
@@ -59,7 +59,7 @@ public class CookbookDatabase : CookbookRepository
         return GetSingleCookbookFromSqlCommand(command);
     }
 
-    public IEnumerable<Cookbook> findForChef(Chef chef)
+    public IEnumerable<Cookbook> FindForChef(Chef chef)
     {
         var command = database.CreateSqlCommand(@$"
             SELECT

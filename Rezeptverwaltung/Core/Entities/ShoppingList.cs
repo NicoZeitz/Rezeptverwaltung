@@ -1,8 +1,9 @@
-﻿using Core.ValueObjects;
+﻿using Core.Interfaces;
+using Core.ValueObjects;
 
 namespace Core.Entities;
 
-public class ShoppingList
+public class ShoppingList : IEquatable<ShoppingList>, UniqueIdentity
 {
     public Identifier Identifier { get; }
     public Text Title { get; }
@@ -18,6 +19,8 @@ public class ShoppingList
         Creator = creator;
         PortionedRecipes = portionedRecipes;
     }
+
+    public string GetUniqueIdentity() => Identifier.Id.ToString();
 
     public virtual bool Equals(ShoppingList? other)
     {

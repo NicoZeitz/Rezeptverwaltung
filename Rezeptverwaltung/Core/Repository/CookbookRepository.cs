@@ -5,11 +5,11 @@ namespace Core.Repository;
 
 public interface CookbookRepository
 {
-    void add(Cookbook cookbook);
+    void Add(Cookbook cookbook);
 
-    void remove(Cookbook cookbook);
+    void Remove(Cookbook cookbook);
 
-    Cookbook? findByIdentifier(Identifier identifier);
+    Cookbook? FindByIdentifier(Identifier identifier);
 
-    IEnumerable<Cookbook> findForChef(Chef chef);
+    IEnumerable<Cookbook> FindForChef(Chef chef);
 }
