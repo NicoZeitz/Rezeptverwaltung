@@ -2,8 +2,6 @@
 using Core.Repository;
 using Core.Services;
 using Core.Services.Password;
-using Core.ValueObjects.MeasurementUnits;
-using Core.ValueObjects;
 using Main;
 using Microsoft.Extensions.DependencyInjection;
 using Persistence.DB;
@@ -14,12 +12,12 @@ using Server.Components;
 using Server.ContentParser;
 using Server.RequestHandler;
 using Server.RequestHandler.Chef;
+using Server.RequestHandler.Login;
 using Server.RequestHandler.Recipe;
 using Server.RequestHandler.Register;
 using Server.ResourceLoader;
 using Server.Resources;
 using Server.Session;
-using System.Net;
 using System.Reflection;
 
 
@@ -170,6 +168,8 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     services.AddTransient<ImageUrlService>();
     services.AddTransient<MimeTypeDeterminer>();
     services.AddTransient<MimeTypeToImageType>();
+    services.AddTransient<LoginPageRenderer>();
+    services.AddTransient<LoginPostDataParser>();
     services.AddTransient<RegisterPageRenderer>();
     services.AddTransient<RegisterPostDataParser>();
 

@@ -15,7 +15,8 @@ public class LoginPage : ContainerComponent
     {
         return await templateLoader.LoadTemplate("LoginPage.html")!.RenderAsync(new
         {
-            Header = await GetRenderedSlottedChild("Header")
+            Header = await GetRenderedSlottedChild("Header"),
+            ErrorMessages = await GetRenderedChildren()
         });
     }
 }

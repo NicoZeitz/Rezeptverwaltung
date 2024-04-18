@@ -39,7 +39,9 @@
                         required
                     />
                 </div>
+                {{ for error_message in error_messages }}
                 <span class="text-red-500"> {{ error_message }} </span>
+                {{ end }}
                 <button
                     type="submit"
                     class="rounded-md bg-green-500 px-16 py-3 text-white shadow-lg"

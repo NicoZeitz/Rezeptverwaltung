@@ -11,13 +11,14 @@ public class RegisterPage : ContainerComponent
     {
     }
 
-    public override Task<string> RenderAsync()
+    public override async Task<string> RenderAsync()
     {
-        return templateLoader.LoadTemplate("RegisterPage.html")!.RenderAsync(new
-        {
-            ErrorMessages = GetSlottedChild("ErrorMessages"),
-            Header = GetSlottedChild("Header")
-        })
-            .AsTask();
+        return await templateLoader
+            .LoadTemplate("RegisterPage.html")!
+            .RenderAsync(new
+            {
+                ErrorMessages = await GetRenderedChildren(),
+                Header = await GetRenderedSlottedChild("Header")
+            });
     }
 }
