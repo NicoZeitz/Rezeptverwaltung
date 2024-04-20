@@ -23,12 +23,12 @@ public sealed class Result<T> : IEquatable<Result<T>>
 
     public static Result<T> Successful(T value)
     {
-        return new Result<T>(true, value, Enumerable.Empty<ErrorMessage>());
+        return new Result<T>(true, value, []);
     }
 
     public static Result<T> Error(ErrorMessage errorMessage)
     {
-        return new Result<T>(false, default, new[] { errorMessage });
+        return new Result<T>(false, default, [errorMessage]);
     }
 
     public static Result<T> Errors(IEnumerable<ErrorMessage> errorMessages)

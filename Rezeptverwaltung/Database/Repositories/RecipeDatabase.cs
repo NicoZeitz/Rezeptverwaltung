@@ -96,7 +96,11 @@ public class RecipeDatabase : RecipeRepository
                 portion_denominator,
                 preparation_time
             FROM recipes
-            WHERE = {tag.Text}
+            WHERE id IN (
+                SELECT recipe_id
+                FROM recipe_tags
+                WHERE tag_name = {tag.Text}
+            )
         ");
         return GetRecipesFromSqlCommand(command);
     }
@@ -191,6 +195,9 @@ public class RecipeDatabase : RecipeRepository
             var recipe = CreateRecipeFromReader(reader);
             recipes.Add(recipe);
         }
+
+        if (recipes.Count == 0)
+            return recipes;
 
         AddRelationshipsToRecipes(recipes);
         return recipes;

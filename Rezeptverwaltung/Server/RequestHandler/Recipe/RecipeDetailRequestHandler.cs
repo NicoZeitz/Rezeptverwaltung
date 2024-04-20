@@ -10,27 +10,24 @@ namespace Server.RequestHandler;
 
 public partial class RecipeDetailRequestHandler : HTMLRequestHandler
 {
-    private readonly Header header;
+    private readonly ComponentProvider componentProvider;
     private readonly NotFoundPageRenderer notFoundPageRenderer;
-    private readonly RecipeDetailPage recipeDetailPage;
     private readonly SessionService sessionService;
     private readonly ShowRecipes showRecipes;
 
-    [GeneratedRegex("/recipe/(?<recipe_id>[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[89AB][a-fA-F0-9]{3}-[a-fA-F0-9]{12})", RegexOptions.NonBacktracking | RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 1000)]
+    [GeneratedRegex("^/recipe/(?<recipe_id>[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[89AB][a-fA-F0-9]{3}-[a-fA-F0-9]{12})/?$", RegexOptions.NonBacktracking | RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 1000)]
     private static partial Regex recipeUrlPathRegex();
 
     public RecipeDetailRequestHandler(
-        Header header,
+        ComponentProvider componentProvider,
         HTMLFileWriter htmlFileWriter,
         NotFoundPageRenderer notFoundPageRenderer,
-        RecipeDetailPage recipeDetailPage,
         SessionService sessionService,
         ShowRecipes showRecipes)
         : base(htmlFileWriter)
     {
-        this.header = header;
+        this.componentProvider = componentProvider;
         this.notFoundPageRenderer = notFoundPageRenderer;
-        this.recipeDetailPage = recipeDetailPage;
         this.sessionService = sessionService;
         this.showRecipes = showRecipes;
     }
@@ -48,6 +45,9 @@ public partial class RecipeDetailRequestHandler : HTMLRequestHandler
             // return notFoundRequestHandler.HandleHtmlFileRequest(request);
             return Task.FromResult("TODO: NOT FOUND");
         }
+
+        var header = componentProvider.GetComponent<Header>();
+        var recipeDetailPage = componentProvider.GetComponent<RecipeDetailPage>();
 
         header.CurrentChef = pageData.CurrentChef;
         recipeDetailPage.Recipe = pageData.Recipe;

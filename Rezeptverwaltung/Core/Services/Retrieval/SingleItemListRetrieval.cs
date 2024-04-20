@@ -13,9 +13,9 @@ public class OptionalSingleItemListRetrieval<T> : ListRetrieval<T>
     {
         if (item is null)
         {
-            return Enumerable.Empty<T>();
+            return [];
         }
 
-        return new List<T> { item };
+        return [item];
     }
 }

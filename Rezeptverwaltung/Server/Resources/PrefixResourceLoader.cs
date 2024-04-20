@@ -13,6 +13,9 @@ public class PrefixResourceLoader : ResourceLoader
 
     public Stream? LoadResource(string resourceName)
     {
-        return innerResourceLoader.LoadResource(prefix + "/" + resourceName);
+        var trimmedResourceName = resourceName.StartsWith("/")
+            ? resourceName[1..]
+            : resourceName;
+        return innerResourceLoader.LoadResource(prefix + "/" + trimmedResourceName);
     }
 }

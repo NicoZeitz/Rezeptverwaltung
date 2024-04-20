@@ -5,15 +5,15 @@ namespace Server.Service;
 
 public class ImageTypeMimeTypeConverter
 {
-    public readonly IList<(ImageType, MimeType)> Mapping = new List<(ImageType, MimeType)>
-    {
+    public readonly IList<(ImageType, MimeType)> Mapping =
+    [
         (ImageType.PNG, MimeType.PNG),
         (ImageType.JPEG, MimeType.JPEG),
         (ImageType.GIF, MimeType.GIF),
         (ImageType.SVG, MimeType.SVG),
         (ImageType.WEBP, MimeType.WEBP),
         (ImageType.ICO, MimeType.ICO)
-    };
+    ];
 
     public ImageTypeMimeTypeConverter() : base() { }
 

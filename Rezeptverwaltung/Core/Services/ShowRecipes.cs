@@ -14,6 +14,31 @@ public class ShowRecipes
         this.recipeRepository = recipeRepository;
     }
 
+    public IEnumerable<Tag> ShowAllTags(Chef? viewer)
+    {
+        var retrievalGraph = CreateRetrievalGraph(
+            viewer,
+            new SimpleListRetrieval<Recipe>(recipeRepository.FindAll())
+        );
+        return retrievalGraph
+            .Retrieve()
+            .SelectMany(recipe => recipe.Tags)
+            .Distinct();
+    }
+
+    public IEnumerable<Ingredient> ShowAllIngredients(Chef? viewer)
+    {
+        var retrievalGraph = CreateRetrievalGraph(
+            viewer,
+            new SimpleListRetrieval<Recipe>(recipeRepository.FindAll())
+        );
+        return retrievalGraph
+            .Retrieve()
+            .SelectMany(recipe => recipe.WeightedIngredients)
+            .Select(weightedIngredient => weightedIngredient.Ingredient)
+            .Distinct();
+    }
+
     public Recipe? ShowSingleRecipe(Identifier identifier, Chef? viewer)
     {
         var retrievalGraph = CreateRetrievalGraph(
@@ -84,7 +109,7 @@ public class ShowRecipes
     private ListRetrieval<Recipe> CreateRetrievalGraph(Chef? viewer, ListRetrieval<Recipe> baseRetriever)
     {
         var filterAccessRights = new FilterAccessRights<Recipe>(viewer, baseRetriever);
-        var orderByProperty = new OrderByProperty<Recipe>(recipe => recipe.Title, filterAccessRights);
+        var orderByProperty = new OrderByProperty<Recipe, Text>(recipe => recipe.Title, filterAccessRights);
         return orderByProperty;
     }
 }

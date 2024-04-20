@@ -6,8 +6,8 @@ namespace Core.Entities;
 public class Chef : IEquatable<Chef>, UniqueIdentity
 {
     public Username Username { get; }
-    public Name Name { get; }
-    public HashedPassword HashedPassword { get; }
+    public Name Name { get; set; }
+    public HashedPassword HashedPassword { get; set; }
 
     public Chef(Username username, Name name, HashedPassword hashedPassword)
     {

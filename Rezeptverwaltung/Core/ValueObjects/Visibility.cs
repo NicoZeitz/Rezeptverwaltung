@@ -2,8 +2,8 @@
 
 public enum Visibility
 {
-    PRIVATE,
-    PUBLIC
+    PRIVATE = 0,
+    PUBLIC = 1
 }
 
 public static class VisibilityExtensions
@@ -13,10 +13,10 @@ public static class VisibilityExtensions
 
     public static Visibility FromString(string visibility)
     {
-        return visibility switch
+        return visibility.ToUpper() switch
         {
-            "0" => Visibility.PRIVATE,
-            "1" => Visibility.PUBLIC,
+            "0" or "PRIVATE" => Visibility.PRIVATE,
+            "1" or "PUBLIC" => Visibility.PUBLIC,
             _ => throw new ArgumentException($"Unknown visibility: {visibility}")
         };
     }

@@ -1,7 +1,9 @@
 ﻿namespace Core.ValueObjects;
 
-public record struct Duration(TimeSpan TimeSpan)
+public record struct Duration(TimeSpan TimeSpan) : IComparable<Duration>
 {
+    public int CompareTo(Duration other) => TimeSpan.CompareTo(other.TimeSpan);
+
     public override string ToString()
     {
         // TODO: write tests for formatting

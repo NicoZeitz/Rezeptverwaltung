@@ -6,7 +6,7 @@ namespace Server.Components;
 
 public class RecipeList : TemplateComponent
 {
-    public IEnumerable<Recipe> Recipes { get; set; } = Enumerable.Empty<Recipe>();
+    public IEnumerable<Recipe> Recipes { get; set; } = [];
 
     private readonly ImageUrlService imageUrlService;
 

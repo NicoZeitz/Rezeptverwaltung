@@ -6,7 +6,7 @@ namespace Server.RequestHandler;
 
 public partial class ShoppingListDetailRequestHandler : HTMLRequestHandler
 {
-    [GeneratedRegex("/shopping-list/(?<shopping_list_id>[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[89AB][a-fA-F0-9]{3}-[a-fA-F0-9]{12})", RegexOptions.NonBacktracking | RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 1000)]
+    [GeneratedRegex("^/shopping-list/(?<shopping_list_id>[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[89AB][a-fA-F0-9]{3}-[a-fA-F0-9]{12})/?$", RegexOptions.NonBacktracking | RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 1000)]
     private static partial Regex shoppingListUrlPathRegex();
 
     public ShoppingListDetailRequestHandler(HTMLFileWriter htmlFileWriter)

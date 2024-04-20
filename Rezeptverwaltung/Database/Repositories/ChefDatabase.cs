@@ -59,7 +59,7 @@ public class ChefDatabase : ChefRepository
             WHERE username = {username.Name}
         ");
 
-        var reader = command.ExecuteReader();
+        using var reader = command.ExecuteReader();
         if (!reader.Read())
         {
             return null;

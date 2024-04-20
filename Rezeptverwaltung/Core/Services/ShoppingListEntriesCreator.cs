@@ -6,7 +6,7 @@ public class ShoppingListEntriesCreator
 {
     public static IEnumerable<object> Create(ShoppingList shoppingList)
     {
-        return Enumerable.Empty<object>();
+        return [];
         //shoppingList.PortionedRecipes
         //return shoppingListEntries
         //        .GroupBy(shoppingListEntry => shoppingListEntry.ProductId)

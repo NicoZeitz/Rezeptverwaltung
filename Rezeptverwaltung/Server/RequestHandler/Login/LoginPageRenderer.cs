@@ -7,19 +7,16 @@ namespace Server.RequestHandler;
 
 public class LoginPageRenderer
 {
-    private readonly Header header;
+    private readonly ComponentProvider componentProvider;
     private readonly HTMLFileWriter htmlFileWriter;
-    private readonly LoginPage loginPage;
 
     public LoginPageRenderer(
-        Header header,
-        HTMLFileWriter htmlFileWriter,
-        LoginPage loginPage)
+        ComponentProvider componentProvider,
+        HTMLFileWriter htmlFileWriter)
         : base()
     {
-        this.header = header;
+        this.componentProvider = componentProvider;
         this.htmlFileWriter = htmlFileWriter;
-        this.loginPage = loginPage;
     }
 
     public async Task RenderPage(
@@ -36,9 +33,12 @@ public class LoginPageRenderer
             return;
         }
 
+        var header = componentProvider.GetComponent<Header>();
+        var loginPage = componentProvider.GetComponent<LoginPage>();
+
         header.CurrentChef = currentChef;
         loginPage.SlottedChildren["Header"] = header;
-        loginPage.Children = errorMessage is null ? new Component[0] : new[] { new DisplayableComponent(errorMessage) };
+        loginPage.Children = errorMessage is null ? new Component[0] : [new DisplayableComponent(errorMessage)];
         var htmlString = await loginPage.RenderAsync();
 
         htmlFileWriter.WriteHtmlFile(response, htmlString, httpStatus);

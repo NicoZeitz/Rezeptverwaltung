@@ -14,7 +14,7 @@ public class HomePage : ContainerComponent
         return await templateLoader.LoadTemplate("HomePage.html")!.RenderAsync(new
         {
             Header = await GetRenderedSlottedChild("Header"),
-            RecipeList = await GetRenderedChildren()
+            Children = await GetRenderedChildren()
         });
     }
 }

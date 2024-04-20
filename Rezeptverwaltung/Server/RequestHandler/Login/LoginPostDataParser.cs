@@ -1,41 +1,29 @@
-﻿using Core.ValueObjects;
+﻿using Core.Data;
+using Core.ValueObjects;
 using Server.ContentParser;
 using System.Net;
 
 namespace Server.RequestHandler;
 
-public class LoginPostDataParser
+public class LoginPostDataParser : DataParser<LoginPostData>
 {
-    private readonly ContentParserFactory contentParserFactory;
-
     public LoginPostDataParser(ContentParserFactory contentParserFactory)
+        : base(contentParserFactory) { }
+
+    public override Result<LoginPostData> ExtractDataFromContent(IDictionary<string, ContentData> content)
     {
-        this.contentParserFactory = contentParserFactory;
-    }
-
-    public LoginPostData? ParsePostData(HttpListenerRequest request)
-    {
-        var contentParser = contentParserFactory.CreateContentParser(request.ContentType);
-
-        if (!contentParser.CanParse(request))
-        {
-            return null;
-        }
-
-        var content = contentParser.ParseRequest(request);
-
         if (!content.TryGetValue("username", out var username) && username!.IsText)
         {
-            return null;
+            return GENERIC_ERROR_RESULT;
         }
         if (!content.TryGetValue("password", out var password) && password!.IsText)
         {
-            return null;
+            return GENERIC_ERROR_RESULT;
         }
 
-        return new LoginPostData(
+        return Result<LoginPostData>.Successful(new LoginPostData(
             new Username(username.TextValue!),
             new Password(password.TextValue!)
-        );
+        ));
     }
 }

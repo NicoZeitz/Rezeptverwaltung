@@ -6,7 +6,7 @@ namespace Server.RequestHandler;
 
 public partial class CookbookDetailRequestHandler : HTMLRequestHandler
 {
-    [GeneratedRegex("/cookbook/(?<cookbook_id>[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[89AB][a-fA-F0-9]{3}-[a-fA-F0-9]{12})", RegexOptions.NonBacktracking | RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 1000)]
+    [GeneratedRegex("^/cookbook/(?<cookbook_id>[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[89AB][a-fA-F0-9]{3}-[a-fA-F0-9]{12})/?$", RegexOptions.NonBacktracking | RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 1000)]
     private static partial Regex cookbookUrlPathRegex();
 
     public CookbookDetailRequestHandler(HTMLFileWriter htmlFileWriter)

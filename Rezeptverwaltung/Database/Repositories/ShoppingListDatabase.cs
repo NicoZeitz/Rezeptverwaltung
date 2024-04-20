@@ -1,6 +1,7 @@
 ﻿using Core.Entities;
 using Core.Repository;
 using Core.ValueObjects;
+using Microsoft.Data.Sqlite;
 using System.Data;
 
 namespace Database.Repositories;
@@ -67,46 +68,26 @@ public class ShoppingListDatabase : ShoppingListRepository
             ON shopping_lists.id = shopping_list_recipes.shopping_list_id
             WHERE id = {identifier.Id};
         ");
-        var reader = command.ExecuteReader();
-
-        if (!reader.HasRows)
-        {
-            return null;
-        }
-
-        reader.Read();
-
-        var id = Identifier.Parse(reader.GetString("id"));
-        var title = new Text(reader.GetString("title"));
-        var visibility = VisibilityExtensions.FromString(reader.GetString("visibility"));
-        var creator = new Username(reader.GetString("creator"));
-
-        var shoppingList = new ShoppingList(
-            id,
-            title,
-            visibility,
-            creator,
-            new List<PortionedRecipe>()
-        );
-
-        do
-        {
-            var portionedRecipe = new PortionedRecipe(
-                Identifier.Parse(reader.GetString("recipe_id")),
-                new Portion(new Rational<int>(
-                    reader.GetInt32("portion_numerator"),
-                    reader.GetInt32("portion_denominator")
-                ))
-            );
-            shoppingList.PortionedRecipes.Add(portionedRecipe);
-        } while (reader.Read());
-
-        return shoppingList;
+        return GetShoppingListsFromSqlCommand(command).FirstOrDefault();
     }
 
     public IEnumerable<ShoppingList> FindForChef(Chef chef)
     {
-        throw new NotImplementedException(); // TODO:
+        var command = database.CreateSqlCommand(@$"
+            SELECT
+                id,
+                title,
+                visibility,
+                creator,
+                recipe_id
+                portion
+            FROM shopping_lists
+            INNER JOIN shopping_list_recipes
+            ON shopping_lists.id = shopping_list_recipes.shopping_list_id
+            WHERE creator = {chef.Username.Name}
+            ORDER BY id;
+        ");
+        return GetShoppingListsFromSqlCommand(command);
     }
 
     private void InsertPortionedRecipesForShoppingList(ShoppingList shoppingList)
@@ -126,5 +107,46 @@ public class ShoppingListDatabase : ShoppingListRepository
             DELETE FROM shopping_list_recipes
             WHERE shopping_list_id = {shoppingList.Identifier.Id};
         ").ExecuteNonQuery();
+    }
+
+    private IEnumerable<ShoppingList> GetShoppingListsFromSqlCommand(SqliteCommand command)
+    {
+        using var reader = command.ExecuteReader();
+
+        ShoppingList? lastShoppingList = null;
+
+        while (reader.Read())
+        {
+            var id = Identifier.Parse(reader.GetString("id"));
+            if (id == lastShoppingList?.Identifier)
+            {
+                var portionedRecipe = new PortionedRecipe(
+                    Identifier.Parse(reader.GetString("recipe_id")),
+                    new Portion(new Rational<int>(
+                        reader.GetInt32("portion_numerator"),
+                        reader.GetInt32("portion_denominator")
+                    ))
+                );
+                lastShoppingList.PortionedRecipes.Add(portionedRecipe);
+                continue;
+            }
+
+            if (lastShoppingList != null)
+            {
+                yield return lastShoppingList;
+            }
+
+            var title = new Text(reader.GetString("title"));
+            var visibility = VisibilityExtensions.FromString(reader.GetString("visibility"));
+            var creator = new Username(reader.GetString("creator"));
+
+            lastShoppingList = new ShoppingList(
+                id,
+                title,
+                visibility,
+                creator,
+                new List<PortionedRecipe>()
+            );
+        }
     }
 }

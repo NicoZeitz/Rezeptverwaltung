@@ -24,7 +24,7 @@
                     <h2>Nachname: {{ chef.name.last_name }}</h2>
                 </section>
                 <div
-                    class="h-50 w-50 relative -top-28 col-span-1 -mb-20 block aspect-square rounded-xl bg-white p-2 sm:col-start-2 sm:mb-0"
+                    class="relative -top-28 col-span-1 -mb-20 block aspect-square h-52 w-52 rounded-xl bg-white p-2 sm:col-start-2 sm:mb-0"
                 >
                     <picture class="contents">
                         <img
@@ -39,15 +39,21 @@
         <div class="isolate flex flex-col gap-10 px-10">
             <section>
                 <h2 class="mb-3 text-2xl font-bold">Rezepte</h2>
-                {{ chef_recipes }}
+                {{ if string.empty(chef_recipes) }}
+                <p>Der Koch hat noch keine Rezepte veröffentlicht.</p>
+                {{ else }} {{ chef_recipes }} {{ end }}
             </section>
             <section>
                 <h2 class="mb-3 text-2xl font-bold">Kochbücher</h2>
-                {{ chef_cooking_books }}
+                {{ if string.empty(chef_cookbooks) }}
+                <p>Der Koch hat noch keine Kochbücher veröffentlicht.</p>
+                {{ else }} {{ chef_cookbooks }} {{ end }}
             </section>
             <section>
                 <h2 class="mb-3 text-2xl font-bold">Einkaufslisten</h2>
-                {{ chef_shopping_lists }}
+                {{ if string.empty(chef_shopping_lists) }}
+                <p>Der Koch hat noch keine Einkaufslisten veröffentlicht.</p>
+                {{ else }} {{ chef_shopping_lists }} {{ end }}
             </section>
         </div>
     </body>

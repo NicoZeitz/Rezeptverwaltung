@@ -19,7 +19,7 @@ public class TagPage : ContainerComponent
             .RenderAsync(new
             {
                 Tag,
-                Recipes = await GetRenderedChildren(),
+                Children = await GetRenderedChildren(),
                 Header = await GetRenderedSlottedChild("Header")
             });
     }

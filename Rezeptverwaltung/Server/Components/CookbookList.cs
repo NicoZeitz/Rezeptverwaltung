@@ -5,7 +5,7 @@ namespace Server.Components;
 
 public class CookbookList : TemplateComponent
 {
-    public IEnumerable<Cookbook> Cookbooks { get; set; } = Enumerable.Empty<Cookbook>();
+    public IEnumerable<Cookbook> Cookbooks { get; set; } = [];
 
     public CookbookList(TemplateLoader templateLoader)
         : base(templateLoader)

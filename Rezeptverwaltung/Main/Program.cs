@@ -19,6 +19,8 @@ using Server.Resources;
 using Server.Service;
 using Server.Session;
 
+// TODO: Not found should always return 404
+
 var configuration = new ApplicationConfiguration();
 var provider = configureServices(configuration);
 var server = provider.GetRequiredService<Server.Server>();
@@ -39,8 +41,22 @@ server.AddRequestHandler(provider.GetRequiredService<EditCookbookRequestHandler>
 server.AddRequestHandler(provider.GetRequiredService<ShoppingListDetailRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<NewShoppingListRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<EditShoppingListRequestHandler>());
+server.AddRequestHandler(provider.GetRequiredService<ImageRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<StaticRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<NotFoundRequestHandler>());
+
+var recipeRepository = provider.GetRequiredService<RecipeRepository>();
+var cookbookRepository = provider.GetRequiredService<CookbookRepository>();
+var shoppingListRepository = provider.GetRequiredService<ShoppingListRepository>();
+var chefRepository = provider.GetRequiredService<ChefRepository>();
+
+// chefRepository.Add(
+//    new Chef(
+//        new Username("MeisterkochFabian"),
+//        new Name("Fabian", "Wolf"),
+//        provider.GetRequiredService<PasswordHasher>().HashPassword(new Password("wolf"))
+//    )
+// );
 
 var serverCancellationToken = new CancellationToken();
 server.Run(serverCancellationToken).GetAwaiter().GetResult();
@@ -87,6 +103,7 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
 
     // Server
     services.AddSingleton<Server.Server>();
+    services.AddSingleton<ComponentProvider>(p => new UIComponentProvider(p));
 
     // File System
     services.AddSingleton(new FileSystem.FileSystem(configuration.ApplicationDirectory.Join(new Core.ValueObjects.Directory("images"))));
@@ -113,6 +130,9 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     // Services
     services.AddTransient<ChefLoginService>();
     services.AddTransient<ChefRegisterService>();
+    services.AddTransient<ChefDeleteService>();
+    services.AddTransient<ChefChangeDataService>();
+    services.AddTransient<ChefChangePasswordService>();
     services.AddTransient<ImageService, FileSystemImageService>();
     services.AddTransient<MeasurementUnitCombiner>();
     services.AddTransient<MeasurementUnitSerializationManager>();
@@ -135,6 +155,7 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     services.AddTransient<LoginPageRenderer>();
     services.AddTransient<LoginPostDataParser>();
     services.AddTransient<MimeTypeDeterminer>();
+    services.AddTransient<NewRecipePageRenderer>();
     services.AddTransient<NotFoundPageRenderer>();
     services.AddTransient<RegisterPageRenderer>();
     services.AddTransient<RegisterPostDataParser>();
@@ -186,6 +207,7 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     services.AddTransient<EditRecipeRequestHandler>();
     services.AddTransient<EditShoppingListRequestHandler>();
     services.AddTransient<HomeRequestHandler>();
+    services.AddTransient<ImageRequestHandler>();
     services.AddTransient<LoginRequestHandler>();
     services.AddTransient<LogoutRequestHandler>();
     services.AddTransient<NewCookbookRequestHandler>();
@@ -204,4 +226,9 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     ));
 
     return services.BuildServiceProvider();
+}
+
+internal record UIComponentProvider(IServiceProvider ServiceProvider) : ComponentProvider
+{
+    public T GetComponent<T>() where T : Component => ServiceProvider.GetRequiredService<T>();
 }

@@ -1,3 +1,4 @@
+using Core.ValueObjects;
 using System.Net;
 
 namespace Server.RequestHandler;
@@ -9,8 +10,8 @@ public class SettingsRequestHandler : RequestHandler
 
     public SettingsRequestHandler(
         SettingsPageRenderer settingsPageRenderer,
-        SettingsPostDataParser settingsPostDataParser
-    ) : base()
+        SettingsPostDataParser settingsPostDataParser)
+        : base()
     {
         this.settingsPageRenderer = settingsPageRenderer;
         this.settingsPostDataParser = settingsPostDataParser;
@@ -54,7 +55,9 @@ public class SettingsRequestHandler : RequestHandler
                 request,
                 response,
                 HttpStatusCode.BadRequest,
-                postData.ErrorMessages
+                new Dictionary<string, IEnumerable<ErrorMessage>>() {
+                    { "DeleteProfileErrors",  postData.ErrorMessages }
+                }
             );
         }
 

@@ -1,6 +1,7 @@
 namespace Core.Services.Retrieval;
 
-public class OrderByProperty<T> : ListTransformer<T>
+public class OrderByProperty<T, K> : ListTransformer<T>
+  where K : IComparable<K>
 {
     public enum OrderDirection
     {
@@ -8,11 +9,11 @@ public class OrderByProperty<T> : ListTransformer<T>
         Descending
     };
 
-    private readonly Func<T, object> keySelector;
+    private readonly Func<T, K> keySelector;
 
     public OrderDirection OrderByDirection { get; init; } = OrderDirection.Ascending;
 
-    public OrderByProperty(Func<T, object> keySelector, ListRetrieval<T> listRetrieval)
+    public OrderByProperty(Func<T, K> keySelector, ListRetrieval<T> listRetrieval)
         : base(listRetrieval)
     {
         this.keySelector = keySelector;

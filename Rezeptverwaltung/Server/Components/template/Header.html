@@ -5,8 +5,15 @@
         <picture class="aspect-square h-full sm:inline-block">
             <img src="/assets/logo.png" alt="" />
         </picture>
-        <h1 class="select-none text-3xl font-bold">Rezeptverwaltung</h1>
+        <h1 class="hidden select-none text-3xl font-bold sm:inline-block">
+            Rezeptverwaltung
+        </h1>
     </a>
+    <a class="w-fit flex-shrink" href="/recipe/new">Neues Rezept</a>
+    <a class="w-fit flex-shrink" href="/cookbook/new">Neues Kochbuch</a>
+    <a class="w-fit flex-shrink" href="/shopping-list/new"
+        >Neue Einkaufsliste</a
+    >
     {{ if chef }}
     <form
         action="/logout"
@@ -24,7 +31,7 @@
         >
             <img
                 class="aspect-square h-full rounded-t-full object-cover"
-                src="https://picsum.photos/200/300"
+                src="{{ chef_image_url }}"
                 alt="Profilbild von {{ chef.username }}"
             />
         </div>

@@ -15,11 +15,12 @@
                 action="/register"
                 enctype="multipart/form-data"
                 method="post"
-                class="grid place-items-center gap-8"
+                class="grid grid-cols-2 place-items-center gap-5"
             >
                 <div class="flex flex-col gap-1">
                     <label for="username">Benutzername:</label>
                     <input
+                        required
                         class="w-64 rounded-md p-3 shadow-lg"
                         type="text"
                         name="username"
@@ -30,8 +31,20 @@
                     />
                 </div>
                 <div class="flex flex-col gap-1">
+                    <label for="profile_image">Profilbild:</label>
+                    <input
+                        required
+                        class="w-64 rounded-md p-3 shadow-lg"
+                        type="file"
+                        name="profile_image"
+                        id="profile_image"
+                        accept="image/*"
+                    />
+                </div>
+                <div class="flex flex-col gap-1">
                     <label for="first_name">Vorname:</label>
                     <input
+                        required
                         class="w-64 rounded-md p-3 shadow-lg"
                         type="text"
                         name="first_name"
@@ -43,6 +56,7 @@
                 <div class="flex flex-col gap-1">
                     <label for="last_name">Nachname:</label>
                     <input
+                        required
                         class="w-64 rounded-md p-3 shadow-lg"
                         type="text"
                         name="last_name"
@@ -54,6 +68,7 @@
                 <div class="flex flex-col gap-1">
                     <label for="password">Password:</label>
                     <input
+                        required
                         class="w-64 rounded-md p-3 shadow-lg"
                         type="password"
                         name="password"
@@ -66,6 +81,7 @@
                 <div class="flex flex-col gap-1">
                     <label for="password_repeat">Password wiederholen:</label>
                     <input
+                        required
                         class="w-64 rounded-md p-3 shadow-lg"
                         type="password"
                         name="password_repeat"
@@ -74,26 +90,16 @@
                         required
                     />
                 </div>
-                <div class="flex flex-col gap-1">
-                    <label for="profile_image">Profilbild:</label>
-                    <input
-                        class="w-64 rounded-md p-3 shadow-lg"
-                        type="file"
-                        name="profile_image"
-                        id="profile_image"
-                        accept="image/*"
-                    />
-                </div>
-                <div class="flex flex-col gap-1">
+                <div class="col-span-2 flex flex-col gap-1 justify-self-center">
                     {{ for error_message in error_messages }}
                     <span class="text-red-500"> {{ error_message }} </span>
                     {{ end }}
                 </div>
                 <button
                     type="submit"
-                    class="rounded-md bg-green-500 px-16 py-3 text-white shadow-lg"
+                    class="col-span-2 justify-self-center rounded-md bg-green-500 px-16 py-3 text-white shadow-lg"
                 >
-                    Login
+                    Registrieren
                 </button>
             </form>
         </div>

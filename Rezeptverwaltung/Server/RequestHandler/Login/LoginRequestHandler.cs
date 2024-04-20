@@ -60,7 +60,7 @@ public class LoginRequestHandler : RequestHandler
     private Task HandlePost(HttpListenerRequest request, HttpListenerResponse response)
     {
         var usernameAndPassword = loginPostDataParser.ParsePostData(request);
-        if (!usernameAndPassword.HasValue)
+        if (usernameAndPassword.IsError)
         {
             return loginPageRenderer.RenderPage(
                 response,

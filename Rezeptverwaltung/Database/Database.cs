@@ -62,7 +62,7 @@ public class Database
         {
             DataSource = configuration.DatabaseLocation.FullName,
             Mode = SqliteOpenMode.ReadWriteCreate,
-            ForeignKeys = true,
+            ForeignKeys = true
         }.ToString();
 
         connection = new SqliteConnection(connectionString);

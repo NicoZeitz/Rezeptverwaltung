@@ -41,7 +41,7 @@ public class ShowCookbooks
     private ListRetrieval<Cookbook> CreateRetrievalGraph(Chef? viewer, ListRetrieval<Cookbook> baseRetriever)
     {
         var filterAccessRights = new FilterAccessRights<Cookbook>(viewer, baseRetriever);
-        var orderByProperty = new OrderByProperty<Cookbook>(shoppingList => shoppingList.Title, filterAccessRights);
+        var orderByProperty = new OrderByProperty<Cookbook, Text>(shoppingList => shoppingList.Title, filterAccessRights);
         return orderByProperty;
     }
 }

@@ -39,7 +39,7 @@ public class ShowShoppingLists
     private ListRetrieval<ShoppingList> CreateRetrievalGraph(Chef? viewer, ListRetrieval<ShoppingList> baseRetriever)
     {
         var filterAccessRights = new FilterAccessRights<ShoppingList>(viewer, baseRetriever);
-        var orderByProperty = new OrderByProperty<ShoppingList>(shoppingList => shoppingList.Title, filterAccessRights);
+        var orderByProperty = new OrderByProperty<ShoppingList, Text>(shoppingList => shoppingList.Title, filterAccessRights);
         return orderByProperty;
     }
 }

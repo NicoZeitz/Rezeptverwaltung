@@ -1,4 +1,5 @@
 ﻿using Core.Services;
+using Server.Components;
 using Server.Resources;
 using Server.Service;
 using Server.Session;
@@ -8,23 +9,20 @@ namespace Server.RequestHandler;
 
 public class HomeRequestHandler : HTMLRequestHandler
 {
-    private readonly TemplateLoader templateLoader;
+    private readonly ComponentProvider componentProvider;
     private readonly SessionService sessionService;
     private readonly ShowRecipes showRecipes;
-    private readonly ImageUrlService imageUrlService;
 
     public HomeRequestHandler(
+        ComponentProvider componentProvider,
         HTMLFileWriter htmlFileWriter,
-        TemplateLoader templateLoader,
         SessionService sessionService,
-        ShowRecipes showRecipes,
-        ImageUrlService imageUrlService)
+        ShowRecipes showRecipes)
         : base(htmlFileWriter)
     {
-        this.templateLoader = templateLoader;
+        this.componentProvider = componentProvider;
         this.sessionService = sessionService;
         this.showRecipes = showRecipes;
-        this.imageUrlService = imageUrlService;
     }
 
     public override bool CanHandle(HttpListenerRequest request)
@@ -37,20 +35,21 @@ public class HomeRequestHandler : HTMLRequestHandler
         return request.Url!.AbsolutePath is "/" or "/index.html";
     }
 
-    public override Task<string> HandleHtmlFileRequest(HttpListenerRequest request)
+    public override async Task<string> HandleHtmlFileRequest(HttpListenerRequest request)
     {
         var currentChef = sessionService.GetCurrentChef(request);
         var recipes = showRecipes.ShowAllRecipes(currentChef);
 
-        var component = new Components.HomePage(templateLoader)
-        {
-            SlottedChildren = new Dictionary<string, Components.Component>
-            {
-                { "Header", new Components.Header(templateLoader, imageUrlService) { CurrentChef = currentChef } },
-                { "RecipeList", new Components.RecipeList(templateLoader, imageUrlService) { Recipes = recipes } }
-            }
-        };
+        var header = componentProvider.GetComponent<Header>();
+        var homePage = componentProvider.GetComponent<HomePage>();
+        var recipeList = componentProvider.GetComponent<RecipeList>();
 
-        return component.RenderAsync();
+        header.CurrentChef = currentChef;
+        recipeList.Recipes = recipes;
+
+        homePage.SlottedChildren["Header"] = header;
+        homePage.Children = [recipeList];
+
+        return await homePage.RenderAsync();
     }
 }

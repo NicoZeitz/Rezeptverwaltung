@@ -30,7 +30,7 @@ public readonly struct ImageType : IEquatable<ImageType>
         };
     }
 
-    public static readonly ImageType[] ALL_IMAGE_TYPES = new[] { PNG, JPEG, GIF, SVG, WEBP, ICO };
+    public static readonly ImageType[] ALL_IMAGE_TYPES = [PNG, JPEG, GIF, SVG, WEBP, ICO];
 
     public bool Equals(ImageType other) => FileExtension == other.FileExtension;
 

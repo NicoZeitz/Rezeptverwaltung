@@ -10,29 +10,26 @@ namespace Server.RequestHandler;
 
 public partial class TagRequestHandler : HTMLRequestHandler
 {
-    [GeneratedRegex("/tag/(?<tag_name>.+)", RegexOptions.NonBacktracking | RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 1000)]
+    [GeneratedRegex("^/tag/(?<tag_name>.+)/?$", RegexOptions.NonBacktracking | RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 1000)]
     private static partial Regex tagUrlPathRegex();
 
-    private readonly TagPage tagPage;
-    private readonly Header header;
-    private readonly RecipeList recipeList;
+    private readonly ComponentProvider componentProvider;
     private readonly ShowRecipes showRecipes;
     private readonly SessionService sessionService;
+    private readonly URLEncoder urlEncoder;
 
     public TagRequestHandler(
         HTMLFileWriter htmlFileWriter,
-        TagPage tagPage,
-        Header header,
-        RecipeList recipeList,
+        ComponentProvider componentProvider,
         ShowRecipes showRecipes,
-        SessionService sessionService)
+        SessionService sessionService,
+        URLEncoder urlEncoder)
         : base(htmlFileWriter)
     {
-        this.tagPage = tagPage;
-        this.header = header;
-        this.recipeList = recipeList;
+        this.componentProvider = componentProvider;
         this.showRecipes = showRecipes;
         this.sessionService = sessionService;
+        this.urlEncoder = urlEncoder;
     }
 
     public override bool CanHandle(HttpListenerRequest request) =>
@@ -45,10 +42,14 @@ public partial class TagRequestHandler : HTMLRequestHandler
         var currentChef = sessionService.GetCurrentChef(request);
         var recipes = showRecipes.ShowRecipesForTag(tag, currentChef);
 
+        var header = componentProvider.GetComponent<Header>();
+        var recipeList = componentProvider.GetComponent<RecipeList>();
+        var tagPage = componentProvider.GetComponent<TagPage>();
+
         header.CurrentChef = currentChef;
         recipeList.Recipes = recipes;
         tagPage.Tag = tag;
-        tagPage.Children = new List<Component>() { recipeList };
+        tagPage.Children = [recipeList];
         tagPage.SlottedChildren["Header"] = header;
         return tagPage.RenderAsync();
     }
@@ -57,6 +58,7 @@ public partial class TagRequestHandler : HTMLRequestHandler
     {
         var match = tagUrlPathRegex().Match(request.Url?.AbsolutePath ?? "");
         var tagName = match.Groups["tag_name"].Value;
+        tagName = urlEncoder.URLDecode(tagName);
         return new Tag(tagName);
     }
 }

@@ -7,19 +7,16 @@ namespace Server.RequestHandler;
 
 public class RegisterPageRenderer
 {
-    private readonly Header header;
+    private readonly ComponentProvider componentProvider;
     private readonly HTMLFileWriter htmlFileWriter;
-    private readonly RegisterPage registerPage;
 
     public RegisterPageRenderer(
-        Header header,
-        HTMLFileWriter htmlFileWriter,
-        RegisterPage registerPage)
+        ComponentProvider componentProvider,
+        HTMLFileWriter htmlFileWriter)
         : base()
     {
-        this.header = header;
+        this.componentProvider = componentProvider;
         this.htmlFileWriter = htmlFileWriter;
-        this.registerPage = registerPage;
     }
 
     public async Task RenderPage(
@@ -36,7 +33,10 @@ public class RegisterPageRenderer
             return;
         }
 
-        errorMessages ??= Enumerable.Empty<ErrorMessage>();
+        errorMessages ??= [];
+
+        var header = componentProvider.GetComponent<Header>();
+        var registerPage = componentProvider.GetComponent<RegisterPage>();
 
         header.CurrentChef = currentChef;
         registerPage.SlottedChildren["Header"] = header;

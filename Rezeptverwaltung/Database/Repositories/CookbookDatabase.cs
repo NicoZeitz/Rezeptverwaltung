@@ -81,42 +81,46 @@ public class CookbookDatabase : CookbookRepository
             INNER JOIN cookbook_recipes
             ON cookbooks.id = cookbook_recipes.cookbook_id
             WHERE creator = {chef.Username.Name}
+            ORDER BY id;
         ");
         return GetCookbooksFromSqlCommand(command);
     }
 
     private IEnumerable<Cookbook> GetCookbooksFromSqlCommand(SqliteCommand command)
     {
-        var reader = command.ExecuteReader();
-        var cookbooks = new Dictionary<string, Cookbook>();
+        using var reader = command.ExecuteReader();
+
+        Cookbook? lastCookbook = null;
 
         while (reader.Read())
         {
-            var cookbookId = reader.GetString("id");
+            var id = Identifier.Parse(reader.GetString("id"));
             var recipeId = Identifier.Parse(reader.GetString("recipe_id"));
 
-            if (cookbooks.TryGetValue(cookbookId, out var existingCookbook))
+            if (id == lastCookbook?.Identifier)
             {
-                existingCookbook.Recipes.Add(recipeId);
+                lastCookbook.Recipes.Add(recipeId);
                 continue;
+            }
+
+            if (lastCookbook != null)
+            {
+                yield return lastCookbook;
             }
 
             var title = new Text(reader.GetString("title"));
             var description = new Text(reader.GetString("description"));
             var creator = new Username(reader.GetString("creator"));
             var visibility = Enum.Parse<Visibility>(reader.GetString("visibility"));
-            var cookbook = new Cookbook(
-                Identifier.Parse(cookbookId),
+            lastCookbook = new Cookbook(
+                id,
                 title,
                 description,
                 creator,
                 visibility,
-                new[] { recipeId }
+                [recipeId]
             );
-            cookbooks.Add(cookbookId, cookbook);
         }
-
-        return cookbooks.Select(tuple => tuple.Value);
     }
 
     private void InsertRecipesForCookbook(Cookbook cookbook)

@@ -5,7 +5,7 @@ namespace Server.Components;
 
 public class ShoppingListList : TemplateComponent
 {
-    public IEnumerable<ShoppingList> ShoppingLists = Enumerable.Empty<ShoppingList>();
+    public IEnumerable<ShoppingList> ShoppingLists = [];
 
     public ShoppingListList(TemplateLoader templateLoader)
         : base(templateLoader)

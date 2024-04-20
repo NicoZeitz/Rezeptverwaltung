@@ -4,76 +4,449 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Neues Rezept erstellen — Rezeptverwaltung</title>
+        <link rel="stylesheet" href="/assets/styles.css" />
     </head>
     <body>
-        {{ header }}
-        <form
-            action="/recipe/new"
-            method="post"
-            enctype="application/x-www-form-urlencoded"
+        {{ header }} {{ recipe }} {{ error_messages }}
+        <main
+            class="mx-auto grid max-w-full grid-cols-1 justify-items-center gap-5 px-4 pb-32 pt-10 sm:max-w-[130ch] sm:grid-cols-2"
         >
-            <!--  Identifier automatisch -->
-            <label for="title">Titel des Rezepts:</label>
-            <input type="text" id="title" />
-            <label for="description">Beschreibung:</label>
-            <input type="text" id="description" />
-            <!--  Koch automatisch -->
-            <label for="visibility">Privat:</label>
-            <input type="checkbox" id="visibility" />
-            <label for="portion_denominator">Anzahl Portionen (Zähler)</label>
-            <input type="number" id="portion_denominator" min="0" max="100" />
-            <label for="portion_denominator">Anzahl Portionen (Nenner)</label>
-            <input
-                type="number"
-                id="portion_numerator"
-                min="1"
-                max="100"
-                value="1"
-            />
-            <label for="duration">Zubereitungszeit in Sekunden:</label>
-            <input type="range" min="0" max="10800" id="duration" />
-
-            <label for="tags">Komma separiere Liste an Tags:</label>
-            <input type="text" id="tags" />
-            <!-- Weighted Ingredients -->
-            <div id="weighted_ingredients">
-                <div>einheit menge ingredientname</div>
-            </div>
-            <!-- Preparation Steps -->
-            <label for="preparation_step_0">Zubereitungsschritte</label>
-            <div id="preparation_steps">
-                <div>
-                    <textarea class="preparation_step_="></textarea>
-                    <button type="button" title="Schritt löschen">
-                        Schritt Löschen
+            <form
+                class="grid w-[min(100%,130ch)] grid-cols-subgrid gap-x-4 gap-y-2 sm:col-span-2"
+                action="/recipe/new"
+                method="post"
+                enctype="multipart/form-data"
+            >
+                <label class="col-span-1 col-start-1 sm:text-right" for="title"
+                    >Titel des Rezepts:</label
+                >
+                <input
+                    class="rounded-md bg-gray-200 p-1"
+                    type="text"
+                    required
+                    id="title"
+                    name="title"
+                />
+                <label
+                    class="col-span-1 col-start-1 sm:text-right"
+                    for="description"
+                    >Beschreibung:</label
+                >
+                <textarea
+                    class="rounded-md bg-gray-200 p-1"
+                    name="description"
+                    id="description"
+                ></textarea>
+                <label
+                    class="col-span-1 col-start-1 sm:text-right"
+                    for="visibility"
+                    >Privat:</label
+                >
+                <input
+                    class="aspect-square h-full justify-self-start rounded-md bg-gray-200 p-1"
+                    type="checkbox"
+                    id="visibility"
+                    name="visibility"
+                />
+                <label
+                    class="col-span-1 col-start-1 sm:text-right"
+                    for="portion_denominator"
+                    >Anzahl Portionen (Zähler/Nenner)</label
+                >
+                <div class="flex w-full gap-5">
+                    <input
+                        class="flex-grow rounded-md bg-gray-200 p-1"
+                        type="number"
+                        required
+                        id="portion_denominator"
+                        min="0"
+                        max="100"
+                        title="Zähler"
+                        placeholder="Zähler"
+                        name="portion_denominator"
+                    />
+                    <input
+                        class="flex-grow rounded-md bg-gray-200 p-1"
+                        type="number"
+                        required
+                        placeholder="Nenner (1)"
+                        title="Nenner"
+                        id="portion_numerator"
+                        name="portion_numerator"
+                        min="1"
+                        max="100"
+                        value="1"
+                    />
+                </div>
+                <label
+                    class="col-span-1 col-start-1 sm:text-right"
+                    for="duration"
+                    >Zubereitungszeit (HH:mm):</label
+                >
+                <input
+                    class="rounded-md bg-gray-200 p-1"
+                    type="text"
+                    required
+                    pattern="[1-9]\d?:\d{2}|[1-9]\d?"
+                    title="Zubereitungszeit in Stunden und Minuten"
+                    placeholder="HH:mm"
+                    name="duration"
+                    id="duration"
+                />
+                <label class="col-span-1 col-start-1 sm:text-right" for="tags"
+                    >Tags:</label
+                >
+                <div class="flex flex-col">
+                    <input
+                        type="text"
+                        id="tag-input"
+                        list="tag-list"
+                        class="rounded-md bg-gray-200 p-1"
+                    />
+                    <template id="tag-template">
+                        <div
+                            class="flex items-center gap-1 rounded-md bg-gray-200 p-1"
+                        >
+                            <span></span>
+                            <button
+                                type="button"
+                                title="Tag löschen"
+                                class="inline-block aspect-square h-full"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="20"
+                                    height="20"
+                                    class="h-full"
+                                    fill="#000000"
+                                    viewBox="0 0 256 256"
+                                >
+                                    <path
+                                        d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"
+                                    ></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </template>
+                    <datalist id="tag-list">
+                        {{ for tag in tags }}
+                        <option value="{{ tag }}">{{ tag }}</option>
+                        {{ end }}
+                    </datalist>
+                    <div
+                        id="tag-output"
+                        class="flex flex-wrap gap-1 pt-2"
+                    ></div>
+                </div>
+                <label class="col-span-1 col-start-1 sm:text-right" for="tags"
+                    >Zutaten:</label
+                >
+                <table
+                    class="grid grid-cols-[repeat(3,minmax(0,1fr)),1.2rem] gap-1"
+                >
+                    <thead class="contents">
+                        <tr class="col-span-4 grid grid-cols-subgrid">
+                            <th>Menge</th>
+                            <th>Einheit</th>
+                            <th>Zutat</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody class="contents"></tbody>
+                </table>
+                <datalist id="ingredient-list">
+                    {{ for ingredient in ingredients }}
+                    <option value="{{ ingredient }}">{{ ingredient }}</option>
+                    {{ end }}
+                </datalist>
+                <template id="ingredient-template">
+                    <tr class="col-span-4 grid grid-cols-subgrid">
+                        <td class="rounded-md bg-gray-200 p-1">
+                            <input
+                                required
+                                class="w-full bg-gray-200 text-right"
+                                type="number"
+                                min="0"
+                                max="1000"
+                            />
+                        </td>
+                        <td class="rounded-md bg-gray-200 p-1">
+                            <select
+                                class="w-full bg-gray-200 text-left"
+                                required
+                            >
+                                {{ for unit in units }}
+                                <option value="{{ unit }}">{{ unit }}</option>
+                                {{ end }}
+                            </select>
+                        </td>
+                        <td
+                            class="user-invalid:bg-red-300 rounded-md bg-gray-200 p-1"
+                        >
+                            <input
+                                type="text"
+                                placeholder="Zutat"
+                                required
+                                list="ingredient-list"
+                                class="w-full bg-gray-200"
+                            />
+                        </td>
+                        <td>
+                            <button type="button">
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="20"
+                                    height="20"
+                                    class="h-full"
+                                    fill="#000000"
+                                    viewBox="0 0 256 256"
+                                >
+                                    <path
+                                        d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"
+                                    ></path>
+                                </svg>
+                            </button>
+                        </td>
+                    </tr>
+                </template>
+                <button
+                    type="button"
+                    class="rounded-md bg-gray-400 px-3 py-1 sm:col-start-2"
+                    id="add-ingredient"
+                >
+                    Neue Zutat hinzufügen
+                </button>
+                <label
+                    class="col-span-1 col-start-1 sm:text-right"
+                    for="preparation_step_0"
+                    >Zubereitungsschritte:</label
+                >
+                <div id="preparation-steps" class="flex flex-col">
+                    <div class="relative">
+                        <textarea
+                            required
+                            class="w-full resize-y rounded-md bg-gray-200 p-1"
+                        ></textarea>
+                        <button
+                            type="button"
+                            class="absolute right-1 top-1"
+                            title="Schritt löschen"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                class="h-full"
+                                fill="#000000"
+                                viewBox="0 0 256 256"
+                            >
+                                <path
+                                    d="M205.66,194.34a8,8,0,0,1-11.32,11.32L128,139.31,61.66,205.66a8,8,0,0,1-11.32-11.32L116.69,128,50.34,61.66A8,8,0,0,1,61.66,50.34L128,116.69l66.34-66.35a8,8,0,0,1,11.32,11.32L139.31,128Z"
+                                ></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <button
+                        type="button"
+                        class="rounded-md bg-gray-400 px-3 py-1"
+                        id="add-preparation-step"
+                    >
+                        Neuen Schritt hinzufügen
                     </button>
                 </div>
-            </div>
-            <button type="button" id="add_preparation_step">
-                Neuen Schritt hinzufügen
-            </button>
-            <script>
-                const addPreparationStep = document.getElementById(
-                    "add_preparation_step",
-                );
-                const preparationSteps =
-                    document.getElementById("preparation_steps");
-
-                addPreparationStep.onclick = (event) => {
-                    event.preventDefault();
-                    preparationSteps.appendChild();
-                };
-
-                // preparationSteps.
+                <label
+                    class="col-span-1 col-start-1 sm:text-right"
+                    for="preparation_step_0"
+                    >Bild:</label
+                >
+                <div
+                    class="relative h-32 w-32 cursor-pointer justify-self-center overflow-clip rounded-full sm:h-44 sm:w-44"
+                >
+                    <picture class="contents">
+                        <img
+                            id="profile-image"
+                            class="h-full w-full rounded-full object-cover"
+                            src="data:image/svg+xml,%3Csvg width='1' height='1' viewBox='0 0 1 1' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='1' height='1' x='0' y='0' fill='rgb(229, 231, 235)' /%3E%3C/svg%3E"
+                            alt="Bild des Rezepts"
+                        />
+                    </picture>
+                    <input
+                        class="absolute inset-0 cursor-pointer opacity-0"
+                        required
+                        type="file"
+                        accept="image/*"
+                        name="profile_image"
+                        id="profile_image"
+                    />
+                    <script type="text/javascript"></script>
+                </div>
+                <button
+                    class="col-span-2 col-start-1 mt-3 justify-self-center rounded-md bg-green-500 px-5 py-2 shadow-md"
+                    type="submit"
+                >
+                    Rezept erstellen
+                </button>
+            </form>
+            <script type="text/javascript">
+                const tags = new Set();
 
                 const form = document.querySelector("form");
+                const tagInput = document.getElementById("tag-input");
+                const tagOutput = document.getElementById("tag-output");
+                const tagTemplate = document.getElementById("tag-template");
+                const preparationStepsContainer =
+                    document.getElementById("preparation-steps");
+                const addPreparationStep = document.getElementById(
+                    "add-preparation-step",
+                );
+                const addIngredient = document.getElementById("add-ingredient");
+                const profilePic = document.getElementById("profile-image");
+                const imageInput = document.getElementById("profile_image");
+
+                if (imageInput.files.length > 0) {
+                    URL.revokeObjectURL(profilePic.src);
+                    const file = URL.createObjectURL(imageInput.files[0]);
+                    profilePic.src = file;
+                } else {
+                    imageInput.addEventListener("change", (evt) => {
+                        URL.revokeObjectURL(profilePic.src);
+                        const file = URL.createObjectURL(evt.target.files[0]);
+                        profilePic.src = file;
+                    });
+                    setTimeout(() => {
+                        if (imageInput.files.length > 0) {
+                            URL.revokeObjectURL(profilePic.src);
+                            const file = URL.createObjectURL(
+                                imageInput.files[0],
+                            );
+                            profilePic.src = file;
+                        }
+                    }, 1000);
+                }
+
+                function newTag(event) {
+                    event.preventDefault();
+                    const tagName = tagInput.value;
+                    tagInput.value = "";
+
+                    if (tagName.trim() === "") return;
+
+                    const beforeLength = tags.size;
+                    tags.add(tagName);
+                    document
+                        .querySelectorAll("#tag-list option")
+                        .forEach((tag) => {
+                            if (tag.value === tagName) {
+                                tag.remove();
+                            }
+                        });
+
+                    if (beforeLength !== tags.size) {
+                        const tagElement = tagTemplate.content.cloneNode(true);
+                        tagElement.querySelector("span").textContent = tagName;
+                        tagElement.querySelector("button").onclick = (
+                            event,
+                        ) => {
+                            tags.delete(tagName);
+                            document.querySelector(`#tag-list`).innerHTML +=
+                                `<option value="${tagName}">${tagName}</option>`;
+                            event.currentTarget.parentElement.remove();
+                        };
+                        tagOutput.appendChild(tagElement);
+                    }
+                }
+
+                tagInput.oninput = (event) => {
+                    if (
+                        event.type == "input" &&
+                        (event.inputType === undefined ||
+                            event.inputType === "insertReplacementText")
+                    ) {
+                        let matches = false;
+                        document
+                            .querySelectorAll("#tag-list option")
+                            .forEach((tag) => {
+                                if (tag.value === tagInput.value) {
+                                    matches = true;
+                                }
+                            });
+                        if (matches) newTag(event);
+                    }
+                };
+                tagInput.onkeydown = (event) => {
+                    if (event.key === "Enter") {
+                        newTag(event);
+                    }
+                };
+
+                preparationStepsContainer.firstElementChild.querySelector(
+                    "button",
+                ).onclick = (event) => {
+                    if (preparationStepsContainer.childElementCount > 2) {
+                        event.currentTarget.parentElement.remove();
+                    } else {
+                        event.currentTarget.parentElement.querySelector(
+                            "textarea",
+                        ).value = "";
+                    }
+                };
+                addPreparationStep.onclick = (event) => {
+                    const newStep =
+                        preparationStepsContainer.firstElementChild.cloneNode(
+                            true,
+                        );
+                    newStep.querySelector("textarea").value = "";
+                    newStep.querySelector("button").onclick = (event) => {
+                        if (preparationStepsContainer.childElementCount > 2) {
+                            event.currentTarget.parentElement.remove();
+                        } else {
+                            event.currentTarget.parentElement.querySelector(
+                                "textarea",
+                            ).value = "";
+                        }
+                    };
+                    preparationStepsContainer.insertBefore(
+                        newStep,
+                        addPreparationStep,
+                    );
+                };
+
+                addIngredient.onclick = (event) => {
+                    event.preventDefault();
+                    const newIngredient = document
+                        .getElementById("ingredient-template")
+                        .content.cloneNode(true);
+                    newIngredient.querySelector("button").onclick = (event) => {
+                        event.currentTarget.parentElement.parentElement.remove();
+                    };
+                    document.querySelector("tbody").appendChild(newIngredient);
+                };
+
                 form.onsubmit = (event) => {
-                    // preparation steps ids
+                    tagOutput.querySelectorAll("span").forEach((tag, index) => {
+                        const input = document.createElement("input");
+                        input.type = "hidden";
+                        input.name = `tags_${index}`;
+                        input.value = tag.textContent;
+                        form.appendChild(input);
+                    });
+                    preparationStepsContainer
+                        .querySelectorAll("textarea")
+                        .forEach((textarea, index) => {
+                            textarea.name = `preparation_step_${index}`;
+                            textarea.id = `preparation_step_${index}`;
+                        });
+                    const ingredients = form.querySelectorAll("tbody tr");
+                    ingredients.forEach((ingredient, index) => {
+                        ingredient.querySelector("td:nth-child(1) input").name =
+                            `ingredient_${index}_amount`;
+                        ingredient.querySelector("select").name =
+                            `ingredient_${index}_unit`;
+                        ingredient.querySelector("td:nth-child(3) input").name =
+                            `ingredient_${index}_name`;
+                    });
                 };
             </script>
-
-            <!-- Image -->
-            <input type="image" src="" alt="" />
-        </form>
+        </main>
     </body>
 </html>

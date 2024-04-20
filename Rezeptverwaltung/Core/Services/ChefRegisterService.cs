@@ -35,7 +35,7 @@ public class ChefRegisterService
         }
 
         var passwordErrors = allowedPasswordChecker.CheckPassword(password);
-        if (passwordErrors.Count() > 0)
+        if (passwordErrors.Any())
         {
             return Result<Chef>.Errors(passwordErrors);
         }

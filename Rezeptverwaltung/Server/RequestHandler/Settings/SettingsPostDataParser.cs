@@ -1,6 +1,9 @@
 using Core.Data;
+using Core.Services;
 using Core.ValueObjects;
 using Server.ContentParser;
+using Server.Service;
+using Server.Session;
 using System.Net;
 
 namespace Server.RequestHandler;
@@ -8,11 +11,33 @@ namespace Server.RequestHandler;
 public class SettingsPostDataParser
 {
     private static readonly ErrorMessage GENERIC_ERROR_MESSAGE = new ErrorMessage("Es ist ein Fehler aufgetreten.");
-    private readonly ContentParserFactory contentParserFactory;
 
-    public SettingsPostDataParser(ContentParserFactory contentParserFactory)
+    private readonly ChefChangePasswordService chefChangePasswordService;
+    private readonly ChefDeleteService chefDeleteService;
+    private readonly ChefChangeDataService chefChangeDataService;
+    private readonly ImageTypeMimeTypeConverter imageTypeMimeTypeConverter;
+    private readonly ContentParserFactory contentParserFactory;
+    private readonly SessionService sessionService;
+    private readonly SettingsPageRenderer settingsPageRenderer;
+
+
+    public SettingsPostDataParser(
+        ChefChangePasswordService chefChangePasswordService,
+        ContentParserFactory contentParserFactory,
+        SessionService sessionService,
+        SettingsPageRenderer settingsPageRenderer,
+        ChefDeleteService chefDeleteService,
+        ChefChangeDataService chefChangeDataService,
+        ImageTypeMimeTypeConverter imageTypeMimeTypeConverter)
+        : base()
     {
+        this.chefChangePasswordService = chefChangePasswordService;
+        this.chefDeleteService = chefDeleteService;
+        this.chefChangeDataService = chefChangeDataService;
+        this.imageTypeMimeTypeConverter = imageTypeMimeTypeConverter;
         this.contentParserFactory = contentParserFactory;
+        this.sessionService = sessionService;
+        this.settingsPageRenderer = settingsPageRenderer;
     }
 
     public Result<SettingsPostData> ParsePostData(HttpListenerRequest request)
@@ -47,17 +72,21 @@ public class SettingsPostDataParser
         content.TryGetValue("last_name", out var lastName);
         content.TryGetValue("profile_image", out var profileImage);
 
-        if ((firstName is not null && !firstName.IsText)
-            || (lastName is not null && !lastName.IsText)
-            || (profileImage is not null && !profileImage.IsFile))
+        if ((firstName is not null && !firstName.IsText) ||
+           (lastName is not null && !lastName.IsText) ||
+           (profileImage is not null && !profileImage.IsFile))
         {
             return Result<SettingsPostData>.Error(GENERIC_ERROR_MESSAGE);
         }
 
-        return Result<SettingsPostData>.Successful(new SettingsPostData.ChangeProfile(
+        return Result<SettingsPostData>.Successful(new SettingsChangeProfilePostData(
             firstName?.TextValue,
             lastName?.TextValue,
-            profileImage
+            profileImage,
+            chefChangeDataService,
+            sessionService,
+            settingsPageRenderer,
+            imageTypeMimeTypeConverter
         ));
     }
 
@@ -76,10 +105,13 @@ public class SettingsPostDataParser
             return Result<SettingsPostData>.Error(GENERIC_ERROR_MESSAGE);
         }
 
-        return Result<SettingsPostData>.Successful(new SettingsPostData.ChangePassword(
+        return Result<SettingsPostData>.Successful(new SettingsChangePasswordPostData(
             new Password(oldPassword.TextValue!),
             new Password(newPassword.TextValue!),
-            new Password(newPasswordRepeat.TextValue!)
+            new Password(newPasswordRepeat.TextValue!),
+            chefChangePasswordService,
+            sessionService,
+            settingsPageRenderer
         ));
     }
 
@@ -90,8 +122,11 @@ public class SettingsPostDataParser
             return Result<SettingsPostData>.Error(GENERIC_ERROR_MESSAGE);
         }
 
-        return Result<SettingsPostData>.Successful(new SettingsPostData.DeleteProfile(
-            new Password(password.TextValue!)
+        return Result<SettingsPostData>.Successful(new SettingsDeleteProfilePostData(
+            new Password(password.TextValue!),
+            chefDeleteService,
+            sessionService,
+            settingsPageRenderer
         ));
     }
 }

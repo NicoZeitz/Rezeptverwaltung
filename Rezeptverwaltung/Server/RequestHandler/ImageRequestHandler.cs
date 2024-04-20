@@ -15,10 +15,10 @@ public partial class ImageRequestHandler : RequestHandler
     private readonly ShowChefs showChefs;
     private readonly ShowRecipes showRecipes;
 
-    [GeneratedRegex("/images/chefs/(?<chef_username>[A-Z0-9_ ]+)", RegexOptions.NonBacktracking | RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 1000)]
+    [GeneratedRegex("^/images/chef/(?<chef_username>[A-Z0-9_ ]+)/?$", RegexOptions.NonBacktracking | RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 1000)]
     private static partial Regex chefImageUrlPathRegex();
 
-    [GeneratedRegex("/images/recipe/(?<recipe_id>[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[89AB][a-fA-F0-9]{3}-[a-fA-F0-9]{12})", RegexOptions.NonBacktracking | RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 1000)]
+    [GeneratedRegex("^/images/recipe/(?<recipe_id>[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[89AB][a-fA-F0-9]{3}-[a-fA-F0-9]{12})/?$", RegexOptions.NonBacktracking | RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 1000)]
     private static partial Regex recipeImageUrlPathRegex();
 
     public ImageRequestHandler(
@@ -99,13 +99,14 @@ public partial class ImageRequestHandler : RequestHandler
         return WriteImageToResponse(response, image.Value);
     }
 
-    private Task WriteImageToResponse(HttpListenerResponse response, Image image)
+    private async Task WriteImageToResponse(HttpListenerResponse response, Image image)
     {
         var (data, imageType) = image;
         var mimeType = imageTypeMimeTypeConverter.ConvertImageTypeToMimeType(imageType);
 
         response.ContentType = mimeType;
         response.ContentLength64 = data.Length;
-        return data.CopyToAsync(response.OutputStream);
+        await data.CopyToAsync(response.OutputStream);
+        image.Data.Close();
     }
 }
