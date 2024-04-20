@@ -1,4 +1,5 @@
 ﻿using HttpMultipartParser;
+using Server.ValueObjects;
 using System.Collections.Immutable;
 using System.Net;
 
@@ -13,19 +14,19 @@ internal class MultipartContentParser : ContentParser
 
     public IDictionary<string, ContentData> ParseRequest(HttpListenerRequest request)
     {
-        if(!IsMultipartRequest(request))
+        if (!IsMultipartRequest(request))
         {
-           return ImmutableDictionary.Create<string, ContentData>();
+            return ImmutableDictionary.Create<string, ContentData>();
         }
 
         var multipartFormDataParser = MultipartFormDataParser.Parse(request.InputStream, request.ContentEncoding);
 
-        if(!EnsureParametersAreUnique(multipartFormDataParser))
+        if (!EnsureParametersAreUnique(multipartFormDataParser))
         {
             return ImmutableDictionary.Create<string, ContentData>();
         }
-        
-        var parameterDataDictionary = new Dictionary<string, ContentData>(); 
+
+        var parameterDataDictionary = new Dictionary<string, ContentData>();
         foreach (var parameter in multipartFormDataParser.Parameters)
         {
             parameterDataDictionary.Add(parameter.Name, ContentData.FromString(parameter.Data));
@@ -34,7 +35,7 @@ internal class MultipartContentParser : ContentParser
         foreach (var file in multipartFormDataParser.Files)
         {
             var mimeType = MimeType.FromString(file.ContentType);
-            if(!mimeType.HasValue)
+            if (!mimeType.HasValue)
             {
                 continue;
             }

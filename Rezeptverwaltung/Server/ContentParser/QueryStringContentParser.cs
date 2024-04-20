@@ -43,7 +43,7 @@ internal class QueryStringContentParser : ContentParser
 
     private IDictionary<string, ContentData> ParseQueryStringEncodedRequest(HttpListenerRequest request)
     {
-        if(request.Url?.Query is null)
+        if (request.Url?.Query is null)
         {
             return ImmutableDictionary.Create<string, ContentData>();
         }

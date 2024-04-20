@@ -1,5 +1,6 @@
 ﻿using Core.Services;
 using Server.Resources;
+using Server.Service;
 using Server.Session;
 using System.Net;
 
@@ -12,7 +13,13 @@ public class HomeRequestHandler : HTMLRequestHandler
     private readonly ShowRecipes showRecipes;
     private readonly ImageUrlService imageUrlService;
 
-    public HomeRequestHandler(TemplateLoader templateLoader, SessionService sessionService, ShowRecipes showRecipes, ImageUrlService imageUrlService)
+    public HomeRequestHandler(
+        HTMLFileWriter htmlFileWriter,
+        TemplateLoader templateLoader,
+        SessionService sessionService,
+        ShowRecipes showRecipes,
+        ImageUrlService imageUrlService)
+        : base(htmlFileWriter)
     {
         this.templateLoader = templateLoader;
         this.sessionService = sessionService;
@@ -20,9 +27,9 @@ public class HomeRequestHandler : HTMLRequestHandler
         this.imageUrlService = imageUrlService;
     }
 
-    public bool CanHandle(HttpListenerRequest request)
+    public override bool CanHandle(HttpListenerRequest request)
     {
-        if (request.HttpMethod != "GET")
+        if (request.HttpMethod != HttpMethod.Get.Method)
         {
             return false;
         }
@@ -30,16 +37,16 @@ public class HomeRequestHandler : HTMLRequestHandler
         return request.Url!.AbsolutePath is "/" or "/index.html";
     }
 
-    public Task<string> HandleHtmlFileRequest(HttpListenerRequest request)
+    public override Task<string> HandleHtmlFileRequest(HttpListenerRequest request)
     {
         var currentChef = sessionService.GetCurrentChef(request);
-        var recipes = showRecipes.ShowRecipesVisibleTo(currentChef);
+        var recipes = showRecipes.ShowAllRecipes(currentChef);
 
         var component = new Components.HomePage(templateLoader)
         {
             SlottedChildren = new Dictionary<string, Components.Component>
             {
-                { "Header", new Components.Header(templateLoader) { CurrentChef = currentChef } },
+                { "Header", new Components.Header(templateLoader, imageUrlService) { CurrentChef = currentChef } },
                 { "RecipeList", new Components.RecipeList(templateLoader, imageUrlService) { Recipes = recipes } }
             }
         };

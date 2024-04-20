@@ -2,7 +2,7 @@
 using Server.ContentParser;
 using System.Net;
 
-namespace Server.RequestHandler.Login;
+namespace Server.RequestHandler;
 
 public class LoginPostDataParser
 {
@@ -13,7 +13,7 @@ public class LoginPostDataParser
         this.contentParserFactory = contentParserFactory;
     }
 
-    public LoginData? ParsePostData(HttpListenerRequest request)
+    public LoginPostData? ParsePostData(HttpListenerRequest request)
     {
         var contentParser = contentParserFactory.CreateContentParser(request.ContentType);
 
@@ -33,7 +33,7 @@ public class LoginPostDataParser
             return null;
         }
 
-        return new LoginData(
+        return new LoginPostData(
             new Username(username.TextValue!),
             new Password(password.TextValue!)
         );

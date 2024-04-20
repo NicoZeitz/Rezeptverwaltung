@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Neues Rezept erstellen — Rezeptverwaltung</title>
+    </head>
+    <body>
+        {{ header }}
+        <form
+            action="/recipe/new"
+            method="post"
+            enctype="application/x-www-form-urlencoded"
+        >
+            <!--  Identifier automatisch -->
+            <label for="title">Titel des Rezepts:</label>
+            <input type="text" id="title" />
+            <label for="description">Beschreibung:</label>
+            <input type="text" id="description" />
+            <!--  Koch automatisch -->
+            <label for="visibility">Privat:</label>
+            <input type="checkbox" id="visibility" />
+            <label for="portion_denominator">Anzahl Portionen (Zähler)</label>
+            <input type="number" id="portion_denominator" min="0" max="100" />
+            <label for="portion_denominator">Anzahl Portionen (Nenner)</label>
+            <input
+                type="number"
+                id="portion_numerator"
+                min="1"
+                max="100"
+                value="1"
+            />
+            <label for="duration">Zubereitungszeit in Sekunden:</label>
+            <input type="range" min="0" max="10800" id="duration" />
+
+            <label for="tags">Komma separiere Liste an Tags:</label>
+            <input type="text" id="tags" />
+            <!-- Weighted Ingredients -->
+            <div id="weighted_ingredients">
+                <div>einheit menge ingredientname</div>
+            </div>
+            <!-- Preparation Steps -->
+            <label for="preparation_step_0">Zubereitungsschritte</label>
+            <div id="preparation_steps">
+                <div>
+                    <textarea class="preparation_step_="></textarea>
+                    <button type="button" title="Schritt löschen">
+                        Schritt Löschen
+                    </button>
+                </div>
+            </div>
+            <button type="button" id="add_preparation_step">
+                Neuen Schritt hinzufügen
+            </button>
+            <script>
+                const addPreparationStep = document.getElementById(
+                    "add_preparation_step",
+                );
+                const preparationSteps =
+                    document.getElementById("preparation_steps");
+
+                addPreparationStep.onclick = (event) => {
+                    event.preventDefault();
+                    preparationSteps.appendChild();
+                };
+
+                // preparationSteps.
+
+                const form = document.querySelector("form");
+                form.onsubmit = (event) => {
+                    // preparation steps ids
+                };
+            </script>
+
+            <!-- Image -->
+            <input type="image" src="" alt="" />
+        </form>
+    </body>
+</html>

@@ -1,5 +1,3 @@
-﻿using Core.ValueObjects;
-
-namespace Core.Entities;
+﻿namespace Core.ValueObjects;
 
 public record class PreparationStep(Text Description);

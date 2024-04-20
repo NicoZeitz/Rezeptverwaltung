@@ -7,6 +7,8 @@ public interface RecipeRepository
 {
     void Add(Recipe recipe);
 
+    void Update(Recipe recipe);
+
     void Remove(Recipe recipe);
 
     Recipe? FindByIdentifier(Identifier identifier);
@@ -14,6 +16,8 @@ public interface RecipeRepository
     IEnumerable<Recipe> FindByTitle(Text title);
 
     IEnumerable<Recipe> FindAll();
+
+    IEnumerable<Recipe> FindByTag(Tag tag);
 
     IEnumerable<Recipe> FindForChef(Chef chef);
 

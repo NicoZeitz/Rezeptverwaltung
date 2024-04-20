@@ -25,7 +25,9 @@
                     <h1 class="text-3xl">{{ recipe.title }}</h1>
                     <p class="mb-3 text-lg text-gray-500">
                         von
-                        <a href="/chef/{{ recipe.chef }}">{{ recipe.chef }}</a>
+                        <a href="/chef/{{ recipe.chef | html.url_escape }}"
+                            >{{ recipe.chef }}</a
+                        >
                         | für {{ recipe.portion }} Portionen | Zubereitungszeit:
                         {{ recipe.preparation_time }}
                     </p>
@@ -36,7 +38,7 @@
                         {{ for tag in recipe.tags }}
                         <li class="contents">
                             <a
-                                href="/tag/{{ tag }}"
+                                href="/tag/{{ tag | html.url_escape }}"
                                 class="inline-block rounded-full bg-green-500 px-2 py-1 text-white"
                                 >{{ tag }}</a
                             >

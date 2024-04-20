@@ -1,9 +1,8 @@
 ﻿using Core.Entities;
 using Server.Resources;
+using Server.Service;
 
 namespace Server.Components;
-
-
 
 public class RecipeList : TemplateComponent
 {

@@ -3,7 +3,7 @@ using Core.ValueObjects;
 
 namespace Core.Entities;
 
-public class Cookbook : IEquatable<Cookbook>, UniqueIdentity
+public class Cookbook : IEquatable<Cookbook>, AccessRights, UniqueIdentity
 {
     public Identifier Identifier { get; }
     public Text Title { get; }
@@ -23,6 +23,8 @@ public class Cookbook : IEquatable<Cookbook>, UniqueIdentity
     }
 
     public string GetUniqueIdentity() => Identifier.Id.ToString();
+
+    public bool IsVisibleTo(Chef viewer) => viewer.Username == Creator || Visibility.IsPublic();
 
     public virtual bool Equals(Cookbook? other)
     {

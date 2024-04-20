@@ -1,4 +1,6 @@
-﻿using System.Net;
+﻿using Core.ValueObjects;
+using Server.Service;
+using System.Net;
 
 namespace Server.RequestHandler;
 
@@ -17,11 +19,7 @@ public class StaticRequestHandler : RequestHandler
 
     public bool CanHandle(HttpListenerRequest request)
     {
-
-        Console.WriteLine(request.Url);
-
-
-        if (request.HttpMethod != "GET")
+        if (request.HttpMethod != HttpMethod.Get.Method)
         {
             return false;
         }

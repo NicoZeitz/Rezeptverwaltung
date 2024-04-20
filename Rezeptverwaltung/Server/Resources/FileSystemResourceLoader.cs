@@ -1,33 +1,33 @@
-﻿namespace Server.ResourceLoader;
+﻿using Core.Interfaces;
+using Core.ValueObjects;
+
+namespace Server.ResourceLoader;
 
 public class FileSystemResourceLoader : ResourceLoader
 {
-    // TODO: Directory value object
-    public string RootDirectory { get; }
+    private readonly Core.ValueObjects.Directory rootDirectory;
+    private readonly Logger logger;
 
-    public FileSystemResourceLoader(string rootDirectory)
+    public FileSystemResourceLoader(Core.ValueObjects.Directory rootDirectory, Logger logger)
     {
-        RootDirectory = rootDirectory;
+        this.logger = logger;
+        this.rootDirectory = rootDirectory;
     }
 
     public Stream? LoadResource(string resourceName)
     {
-        Console.WriteLine($"Loading resource: {resourceName}");
+        logger.LogInfo($"Loading resource: {resourceName}");
 
-        var path = Path.Combine(RootDirectory, resourceName);
-
-        if (!File.Exists(path))
-        {
+        var path = new Core.ValueObjects.File(rootDirectory, FileName.From(resourceName));
+        if (!path.Exists())
             return null;
-        }
 
         while (true)
         {
-
             try
             {
                 return new FileStream(
-                    path,
+                    path.FullName,
                     FileMode.Open,
                     FileAccess.Read,
                     FileShare.Read,

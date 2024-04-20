@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Einstellungen — Rezeptverwaltung</title>
+        <link rel="stylesheet" href="/assets/styles.css" />
+    </head>
+    <body>
+        {{ header }}
+        <main
+            class="pb-32 grid max-w-full sm:max-w-[80ch] mx-auto grid-cols-1 justify-items-center gap-5 px-4 sm:grid-cols-2"
+        >
+            <h1 class="pt-10 text-4xl sm:col-span-2">
+                👋 Hallo {{ current_chef.username }}
+            </h1>
+            <form
+                action="/settings"
+                method="post"
+                enctype="application/x-www-form-urlencoded"
+                class="grid w-[min(100%,80ch)] grid-cols-subgrid gap-x-4 gap-y-2 sm:col-span-2"
+            >
+                <fieldset class="contents">
+                    <input type="hidden" value="change-data" name="type" />
+                    <legend class="sm:col-span-2">
+                        <h2 class="text-2xl">Benutzerdaten</h2>
+                    </legend>
+                    <label
+                        class="col-span-1 col-start-1 sm:text-right"
+                        for="first_name"
+                        >Vorname</label
+                    >
+                    <input
+                        class="rounded-md bg-gray-200 p-1"
+                        type="text"
+                        name="first_name"
+                        id="first_name"
+                        value="{{ current_chef.name.first_name }}"
+                    />
+                    <label
+                        class="col-span-1 col-start-1 sm:text-right"
+                        for="last_name"
+                        >Nachname</label
+                    >
+                    <input
+                        class="rounded-md bg-gray-200 p-1"
+                        type="text"
+                        name="last_name"
+                        id="last_name"
+                        value="{{ current_chef.name.last_name }}"
+                    />
+                    <label
+                        class="col-span-1 col-start-1 sm:text-right"
+                        for="profile_image"
+                        >Profilbild</label
+                    >
+                    <div class="cursor-pointer relative justify-self-center sm:h-44 sm:w-44 h-32 w-32 rounded-full overflow-clip">
+                        <picture class="contents">
+                            <!-- src="{{ current_chef.image }}" -->
+                            <img
+                                id="profile-image"
+                                class="h-full w-full rounded-full object-cover"
+                                src="https://picsum.photos/200/300"
+                                alt="Profilbild von {{ current_chef.username }}"
+                            />
+
+                        <input
+                            class="cursor-pointer opacity-0 absolute inset-0"
+                            type="file"
+                            accept="image/*"
+                            name="profile_image"
+                            id="profile_image"
+                        />
+                        <script>
+                            const profilePic = document.getElementById('profile-image');
+                            document.getElementById('profile_image').addEventListener('change', evt => {
+                                URL.revokeObjectURL(profilePic.src);
+                                const file = URL.createObjectURL(evt.target.files[0]);
+                                profilePic.src = file;
+                            });
+                        </script>
+                    </div>
+                    <button
+                        class="col-start-1 mt-3 justify-self-end rounded-md bg-green-500 px-5 py-2 shadow-md sm:col-span-2"
+                        type="submit"
+                    >
+                        Speichern
+                    </button>
+                </fieldset>
+            </form>
+            <form
+                action="/settings"
+                method="post"
+                enctype="application/x-www-form-urlencoded"
+                class="grid w-[min(100%,80ch)] grid-cols-subgrid gap-x-4 gap-y-2 sm:col-span-2"
+            >
+                <fieldset class="contents">
+                    <input type="hidden" value="change-password" name="type" />
+                    <legend class="sm:col-span-2">
+                        <h2 class="text-2xl">Passwort ändern</h2>
+                    </legend>
+                    <label
+                        class="col-span-1 col-start-1 sm:text-right"
+                        for="old_password"
+                        >Altes Passwort</label
+                    >
+                    <input
+                        class="rounded-md bg-gray-200 p-1"
+                        type="password"
+                        name="old_password"
+                        id="old_password"
+                    />
+                    <label
+                        class="col-span-1 col-start-1 sm:text-right"
+                        for="new_password"
+                        >Neues Passwort</label
+                    >
+                    <input
+                        class="rounded-md bg-gray-200 p-1"
+                        type="password"
+                        name="new_password"
+                        id="new_password"
+                    />
+                    <label
+                        class="col-span-1 col-start-1 sm:text-right"
+                        for="new_password_repeat"
+                        >Neues Passwort wiederholen</label
+                    >
+                    <input
+                        class="rounded-md bg-gray-200 p-1"
+                        type="password"
+                        name="new_password_repeat"
+                        id="new_password_repeat"
+                    />
+                    <button
+                        class="col-start-1 mt-3 justify-self-end rounded-md bg-green-500 px-5 py-2 shadow-md sm:col-span-2"
+                        type="submit"
+                    >
+                        Speichern
+                    </button>
+                </fieldset>
+            </form>
+            <form
+                action="/settings"
+                method="post"
+                enctype="application/x-www-form-urlencoded"
+                class="grid w-[min(100%,80ch)] grid-cols-subgrid gap-x-4 gap-y-2 sm:col-span-2"
+            >
+                <fieldset class="contents">
+                    <input type="hidden" value="delete-account" name="type" />
+                    <legend class="sm:col-span-2">
+                        <h2 class="text-2xl">Account löschen</h2>
+                    </legend>
+                    <label
+                        class="col-span-1 col-start-1 sm:text-right"
+                        for="password"
+                        >Passwort</label
+                    >
+                    <input
+                        class="rounded-md bg-gray-200 p-1"
+                        type="password"
+                        name="password"
+                        id="password"
+                    />
+                    <button
+                        class="col-start-1 mt-3 justify-self-end rounded-md bg-red-500 px-5 py-2 shadow-md sm:col-span-2"
+                        type="submit"
+                    >
+                        Account löschen
+                    </button>
+                </fieldset>
+            </form>
+        </main>
+    </body>
+</html>

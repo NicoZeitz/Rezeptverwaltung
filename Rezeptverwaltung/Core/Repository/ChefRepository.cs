@@ -7,6 +7,8 @@ public interface ChefRepository
 {
     void Add(Chef chef);
 
+    void Update(Chef chef);
+
     void Remove(Chef chef);
 
     Chef? FindByUsername(Username username);

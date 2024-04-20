@@ -1,37 +1,32 @@
-﻿using Server.Resources;
+﻿using Server.Service;
 using Server.Session;
 using System.Net;
 
 namespace Server.RequestHandler;
 
-public class NotFoundRequestHandler : HTMLRequestHandler
+public class NotFoundRequestHandler : RequestHandler
 {
-    private readonly TemplateLoader templateLoader;
+    private readonly HTMLFileWriter htmlFileWriter;
+    private readonly NotFoundPageRenderer notFoundPageRenderer;
     private readonly SessionService sessionService;
 
     public NotFoundRequestHandler(
-        TemplateLoader templateLoader,
-        SessionService sessionService
-    ) : base()
+        HTMLFileWriter htmlFileWriter,
+        NotFoundPageRenderer notFoundPageRenderer,
+        SessionService sessionService)
+        : base()
     {
-        this.templateLoader = templateLoader;
+        this.htmlFileWriter = htmlFileWriter;
+        this.notFoundPageRenderer = notFoundPageRenderer;
         this.sessionService = sessionService;
     }
 
     public bool CanHandle(HttpListenerRequest request) => true;
 
-    public Task<string> HandleHtmlFileRequest(HttpListenerRequest request)
+    public async Task Handle(HttpListenerRequest request, HttpListenerResponse response)
     {
         var currentChef = sessionService.GetCurrentChef(request);
-
-        var component = new Components.NotFoundPage(templateLoader)
-        {
-            SlottedChildren = new Dictionary<string, Components.Component>
-            {
-                { "Header", new Components.Header(templateLoader) { CurrentChef = currentChef } }
-            }
-        };
-
-        return component.RenderAsync();
+        var htmlString = await notFoundPageRenderer.RenderPage(currentChef);
+        htmlFileWriter.WriteHtmlFile(response, htmlString, HttpStatusCode.NotFound);
     }
 }

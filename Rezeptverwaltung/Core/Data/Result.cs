@@ -10,7 +10,11 @@ public sealed class Result<T> : IEquatable<Result<T>>
 
     public bool IsError => !IsSuccessful;
 
-    private Result(bool isSuccessful, T? value, IEnumerable<ErrorMessage> errorMessages)
+    private Result(
+        bool isSuccessful,
+        T? value,
+        IEnumerable<ErrorMessage> errorMessages)
+        : base()
     {
         IsSuccessful = isSuccessful;
         Value = value;

@@ -1,0 +1,17 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>{{ tag }} — Rezeptverwaltung</title>
+        <link rel="stylesheet" href="/assets/styles.css" />
+    </head>
+    <body>
+        {{ header }}
+        <div
+            class="h-[calc(100dvh-3.5rem)] w-full overflow-x-hidden overflow-y-scroll"
+        >
+            <main class="w-full p-8">{{ recipe_list }}</main>
+        </div>
+    </body>
+</html>

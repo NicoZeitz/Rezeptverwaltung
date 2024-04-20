@@ -3,7 +3,7 @@ using Core.ValueObjects;
 
 namespace Core.Entities
 {
-    public class Recipe : UniqueIdentity, IEquatable<Recipe>
+    public class Recipe : IEquatable<Recipe>, AccessRights, UniqueIdentity
     {
         public Identifier Identifier { get; }
         public Username Chef { get; }
@@ -41,6 +41,8 @@ namespace Core.Entities
         }
 
         public string GetUniqueIdentity() => Identifier.Id.ToString();
+
+        public bool IsVisibleTo(Chef viewer) => viewer.Username == Chef || Visibility.IsPublic();
 
         public virtual bool Equals(Recipe? other)
         {

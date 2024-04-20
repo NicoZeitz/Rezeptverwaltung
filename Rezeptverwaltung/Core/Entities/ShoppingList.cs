@@ -3,7 +3,7 @@ using Core.ValueObjects;
 
 namespace Core.Entities;
 
-public class ShoppingList : IEquatable<ShoppingList>, UniqueIdentity
+public class ShoppingList : IEquatable<ShoppingList>, UniqueIdentity, AccessRights
 {
     public Identifier Identifier { get; }
     public Text Title { get; }
@@ -22,6 +22,8 @@ public class ShoppingList : IEquatable<ShoppingList>, UniqueIdentity
 
     public string GetUniqueIdentity() => Identifier.Id.ToString();
 
+    public bool IsVisibleTo(Chef viewer) => viewer.Username == Creator || Visibility.IsPublic();
+
     public virtual bool Equals(ShoppingList? other)
     {
         if (ReferenceEquals(this, other))
@@ -36,6 +38,7 @@ public class ShoppingList : IEquatable<ShoppingList>, UniqueIdentity
     public override int GetHashCode() => Identifier.GetHashCode();
 
     public override bool Equals(object? obj) => Equals(obj as ShoppingList);
+
 
     public static bool operator ==(ShoppingList? left, ShoppingList? right) =>
         ReferenceEquals(left, right) || (left is not null && left.Equals(right));

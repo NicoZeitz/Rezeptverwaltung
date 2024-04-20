@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Neues Kochbuch erstellen — Rezeptverwaltung</title>
+        <link rel="stylesheet" href="/assets/styles.css" />
+    </head>
+    <body>
+        {{ header }}
+        <main class="grid max-w-full justify-items-center px-4">
+            <form
+                class="grid w-[min(100%,80ch)] grid-cols-[fit-content,1fr] gap-x-4 gap-y-2"
+                action="/cookbook/new"
+                method="post"
+                enctype="application/x-www-form-urlencoded"
+            >
+                <label class="col-span-1 col-start-1 text-right" for="title"
+                    >Titel des Kochbuchs:</label
+                >
+                <input
+                    class="rounded-md bg-gray-200 p-1"
+                    type="text"
+                    id="title"
+                    name="title"
+                />
+                <label
+                    class="col-span-1 col-start-1 text-right"
+                    for="description"
+                    >Beschreibung:</label
+                >
+                <textarea
+                    class="rounded-md bg-gray-200 p-1"
+                    name="description"
+                    id="description"
+                ></textarea>
+                <label
+                    class="col-span-1 col-start-1 text-right"
+                    for="visibility"
+                    >Privat:</label
+                >
+                <input
+                    class="aspect-square h-full justify-self-start rounded-md bg-gray-200 p-1"
+                    type="checkbox"
+                    id="visibility"
+                />
+                <div class="contents">
+                    <label
+                        class="col-span-1 col-start-1 text-right"
+                        for="recipe-select"
+                        >Rezepte:</label
+                    >
+                    <select
+                        multiple
+                        name="recipe-select"
+                        id="recipe-select"
+                        class="rounded-md bg-gray-200 p-1"
+                    >
+                        <!-- <option disabled selected value class="hidden"></option> -->
+                        {{ for recipe in recipes }}
+                        <option value="{{ recipe.Identifier }}">
+                            {{ recipe.Title }} von {{ recipe.Chef }}
+                        </option>
+                        {{ end }}
+                    </select>
+                </div>
+
+                <button
+                    class="col-span-2 col-start-1 mt-3 justify-self-center rounded-md bg-green-500 px-5 py-2 shadow-md"
+                    type="submit"
+                >
+                    Kochbuch erstellen
+                </button>
+            </form>
+        </main>
+    </body>
+</html>

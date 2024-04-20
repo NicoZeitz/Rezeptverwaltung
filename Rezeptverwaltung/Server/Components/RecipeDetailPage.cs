@@ -1,6 +1,7 @@
 ﻿
 using Core.Entities;
 using Server.Resources;
+using Server.Service;
 
 namespace Server.Components;
 
@@ -8,18 +9,25 @@ public class RecipeDetailPage : ContainerComponent
 {
     public Recipe? Recipe { get; set; }
 
-    public RecipeDetailPage(TemplateLoader templateLoader)
+    private readonly ImageUrlService imageUrlService;
+
+    public RecipeDetailPage(TemplateLoader templateLoader, ImageUrlService imageUrlService)
         : base(templateLoader)
     {
+        this.imageUrlService = imageUrlService;
     }
 
     public override async Task<string> RenderAsync()
     {
+        var recipeImage = Recipe is null
+            ? null
+            : imageUrlService.GetImageUrlForRecipe(Recipe);
+
         return await templateLoader
             .LoadTemplate("RecipeDetailPage.html")
             .RenderAsync(new
             {
-                RecipeImage = "https://picsum.photos/200/300", // TODO: image service
+                RecipeImage = recipeImage,
                 Header = await GetRenderedSlottedChild("Header"),
                 Recipe
             })

@@ -4,7 +4,7 @@
     {{ for recipe in recipes }}
     <li class="contents">
         <a
-            href="/recipe/{{ recipe.recipe.identifier }}"
+            href="/recipe/{{ recipe.recipe.identifier | html.url_escape }}"
             class="relative overflow-clip rounded-lg bg-white shadow-lg"
         >
             <picture>

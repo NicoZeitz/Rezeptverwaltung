@@ -1,10 +1,12 @@
 ﻿using Core.Services;
 using Core.Services.Password;
 using Core.ValueObjects;
+using Server.Service;
 using Server.Session;
+using Server.ValueObjects;
 using System.Net;
 
-namespace Server.RequestHandler.Register;
+namespace Server.RequestHandler;
 
 public class RegisterRequestHandler : RequestHandler
 {
@@ -12,7 +14,7 @@ public class RegisterRequestHandler : RequestHandler
     private readonly ResourceLoader.ResourceLoader resourceLoader;
     private readonly SessionService sessionService;
     private readonly DuplicatePasswordChecker duplicatePasswordChecker;
-    private readonly MimeTypeToImageType mimeTypeToImageType;
+    private readonly ImageTypeMimeTypeConverter imageTypeMimeTypeConverter;
     private readonly RegisterPageRenderer registerPageRenderer;
     private readonly RegisterPostDataParser registerPostDataParser;
 
@@ -21,7 +23,7 @@ public class RegisterRequestHandler : RequestHandler
       ResourceLoader.ResourceLoader resourceLoader,
       SessionService sessionService,
       DuplicatePasswordChecker duplicatePasswordChecker,
-      MimeTypeToImageType mimeTypeToImageType,
+      ImageTypeMimeTypeConverter imageTypeMimeTypeConverter,
       RegisterPageRenderer registerPageRenderer,
       RegisterPostDataParser registerPostDataParser
   )
@@ -30,7 +32,7 @@ public class RegisterRequestHandler : RequestHandler
         this.resourceLoader = resourceLoader;
         this.sessionService = sessionService;
         this.duplicatePasswordChecker = duplicatePasswordChecker;
-        this.mimeTypeToImageType = mimeTypeToImageType;
+        this.imageTypeMimeTypeConverter = imageTypeMimeTypeConverter;
         this.registerPageRenderer = registerPageRenderer;
         this.registerPostDataParser = registerPostDataParser;
     }
@@ -42,29 +44,36 @@ public class RegisterRequestHandler : RequestHandler
             return false;
         }
 
-        if (request.HttpMethod == "GET")
+        if (request.HttpMethod == HttpMethod.Get.Method)
         {
             return true;
         }
 
-        return request.HttpMethod == "POST" && request.HasEntityBody;
+        return request.HttpMethod == HttpMethod.Post.Method && request.HasEntityBody;
     }
 
     public Task Handle(HttpListenerRequest request, HttpListenerResponse response)
     {
-        if (request.HttpMethod == "GET")
+        if (request.HttpMethod == HttpMethod.Get.Method)
         {
-            return registerPageRenderer.RenderPage(
-                response,
-                HttpStatusCode.OK,
-                sessionService.GetCurrentChef(request)
-            );
+            return HandleGetRequest(request, response);
         }
-
-        return HandlePost(request, response);
+        else
+        {
+            return HandlePostRequest(request, response);
+        }
     }
 
-    private Task HandlePost(HttpListenerRequest request, HttpListenerResponse response)
+    private Task HandleGetRequest(HttpListenerRequest request, HttpListenerResponse response)
+    {
+        return registerPageRenderer.RenderPage(
+            response,
+            HttpStatusCode.OK,
+            sessionService.GetCurrentChef(request)
+        );
+    }
+
+    private Task HandlePostRequest(HttpListenerRequest request, HttpListenerResponse response)
     {
         var postData = registerPostDataParser.ParsePostData(request);
         if (postData.IsError)
@@ -105,7 +114,7 @@ public class RegisterRequestHandler : RequestHandler
 
         var image = new Image(
             profileImage.FileData!,
-            mimeTypeToImageType.ConvertMimeTypeToImageType(profileImage.FileMimeType!.Value)!.Value
+            imageTypeMimeTypeConverter.ConvertMimeTypeToImageType(profileImage.FileMimeType!.Value)!.Value
         );
         var registerResult = chefRegisterService.RegisterChef(username, name, password, image);
 

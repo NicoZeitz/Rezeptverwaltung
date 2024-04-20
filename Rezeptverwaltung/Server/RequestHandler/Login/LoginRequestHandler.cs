@@ -3,7 +3,7 @@ using Core.ValueObjects;
 using Server.Session;
 using System.Net;
 
-namespace Server.RequestHandler.Login;
+namespace Server.RequestHandler;
 
 public class LoginRequestHandler : RequestHandler
 {
@@ -34,17 +34,17 @@ public class LoginRequestHandler : RequestHandler
             return false;
         }
 
-        if (request.HttpMethod == "GET")
+        if (request.HttpMethod == HttpMethod.Get.Method)
         {
             return true;
         }
 
-        return request.HttpMethod == "POST" && request.HasEntityBody;
+        return request.HttpMethod == HttpMethod.Post.Method && request.HasEntityBody;
     }
 
     public Task Handle(HttpListenerRequest request, HttpListenerResponse response)
     {
-        if (request.HttpMethod == "GET")
+        if (request.HttpMethod == HttpMethod.Get.Method)
         {
             var currentChef = sessionService.GetCurrentChef(request);
             return loginPageRenderer.RenderPage(

@@ -1,18 +1,27 @@
 ﻿
 
+using Core.Entities;
 using Server.Resources;
 
 namespace Server.Components;
 
 public class SettingsPage : ContainerComponent
 {
+    public Chef? CurrentChef { get; set; }
+
     public SettingsPage(TemplateLoader templateLoader)
         : base(templateLoader)
     {
     }
 
-    public override Task<string> RenderAsync()
+    public override async Task<string> RenderAsync()
     {
-        throw new NotImplementedException();
+        return await templateLoader
+            .LoadTemplate("SettingsPage.html")!
+            .RenderAsync(new
+            {
+                Header = await GetRenderedSlottedChild("Header"),
+                CurrentChef
+            });
     }
 }

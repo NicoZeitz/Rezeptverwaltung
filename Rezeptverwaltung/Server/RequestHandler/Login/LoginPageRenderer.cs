@@ -1,18 +1,25 @@
 ﻿using Core.ValueObjects;
 using Server.Components;
-using Server.Resources;
+using Server.Service;
 using System.Net;
-using System.Text;
 
-namespace Server.RequestHandler.Login;
+namespace Server.RequestHandler;
 
 public class LoginPageRenderer
 {
-    private readonly TemplateLoader templateLoader;
+    private readonly Header header;
+    private readonly HTMLFileWriter htmlFileWriter;
+    private readonly LoginPage loginPage;
 
-    public LoginPageRenderer(TemplateLoader templateLoader) : base()
+    public LoginPageRenderer(
+        Header header,
+        HTMLFileWriter htmlFileWriter,
+        LoginPage loginPage)
+        : base()
     {
-        this.templateLoader = templateLoader;
+        this.header = header;
+        this.htmlFileWriter = htmlFileWriter;
+        this.loginPage = loginPage;
     }
 
     public async Task RenderPage(
@@ -29,19 +36,11 @@ public class LoginPageRenderer
             return;
         }
 
+        header.CurrentChef = currentChef;
+        loginPage.SlottedChildren["Header"] = header;
+        loginPage.Children = errorMessage is null ? new Component[0] : new[] { new DisplayableComponent(errorMessage) };
+        var htmlString = await loginPage.RenderAsync();
 
-        var component = new LoginPage(templateLoader)
-        {
-            SlottedChildren = new Dictionary<string, Component>
-            {
-                { "Header", new Header(templateLoader) { CurrentChef = currentChef } },
-            },
-            Children = errorMessage is null ? new Component[0] : new[] { new DisplayableComponent(errorMessage) }
-        };
-
-        var registerPage = await component.RenderAsync();
-
-        response.StatusCode = (int)httpStatus;
-        await response.OutputStream.WriteAsync(Encoding.UTF8.GetBytes(registerPage));
+        htmlFileWriter.WriteHtmlFile(response, htmlString, httpStatus);
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace Server.ContentParser;
+﻿using Server.ValueObjects;
+
+namespace Server.ContentParser;
 
 public class ContentData
 {
@@ -6,7 +8,7 @@ public class ContentData
     public Stream? FileData { get; }
     public string? FileName { get; }
     public MimeType? FileMimeType { get; }
-    
+
     public bool IsFile => TextValue is null;
     public bool IsText => TextValue is not null;
 

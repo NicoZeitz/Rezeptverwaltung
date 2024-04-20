@@ -1,4 +1,6 @@
-﻿namespace Server.ContentParser;
+﻿using Server.ValueObjects;
+
+namespace Server.ContentParser;
 
 public class ContentParserFactory
 {

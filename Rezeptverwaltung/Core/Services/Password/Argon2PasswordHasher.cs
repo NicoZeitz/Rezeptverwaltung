@@ -1,7 +1,6 @@
 ﻿using Core.ValueObjects;
 using Isopoh.Cryptography.Argon2;
 
-// TODO: maybe database project?
 namespace Core.Services.Password;
 
 public class Argon2PasswordHasher : PasswordHasher

@@ -11,6 +11,6 @@ public interface ImageService
     void DeleteImage<T>(T entity)
         where T : UniqueIdentity;
 
-    Image GetImageFor<T>(T entity)
+    Image? GetImageFor<T>(T entity)
         where T : UniqueIdentity;
 }

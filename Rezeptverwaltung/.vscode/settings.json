@@ -10,5 +10,5 @@
         "**/obj": true,
         "**/node_modules": true
     },
-    "cSpell.words": ["Hasher", "MIMETYPES", "Sqlite"]
+    "cSpell.words": ["Datetime", "Hasher", "Isopoh", "MIMETYPES", "rezeptverwaltung", "Sqlite"]
 }

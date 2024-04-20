@@ -19,5 +19,5 @@ public static class VisibilityExtensions
             "1" => Visibility.PUBLIC,
             _ => throw new ArgumentException($"Unknown visibility: {visibility}")
         };
-    }    
+    }
 }

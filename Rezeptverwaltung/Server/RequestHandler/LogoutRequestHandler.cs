@@ -1,6 +1,4 @@
-﻿using Core.Entities;
-using Core.ValueObjects;
-using Server.Session;
+﻿using Server.Session;
 using System.Net;
 
 namespace Server.RequestHandler;
@@ -14,10 +12,9 @@ public class LogoutRequestHandler : RequestHandler
         this.sessionService = sessionService;
     }
 
-    public bool CanHandle(HttpListenerRequest request)
-    {
-        return request.Url?.AbsolutePath is "/logout" && request.HttpMethod is "POST";
-    }
+    public bool CanHandle(HttpListenerRequest request) =>
+        request.HttpMethod == HttpMethod.Post.Method
+        && request.Url?.AbsolutePath is "/logout";
 
     public Task Handle(HttpListenerRequest request, HttpListenerResponse response)
     {

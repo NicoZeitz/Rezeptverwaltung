@@ -1,123 +1,48 @@
 ﻿using Core.Entities;
+using Core.Interfaces;
 using Core.Repository;
 using Core.Services;
 using Core.Services.Password;
+using Core.ValueObjects;
+using Database;
+using Database.Repositories;
+using FileSystem;
+using Logging;
 using Main;
 using Microsoft.Extensions.DependencyInjection;
-using Persistence.DB;
-using Persistence.FS;
-using Persistence.Repositories;
 using Server;
 using Server.Components;
 using Server.ContentParser;
 using Server.RequestHandler;
-using Server.RequestHandler.Chef;
-using Server.RequestHandler.Login;
-using Server.RequestHandler.Recipe;
-using Server.RequestHandler.Register;
 using Server.ResourceLoader;
 using Server.Resources;
+using Server.Service;
 using Server.Session;
-using System.Reflection;
-
-
-//Console.WriteLine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location));
-//string[] resNames = Assembly.GetExecutingAssembly().GetManifestResourceNames();
-//foreach (string resName in resNames)
-//    Console.WriteLine(resName);
 
 var configuration = new ApplicationConfiguration();
 var provider = configureServices(configuration);
-var serverCancellationToken = new CancellationToken();
 var server = provider.GetRequiredService<Server.Server>();
 
 server.AddRequestHandler(provider.GetRequiredService<HomeRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<RegisterRequestHandler>());
-server.AddRequestHandler(provider.GetRequiredService<RecipeDetailRequestHandler>());
-server.AddRequestHandler(provider.GetRequiredService<ChefDetailRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<LoginRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<LogoutRequestHandler>());
+server.AddRequestHandler(provider.GetRequiredService<ChefDetailRequestHandler>());
+server.AddRequestHandler(provider.GetRequiredService<SettingsRequestHandler>());
+server.AddRequestHandler(provider.GetRequiredService<RecipeDetailRequestHandler>());
+server.AddRequestHandler(provider.GetRequiredService<TagRequestHandler>());
+server.AddRequestHandler(provider.GetRequiredService<NewRecipeRequestHandler>());
+server.AddRequestHandler(provider.GetRequiredService<EditRecipeRequestHandler>());
+server.AddRequestHandler(provider.GetRequiredService<CookbookDetailRequestHandler>());
+server.AddRequestHandler(provider.GetRequiredService<NewCookbookRequestHandler>());
+server.AddRequestHandler(provider.GetRequiredService<EditCookbookRequestHandler>());
+server.AddRequestHandler(provider.GetRequiredService<ShoppingListDetailRequestHandler>());
+server.AddRequestHandler(provider.GetRequiredService<NewShoppingListRequestHandler>());
+server.AddRequestHandler(provider.GetRequiredService<EditShoppingListRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<StaticRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<NotFoundRequestHandler>());
 
-
-var chefRepository = provider.GetRequiredService<ChefRepository>();
-var recipeRepository = provider.GetRequiredService<RecipeRepository>();
-
-//chefRepository.Add(
-//    new Chef(
-//        new Username("MeisterkochFabian"),
-//        new Name("Fabian", "Wolf"),
-//        provider.GetRequiredService<PasswordHasher>().HashPassword(new Password("wolf"))
-//    )
-//);
-
-//recipeRepository.Add(
-//    new Recipe(
-//            Identifier.NewId(),
-//            new Username("MeisterkochFabian"),
-//            new Text("Nudelauflauf"),
-//            new Text("Nudelauflauf aus dem Hause Wolf"),
-//            Visibility.PUBLIC,
-//            new Portion(new Rational<int>(2, 1)),
-//            new Duration(TimeSpan.FromMinutes(50)),
-//            new List<Tag>
-//            {
-//                new Tag("Nudeln"),
-//                new Tag("Auflauf"),
-//                new Tag("Eier"),
-//                new Tag("Würstchen"),
-//                new Tag("Käse")
-//            },
-//            new List<PreparationStep>
-//            {
-//                new PreparationStep(new Text("Nudeln kochen")),
-//                new PreparationStep(new Text("Form einfetten und mit Semmelbröseln bestreuen")),
-//                new PreparationStep(new Text("Erste Hälfte der Nudeln in die Form")),
-//                new PreparationStep(new Text("Kleingeschnittene Würstchen und 2/3 des Käses in die Form")),
-//                new PreparationStep(new Text("Zweite Hälfte der Nudeln in die Form")),
-//                new PreparationStep(new Text("Mit Prise Salz gequirlte Eier über den Forminhalt gießen")),
-//                new PreparationStep(new Text("Reste des Käses mit Butterflocken und Paprikapulver darüber verteilen")),
-//                new PreparationStep(new Text("Im Ofen bei 180°C Umluft 30 Minuten backen")),
-//            },
-//            new List<WeightedIngredient>
-//            {
-//                new WeightedIngredient(
-//                    Weight.FromGram(160),
-//                    new Text("Nudeln")
-//                ),
-//                new WeightedIngredient(
-//                    new Piece(3),
-//                    new Text("Wiener Würstchen")
-//                ),
-//                new WeightedIngredient(
-//                    Weight.FromKilogram(150),
-//                    new Text("Gouda")
-//                ),
-//                new WeightedIngredient(
-//                    new Piece(2),
-//                    new Text("Eier")
-//                ),
-//                new WeightedIngredient(
-//                    new Pinch(1),
-//                    new Text("Salz")
-//                ),
-//                new WeightedIngredient(
-//                    new Spoon(1, SpoonSize.TEA),
-//                    new Text("Paprikapulver")
-//                ),
-//                new WeightedIngredient(
-//                    new Spoon(5, SpoonSize.TABLE),
-//                    new Text("Semmelbrösel")
-//                ),
-//                                new WeightedIngredient(
-//                    new Spoon(2, SpoonSize.TABLE),
-//                    new Text("Butter")
-//                ),
-//            }
-//        )
-//);
-
+var serverCancellationToken = new CancellationToken();
 server.Run(serverCancellationToken).GetAwaiter().GetResult();
 
 IServiceProvider configureServices(ApplicationConfiguration configuration)
@@ -128,25 +53,62 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     services.AddSingleton<DatabaseConfiguration>(configuration);
     services.AddSingleton<ServerConfiguration>(configuration);
 
+    // Logger
+    services.AddSingleton<Logger>(provider => new LogLevelLogger(
+        new DatetimeLogger(
+            new SplitLogger(
+                new LogLevelFilter(
+                    new ColorLogger(
+                        new ConsoleLogger()
+                    ),
+                    LogLevel.Info
+                ),
+                new LogLevelFilter(
+                    new FileLogger(
+                        new Core.ValueObjects.File(
+                            configuration.ApplicationDirectory.Join(new Core.ValueObjects.Directory("logs")),
+                            FileName.From("rezeptverwaltung.log")
+                        )
+                    ),
+                    LogLevel.Trace
+                )
+            ),
+            provider.GetRequiredService<DateTimeProvider>()
+        )
+    ));
+
     // Database
-    services.AddSingleton(provider => Database.Instance.Initialize(provider.GetRequiredService<DatabaseConfiguration>()));
+    // This is very ugly but we wanted to try out what it means to use a
+    // hardcoded singleton anyways 😉
+    services.AddSingleton(provider => Database.Database.Instance.Initialize(
+        provider.GetRequiredService<DatabaseConfiguration>(),
+        provider.GetRequiredService<Logger>()
+    ));
 
     // Server
     services.AddSingleton<Server.Server>();
 
     // File System
-    services.AddSingleton<FileSystem>();
+    services.AddSingleton(new FileSystem.FileSystem(configuration.ApplicationDirectory.Join(new Core.ValueObjects.Directory("images"))));
 
     // Repositories
     services.AddTransient<ChefRepository, ChefDatabase>();
-    services.AddTransient<RecipeRepository, RecipeDatabase>();
     services.AddTransient<CookbookRepository, CookbookDatabase>();
+    services.AddTransient<RecipeRepository, RecipeDatabase>();
     services.AddTransient<ShoppingListRepository, ShoppingListDatabase>();
 
     // Password Services
-    services.AddTransient<AllowedPasswordChecker>();
-    services.AddTransient<PasswordHasher, Argon2PasswordHasher>();
+    var passwordConditionCheckers = new PasswordConditionChecker[]
+    {
+        new PasswordLengthChecker(8),
+        new PasswordUppercaseChecker(),
+        new PasswordLowercaseChecker(),
+        new PasswordDigitChecker(),
+        new PasswordSpecialCharacterChecker()
+    };
+    services.AddSingleton(new AllowedPasswordChecker(passwordConditionCheckers));
     services.AddTransient<DuplicatePasswordChecker>();
+    services.AddTransient<PasswordHasher, Argon2PasswordHasher>();
 
     // Services
     services.AddTransient<ChefLoginService>();
@@ -155,40 +117,52 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     services.AddTransient<MeasurementUnitCombiner>();
     services.AddTransient<MeasurementUnitSerializationManager>();
     services.AddTransient<ShoppingListEntriesCreator>();
+    services.AddTransient<ShowChefs>();
+    services.AddTransient<ShowCookbooks>();
     services.AddTransient<ShowRecipes>();
+    services.AddTransient<ShowShoppingLists>();
 
     // Database Services
-    services.AddTransient<ParameterNameGenerator>();
     services.AddTransient<DateTimeProvider, DefaultDateTimeProvider>();
+    services.AddTransient<ParameterNameGenerator>();
 
     // Server Services
-    services.AddTransient<ContentParserFactory>();
     services.AddSingleton<SessionBackend<Chef>, InMemorySessionBackend<Chef>>();
-    services.AddTransient<SessionService, CookieSessionService>();
+    services.AddTransient<ContentParserFactory>();
+    services.AddTransient<HTMLFileWriter>();
+    services.AddTransient<ImageTypeMimeTypeConverter>();
     services.AddTransient<ImageUrlService>();
-    services.AddTransient<MimeTypeDeterminer>();
-    services.AddTransient<MimeTypeToImageType>();
     services.AddTransient<LoginPageRenderer>();
     services.AddTransient<LoginPostDataParser>();
+    services.AddTransient<MimeTypeDeterminer>();
+    services.AddTransient<NotFoundPageRenderer>();
     services.AddTransient<RegisterPageRenderer>();
     services.AddTransient<RegisterPostDataParser>();
-
-    // print current path to console
-    Console.WriteLine(Path.GetDirectoryName(Assembly.GetEntryAssembly()!.Location));
+    services.AddTransient<SessionService, CookieSessionService>();
+    services.AddTransient<SettingsPageRenderer>();
+    services.AddTransient<SettingsPostDataParser>();
+    services.AddTransient<URLEncoder>();
 
     // Resource Loader
-    // var resourceLoader = new EmbeddedResourceLoader();
-    Console.WriteLine(Path.GetFullPath("..\\..\\..\\..\\Server\\Components\\template\\"));
-
-    var resourceLoader = new FileSystemResourceLoader(Path.GetFullPath("..\\..\\..\\..\\Server\\Components\\template\\"));
-    var assetResourceLoader = new PrefixResourceLoader("assets", resourceLoader);
-    services.AddSingleton<ResourceLoader>(resourceLoader);
-    services.AddKeyedSingleton<ResourceLoader>("ASSETS", assetResourceLoader);
+#if DEBUG
+    services.AddSingleton<ResourceLoader>(provider => new FileSystemResourceLoader(
+        new Core.ValueObjects.Directory(Path.GetFullPath("..\\..\\..\\..\\Server\\Components\\template\\")),
+        provider.GetRequiredService<Logger>()
+    ));
+#else
+    services.AddSingleton<ResourceLoader, EmbeddedResourceLoader>();
+#endif
+    services.AddKeyedSingleton<ResourceLoader>("ASSETS", (provider, _) => new PrefixResourceLoader(
+        "assets",
+        provider.GetRequiredService<ResourceLoader>()
+    ));
     services.AddTransient<TemplateLoader>();
 
     // Components
+    services.AddTransient<CookbookList>();
     services.AddTransient<Header>();
     services.AddTransient<RecipeList>();
+    services.AddTransient<ShoppingListList>();
 
     // Pages
     services.AddTransient<ChefDetailPage>();
@@ -203,23 +177,31 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     services.AddTransient<RegisterPage>();
     services.AddTransient<SettingsPage>();
     services.AddTransient<ShoppingListDetailPage>();
+    services.AddTransient<TagPage>();
 
     // Request Handlers
+    services.AddTransient<ChefDetailRequestHandler>();
+    services.AddTransient<CookbookDetailRequestHandler>();
+    services.AddTransient<EditCookbookRequestHandler>();
+    services.AddTransient<EditRecipeRequestHandler>();
+    services.AddTransient<EditShoppingListRequestHandler>();
     services.AddTransient<HomeRequestHandler>();
     services.AddTransient<LoginRequestHandler>();
     services.AddTransient<LogoutRequestHandler>();
+    services.AddTransient<NewCookbookRequestHandler>();
+    services.AddTransient<NewRecipeRequestHandler>();
+    services.AddTransient<NewShoppingListRequestHandler>();
     services.AddTransient<NotFoundRequestHandler>();
-    services.AddTransient<ChefDetailRequestHandler>();
     services.AddTransient<RecipeDetailRequestHandler>();
     services.AddTransient<RegisterRequestHandler>();
+    services.AddTransient<SettingsRequestHandler>();
+    services.AddTransient<ShoppingListDetailRequestHandler>();
+    services.AddTransient<TagRequestHandler>();
     services.AddTransient<StaticRequestHandler>(provider => new StaticRequestHandler(
         "assets/",
         provider.GetRequiredKeyedService<ResourceLoader>("ASSETS"),
         provider.GetRequiredService<MimeTypeDeterminer>()
     ));
-
-
-
 
     return services.BuildServiceProvider();
 }

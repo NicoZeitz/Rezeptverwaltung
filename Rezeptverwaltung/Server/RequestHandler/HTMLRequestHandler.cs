@@ -1,18 +1,24 @@
-﻿using System.Net;
-using System.Text;
+﻿using Server.Service;
+using System.Net;
 
 namespace Server.RequestHandler;
 
-public interface HTMLRequestHandler : RequestHandler
+public abstract class HTMLRequestHandler : RequestHandler
 {
-    async Task RequestHandler.Handle(HttpListenerRequest request, HttpListenerResponse response)
-    {
-        var htmlFile = await HandleHtmlFileRequest(request);
+    public HTMLFileWriter htmlFileWriter;
 
-        response.StatusCode = (int)HttpStatusCode.OK;
-        response.ContentType = MimeType.HTML;
-        response.OutputStream.Write(Encoding.UTF8.GetBytes(htmlFile));
+    public HTMLRequestHandler(HTMLFileWriter htmlFileWriter)
+    {
+        this.htmlFileWriter = htmlFileWriter;
     }
 
-    Task<string> HandleHtmlFileRequest(HttpListenerRequest request);
+    public abstract bool CanHandle(HttpListenerRequest request);
+
+    public async Task Handle(HttpListenerRequest request, HttpListenerResponse response)
+    {
+        var htmlFile = await HandleHtmlFileRequest(request);
+        htmlFileWriter.WriteHtmlFile(response, htmlFile);
+    }
+
+    public abstract Task<string> HandleHtmlFileRequest(HttpListenerRequest request);
 }

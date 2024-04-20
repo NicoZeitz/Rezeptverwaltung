@@ -7,6 +7,8 @@ public interface CookbookRepository
 {
     void Add(Cookbook cookbook);
 
+    void Update(Cookbook cookbook);
+
     void Remove(Cookbook cookbook);
 
     Cookbook? FindByIdentifier(Identifier identifier);

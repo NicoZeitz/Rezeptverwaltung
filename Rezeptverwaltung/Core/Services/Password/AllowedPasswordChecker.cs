@@ -6,17 +6,10 @@ public class AllowedPasswordChecker
 {
     private readonly IEnumerable<PasswordConditionChecker> passwordConditionCheckers;
 
-    public AllowedPasswordChecker() : base()
+    public AllowedPasswordChecker(IEnumerable<PasswordConditionChecker> passwordConditionCheckers)
+        : base()
     {
-        // TODO: move to main
-        passwordConditionCheckers = new PasswordConditionChecker[]
-        {
-            new PasswordLengthChecker(8),
-            new PasswordUppercaseChecker(),
-            new PasswordLowercaseChecker(),
-            new PasswordDigitChecker(),
-            new PasswordSpecialCharacterChecker()
-        };
+        this.passwordConditionCheckers = passwordConditionCheckers;
     }
 
     public IEnumerable<ErrorMessage> CheckPassword(ValueObjects.Password password)

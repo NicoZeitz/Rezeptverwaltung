@@ -2,4 +2,7 @@
 
 namespace Core.ValueObjects;
 
-public record class WeightedIngredient(MeasurementUnit PreparationQuantity, Text Ingredient);
+public record class WeightedIngredient(
+    MeasurementUnit PreparationQuantity,
+    Ingredient Ingredient
+);

@@ -1,4 +1,5 @@
-﻿using Core.ValueObjects;
+﻿using Core.Interfaces;
+using Core.ValueObjects;
 using System.Runtime.Caching;
 
 namespace Server.Session;

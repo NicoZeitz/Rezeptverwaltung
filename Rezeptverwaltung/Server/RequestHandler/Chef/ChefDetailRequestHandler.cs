@@ -1,169 +1,72 @@
-﻿using Core.Entities;
+﻿using Core.Services;
 using Core.ValueObjects;
-using Core.ValueObjects.MeasurementUnits;
 using Server.Components;
+using Server.Service;
 using Server.Session;
 using System.Net;
 using System.Text.RegularExpressions;
 
-namespace Server.RequestHandler.Chef;
+namespace Server.RequestHandler;
 
 public partial class ChefDetailRequestHandler : HTMLRequestHandler
 {
     private readonly ChefDetailPage chefDetailPage;
+    private readonly CookbookList cookbookList;
     private readonly Header header;
+    private readonly NotFoundPageRenderer notFoundPageRenderer;
     private readonly RecipeList recipeList;
     private readonly SessionService sessionService;
+    private readonly ShoppingListList shoppingListList;
+    private readonly ShowChefs showChefs;
+    private readonly ShowCookbooks showCookbooks;
+    private readonly ShowRecipes showRecipes;
+    private readonly ShowShoppingLists showShoppingLists;
 
     [GeneratedRegex("/chef/(?<chef_username>[A-Z0-9_ ]+)", RegexOptions.NonBacktracking | RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 1000)]
     private static partial Regex chefDetailUrlPathRegex();
 
     public ChefDetailRequestHandler(
         ChefDetailPage chefDetailPage,
+        CookbookList cookbookList,
         Header header,
+        HTMLFileWriter htmlFileWriter,
+        NotFoundPageRenderer notFoundPageRenderer,
         RecipeList recipeList,
-        SessionService sessionService)
+        SessionService sessionService,
+        ShoppingListList shoppingListList,
+        ShowChefs showChefs,
+        ShowCookbooks showCookbooks,
+        ShowRecipes showRecipes,
+        ShowShoppingLists showShoppingLists)
+        : base(htmlFileWriter)
     {
         this.chefDetailPage = chefDetailPage;
+        this.cookbookList = cookbookList;
         this.header = header;
+        this.notFoundPageRenderer = notFoundPageRenderer;
         this.recipeList = recipeList;
         this.sessionService = sessionService;
+        this.shoppingListList = shoppingListList;
+        this.showChefs = showChefs;
+        this.showCookbooks = showCookbooks;
+        this.showRecipes = showRecipes;
+        this.showShoppingLists = showShoppingLists;
     }
 
-    public bool CanHandle(HttpListenerRequest request) => chefDetailUrlPathRegex().IsMatch(request.Url?.AbsolutePath ?? "");
+    public override bool CanHandle(HttpListenerRequest request) =>
+        request.HttpMethod == HttpMethod.Get.Method
+        && chefDetailUrlPathRegex().IsMatch(request.Url?.AbsolutePath ?? "");
 
-    public Task<string> HandleHtmlFileRequest(HttpListenerRequest request)
+    public override Task<string> HandleHtmlFileRequest(HttpListenerRequest request)
     {
-        var username = GetChefUsernameFromRequest(request);
+        var pageData = ExtractDataFromRequest(request);
+        if (pageData.Chef is null)
+        {
+            return notFoundPageRenderer.RenderPage(pageData.CurrentChef);
+        }
 
-        // TODO: real implementation
-        var chef = new Core.Entities.Chef(
-            username,
-            new Core.ValueObjects.Name("Fabian", "Wolf"),
-            new Core.ValueObjects.HashedPassword("1234")
-        );
-        var recipes = new List<Core.Entities.Recipe>() {
-            new Core.Entities.Recipe(
-            Identifier.NewId(),
-            new Username("FabianWolf"),
-            new Text("Spaghetti Carbonara"),
-            new Text("Spaghetti Carbonara ist ein Klassiker der italienischen Küche."),
-            Visibility.PUBLIC,
-            new Portion(new Rational<int>(4, 1)),
-            new Duration(TimeSpan.FromMinutes(30)),
-            new List<Tag>
-            {
-                new Tag("Spaghetti"),
-                new Tag("Carbonara"),
-                new Tag("Eier"),
-                new Tag("Speck"),
-                new Tag("Parmesan"),
-                new Tag("Salz"),
-                new Tag("Pfeffer")
-            },
-            new List<PreparationStep>
-            {
-                new PreparationStep(new Text("Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolores dolorem cupiditate hic saepe modi. Asperiores aperiam eveniet commodi ipsa consequuntur harum cum quaerat, inventore nemo quo qui voluptas sed repellendus.")),
-                new PreparationStep(new Text("Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolores dolorem cupiditate hic saepe modi. Asperiores aperiam eveniet commodi ipsa consequuntur harum cum quaerat, inventore nemo quo qui voluptas sed repellendus.")),
-                new PreparationStep(new Text("Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolores dolorem cupiditate hic saepe modi. Asperiores aperiam eveniet commodi ipsa consequuntur harum cum quaerat, inventore nemo quo qui voluptas sed repellendus.")),
-                new PreparationStep(new Text("Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolores dolorem cupiditate hic saepe modi. Asperiores aperiam eveniet commodi ipsa consequuntur harum cum quaerat, inventore nemo quo qui voluptas sed repellendus.")),
-                new PreparationStep(new Text("Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolores dolorem cupiditate hic saepe modi. Asperiores aperiam eveniet commodi ipsa consequuntur harum cum quaerat, inventore nemo quo qui voluptas sed repellendus.")),
-                new PreparationStep(new Text("Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolores dolorem cupiditate hic saepe modi. Asperiores aperiam eveniet commodi ipsa consequuntur harum cum quaerat, inventore nemo quo qui voluptas sed repellendus.")),
-                new PreparationStep(new Text("Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolores dolorem cupiditate hic saepe modi. Asperiores aperiam eveniet commodi ipsa consequuntur harum cum quaerat, inventore nemo quo qui voluptas sed repellendus.")),
-            },
-            new List<WeightedIngredient>
-            {
-                new WeightedIngredient(
-                    Weight.FromGram(100),
-                    new Text("Parmesan")
-                ),
-                new WeightedIngredient(
-                    Weight.FromGram(150),
-                    new Text("Speck")
-                ),
-                new WeightedIngredient(
-                    Weight.FromGram(400),
-                    new Text("Spaghetti")
-                ),
-                new WeightedIngredient(
-                    new Piece(10),
-                    new Text("Eier")
-                ),
-                new WeightedIngredient(
-                    new Pinch(1),
-                    new Text("Prise Salz")
-                ),
-                new WeightedIngredient(
-                    Weight.FromGram(1),
-                    new Text("Prise Pfeffer")
-                )
-            }
-        ),
-            new Core.Entities.Recipe(
-            Identifier.NewId(),
-            new Username("FabianWolf"),
-            new Text("Spaghetti Carbonara"),
-            new Text("Spaghetti Carbonara ist ein Klassiker der italienischen Küche."),
-            Visibility.PUBLIC,
-            new Portion(new Rational<int>(4, 1)),
-            new Duration(TimeSpan.FromMinutes(30)),
-            new List<Tag>
-            {
-                new Tag("Spaghetti"),
-                new Tag("Carbonara"),
-                new Tag("Eier"),
-                new Tag("Speck"),
-                new Tag("Parmesan"),
-                new Tag("Salz"),
-                new Tag("Pfeffer")
-            },
-            new List<PreparationStep>
-            {
-                new PreparationStep(new Text("Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolores dolorem cupiditate hic saepe modi. Asperiores aperiam eveniet commodi ipsa consequuntur harum cum quaerat, inventore nemo quo qui voluptas sed repellendus.")),
-                new PreparationStep(new Text("Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolores dolorem cupiditate hic saepe modi. Asperiores aperiam eveniet commodi ipsa consequuntur harum cum quaerat, inventore nemo quo qui voluptas sed repellendus.")),
-                new PreparationStep(new Text("Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolores dolorem cupiditate hic saepe modi. Asperiores aperiam eveniet commodi ipsa consequuntur harum cum quaerat, inventore nemo quo qui voluptas sed repellendus.")),
-                new PreparationStep(new Text("Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolores dolorem cupiditate hic saepe modi. Asperiores aperiam eveniet commodi ipsa consequuntur harum cum quaerat, inventore nemo quo qui voluptas sed repellendus.")),
-                new PreparationStep(new Text("Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolores dolorem cupiditate hic saepe modi. Asperiores aperiam eveniet commodi ipsa consequuntur harum cum quaerat, inventore nemo quo qui voluptas sed repellendus.")),
-                new PreparationStep(new Text("Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolores dolorem cupiditate hic saepe modi. Asperiores aperiam eveniet commodi ipsa consequuntur harum cum quaerat, inventore nemo quo qui voluptas sed repellendus.")),
-                new PreparationStep(new Text("Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolores dolorem cupiditate hic saepe modi. Asperiores aperiam eveniet commodi ipsa consequuntur harum cum quaerat, inventore nemo quo qui voluptas sed repellendus.")),
-            },
-            new List<WeightedIngredient>
-            {
-                new WeightedIngredient(
-                    Weight.FromGram(100),
-                    new Text("Parmesan")
-                ),
-                new WeightedIngredient(
-                    Weight.FromGram(150),
-                    new Text("Speck")
-                ),
-                new WeightedIngredient(
-                    Weight.FromGram(400),
-                    new Text("Spaghetti")
-                ),
-                new WeightedIngredient(
-                    new Piece(10),
-                    new Text("Eier")
-                ),
-                new WeightedIngredient(
-                    new Pinch(1),
-                    new Text("Prise Salz")
-                ),
-                new WeightedIngredient(
-                    Weight.FromGram(1),
-                    new Text("Prise Pfeffer")
-                )
-            }
-            )
-        };
-
-        var currentChef = sessionService.GetCurrentChef(request);
-
-        header.CurrentChef = currentChef;
-        recipeList.Recipes = recipes;
-        chefDetailPage.Chef = chef;
-        chefDetailPage.SlottedChildren["Recipes"] = recipeList;
-        chefDetailPage.SlottedChildren["Header"] = header;
+        SetDataOnComponents(pageData);
+        SetSlottedComponents();
         return chefDetailPage.RenderAsync();
     }
 
@@ -171,4 +74,46 @@ public partial class ChefDetailRequestHandler : HTMLRequestHandler
     {
         return new Username(chefDetailUrlPathRegex().Match(request.Url!.AbsolutePath).Groups["chef_username"].Value);
     }
+
+    private ChefDetailPageData ExtractDataFromRequest(HttpListenerRequest request)
+    {
+        var currentChef = sessionService.GetCurrentChef(request);
+        var username = GetChefUsernameFromRequest(request);
+        var chef = showChefs.ShowSingleChef(username);
+        var recipes = chef is null ? Enumerable.Empty<Core.Entities.Recipe>() : showRecipes.ShowRecipesForChef(chef, currentChef);
+        var cookbooks = chef is null ? Enumerable.Empty<Core.Entities.Cookbook>() : showCookbooks.ShowCookbooksForChef(chef, currentChef);
+        var shoppingLists = chef is null ? Enumerable.Empty<Core.Entities.ShoppingList>() : showShoppingLists.ShowShoppingListsForChef(chef, currentChef);
+
+        return new ChefDetailPageData(
+            currentChef,
+            chef,
+            recipes,
+            cookbooks,
+            shoppingLists
+        );
+    }
+
+    private void SetDataOnComponents(ChefDetailPageData pageData)
+    {
+        header.CurrentChef = pageData.CurrentChef;
+        recipeList.Recipes = pageData.Recipes;
+        cookbookList.Cookbooks = pageData.Cookbooks;
+        shoppingListList.ShoppingLists = pageData.ShoppingLists;
+        chefDetailPage.Chef = pageData.Chef;
+    }
+
+    private void SetSlottedComponents()
+    {
+        chefDetailPage.SlottedChildren["Recipes"] = recipeList;
+        chefDetailPage.SlottedChildren["Cookbooks"] = cookbookList;
+        chefDetailPage.SlottedChildren["ShoppingLists"] = shoppingListList;
+        chefDetailPage.SlottedChildren["Header"] = header;
+    }
+
+    private record struct ChefDetailPageData(
+        Core.Entities.Chef? CurrentChef,
+        Core.Entities.Chef? Chef,
+        IEnumerable<Core.Entities.Recipe> Recipes,
+        IEnumerable<Core.Entities.Cookbook> Cookbooks,
+        IEnumerable<Core.Entities.ShoppingList> ShoppingLists);
 }
