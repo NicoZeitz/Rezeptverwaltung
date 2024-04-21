@@ -7,11 +7,11 @@ namespace Core.Entities
     {
         public Identifier Identifier { get; }
         public Username Chef { get; }
-        public Text Title { get; }
-        public Text Description { get; }
-        public Visibility Visibility { get; }
-        public Portion Portion { get; }
-        public Duration PreparationTime { get; }
+        public Text Title { get; set; }
+        public Text Description { get; set; }
+        public Visibility Visibility { get; set; }
+        public Portion Portion { get; set; }
+        public Duration PreparationTime { get; set; }
         public ISet<Tag> Tags { get; }
         public IList<PreparationStep> PreparationSteps { get; }
         public ISet<WeightedIngredient> WeightedIngredients { get; }
