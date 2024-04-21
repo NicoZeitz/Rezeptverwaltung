@@ -9,102 +9,191 @@ namespace Core.Test;
 
 public class ShowRecipeTest
 {
-    [Fact]
-    public void GuestShouldOnlySeePublicRecipes()
+    public class ShowAllRecipes
     {
-        Chef? loggedInChef = null;
+        [Fact]
+        public void GuestSeeOnlyPublicRecipes()
+        {
+            Chef? loggedInChef = null;
 
-        var publicRecipe = GetPublicRecipe();
-        var privateRecipe = GetPrivateRecipe();
-        var allRecipes = new List<Recipe>() {
-            publicRecipe,
-            privateRecipe
-        };
+            var publicRecipe = GetPublicRecipe();
+            var privateRecipe = GetPrivateRecipe();
+            var allRecipes = new List<Recipe>() {
+                publicRecipe,
+                privateRecipe
+            };
 
-        var recipeRepositoryMock = new Mock<RecipeRepository>();
-        recipeRepositoryMock.Setup(library => library.FindAll())
-            .Returns(allRecipes);
+            var recipeRepositoryMock = new Mock<RecipeRepository>();
+            recipeRepositoryMock
+                .Setup(library => library.FindAll())
+                .Returns(allRecipes);
 
-        var showRecipes = new ShowRecipes(recipeRepositoryMock.Object);
+            var showRecipes = new ShowRecipes(recipeRepositoryMock.Object);
 
-        var recipeList = showRecipes.ShowAllRecipes(loggedInChef).ToList();
+            var recipeList = showRecipes.ShowAllRecipes(loggedInChef).ToList();
 
-        recipeList.Should().Contain(publicRecipe);
-        recipeList.Should().NotContain(privateRecipe);
-        recipeRepositoryMock.Verify(library => library.FindAll(), Times.Once);
+            recipeList.Should().Contain(publicRecipe);
+            recipeList.Should().NotContain(privateRecipe);
+            recipeRepositoryMock.Verify(library => library.FindAll(), Times.Once);
+        }
+
+        [Fact]
+        public void ChefSeesAllOwnRecipes()
+        {
+            var loggedInChef = GetSampleChef(new Username("Test"));
+
+            var ownPublicRecipe = GetPublicRecipeFrom(loggedInChef);
+            var ownPrivateRecipe = GetPrivateRecipeFrom(loggedInChef);
+
+            var allRecipes = new List<Recipe>() {
+                ownPublicRecipe,
+                ownPrivateRecipe,
+            };
+
+            var recipeRepositoryMock = new Mock<RecipeRepository>();
+            recipeRepositoryMock
+                .Setup(library => library.FindAll())
+                .Returns(allRecipes);
+
+            var showRecipes = new ShowRecipes(recipeRepositoryMock.Object);
+
+            var recipeList = showRecipes.ShowAllRecipes(loggedInChef).ToList();
+
+            recipeList.Should().Contain(ownPublicRecipe);
+            recipeList.Should().Contain(ownPrivateRecipe);
+            recipeRepositoryMock.Verify(library => library.FindAll(), Times.Once);
+        }
+
+        [Fact]
+        public void ChefSeesOnlyOtherPublicRecipes()
+        {
+            var loggedInChef = GetSampleChef(new Username("Test"));
+            var otherChef = GetSampleChef(new Username("Other"));
+
+            var otherPublicRecipe = GetPublicRecipeFrom(otherChef);
+            var otherPrivateRecipe = GetPrivateRecipeFrom(otherChef);
+
+            var allRecipes = new List<Recipe>() {
+                otherPublicRecipe,
+                otherPrivateRecipe,
+            };
+
+            var recipeRepositoryMock = new Mock<RecipeRepository>();
+            recipeRepositoryMock
+                .Setup(library => library.FindAll())
+                .Returns(allRecipes);
+
+            var showRecipes = new ShowRecipes(recipeRepositoryMock.Object);
+
+            var recipeList = showRecipes.ShowAllRecipes(loggedInChef).ToList();
+
+            recipeList.Should().Contain(otherPublicRecipe);
+            recipeList.Should().NotContain(otherPrivateRecipe);
+            recipeRepositoryMock.Verify(library => library.FindAll(), Times.Once);
+        }
     }
 
-    [Fact]
-    public void ChefShouldSeeAllOwnRecipes()
+    public class ShowSingleRecipe
     {
-        var loggedInChef = GetSampleChef(new Username("Test"));
+        [Fact]
+        public void GuestSeesPublicRecipe()
+        {
+            Chef? loggedInChef = null;
 
-        var ownPublicRecipe = GetPublicRecipeFrom(loggedInChef);
-        var ownPrivateRecipe = GetPrivateRecipeFrom(loggedInChef);
+            var publicRecipe = GetPublicRecipe();
 
-        var allRecipes = new List<Recipe>() {
-            ownPublicRecipe,
-            ownPrivateRecipe,
-        };
+            var recipeRepositoryMock = new Mock<RecipeRepository>();
+            recipeRepositoryMock
+                .Setup(library => library.FindByIdentifier(publicRecipe.Identifier))
+                .Returns(publicRecipe);
 
-        var recipeRepositoryMock = new Mock<RecipeRepository>();
-        recipeRepositoryMock.Setup(library => library.FindAll())
-            .Returns(allRecipes);
+            var showRecipes = new ShowRecipes(recipeRepositoryMock.Object);
 
-        var showRecipes = new ShowRecipes(recipeRepositoryMock.Object);
+            var recipe = showRecipes.ShowSingleRecipe(publicRecipe.Identifier, loggedInChef);
 
-        var recipeList = showRecipes.ShowAllRecipes(loggedInChef).ToList();
+            recipe.Should().Be(publicRecipe);
+            recipeRepositoryMock.Verify(library => library.FindByIdentifier(publicRecipe.Identifier), Times.Once);
+        }
 
-        recipeList.Should().Contain(ownPublicRecipe);
-        recipeList.Should().Contain(ownPrivateRecipe);
-        recipeRepositoryMock.Verify(library => library.FindAll(), Times.Once);
+        [Fact]
+        public void GuestDoesNotSeePrivateRecipe()
+        {
+            Chef? loggedInChef = null;
+
+            var privateRecipe = GetPrivateRecipe();
+
+            var recipeRepositoryMock = new Mock<RecipeRepository>();
+            recipeRepositoryMock
+                .Setup(library => library.FindByIdentifier(privateRecipe.Identifier))
+                .Returns(privateRecipe);
+
+            var showRecipes = new ShowRecipes(recipeRepositoryMock.Object);
+
+            var recipe = showRecipes.ShowSingleRecipe(privateRecipe.Identifier, loggedInChef);
+
+            recipe.Should().BeNull();
+            recipeRepositoryMock.Verify(library => library.FindByIdentifier(privateRecipe.Identifier), Times.Once);
+        }
+
+        [Fact]
+        public void ChefSeesOwnPublicRecipe()
+        {
+            var loggedInChef = GetSampleChef(new Username("Test"));
+
+            var ownPublicRecipe = GetPublicRecipeFrom(loggedInChef);
+
+            var recipeRepositoryMock = new Mock<RecipeRepository>();
+            recipeRepositoryMock
+                .Setup(library => library.FindByIdentifier(ownPublicRecipe.Identifier))
+                .Returns(ownPublicRecipe);
+
+            var showRecipes = new ShowRecipes(recipeRepositoryMock.Object);
+
+            var recipe = showRecipes.ShowSingleRecipe(ownPublicRecipe.Identifier, loggedInChef);
+
+            recipe.Should().Be(ownPublicRecipe);
+            recipeRepositoryMock.Verify(library => library.FindByIdentifier(ownPublicRecipe.Identifier), Times.Once);
+        }
+
+        [Fact]
+        public void ChefSeesOwnPrivateRecipe()
+        {
+            var loggedInChef = GetSampleChef(new Username("Test"));
+
+            var ownPrivateRecipe = GetPrivateRecipeFrom(loggedInChef);
+
+            var recipeRepositoryMock = new Mock<RecipeRepository>();
+            recipeRepositoryMock
+                .Setup(library => library.FindByIdentifier(ownPrivateRecipe.Identifier))
+                .Returns(ownPrivateRecipe);
+
+            var showRecipes = new ShowRecipes(recipeRepositoryMock.Object);
+
+            var recipe = showRecipes.ShowSingleRecipe(ownPrivateRecipe.Identifier, loggedInChef);
+
+            recipe.Should().Be(ownPrivateRecipe);
+            recipeRepositoryMock.Verify(library => library.FindByIdentifier(ownPrivateRecipe.Identifier), Times.Once);
+        }
     }
 
-    [Fact]
-    public void ChefShouldSeeOnlyOtherPublicRecipes()
-    {
-        var loggedInChef = GetSampleChef(new Username("Test"));
-        var otherChef = GetSampleChef(new Username("Other"));
+    private static Recipe GetPublicRecipe() => GetPublicRecipeFrom(null);
+    private static Recipe GetPrivateRecipe() => GetPrivateRecipeFrom(null);
 
-        var otherPublicRecipe = GetPublicRecipeFrom(otherChef);
-        var otherPrivateRecipe = GetPrivateRecipeFrom(otherChef);
-
-        var allRecipes = new List<Recipe>() {
-            otherPublicRecipe,
-            otherPrivateRecipe,
-        };
-
-        var recipeRepositoryMock = new Mock<RecipeRepository>();
-        recipeRepositoryMock.Setup(library => library.FindAll())
-            .Returns(allRecipes);
-
-        var showRecipes = new ShowRecipes(recipeRepositoryMock.Object);
-
-        var recipeList = showRecipes.ShowAllRecipes(loggedInChef).ToList();
-
-        recipeList.Should().Contain(otherPublicRecipe);
-        recipeList.Should().NotContain(otherPrivateRecipe);
-        recipeRepositoryMock.Verify(library => library.FindAll(), Times.Once);
-    }
-
-    private Recipe GetPublicRecipe() => GetPublicRecipeFrom(null);
-    private Recipe GetPrivateRecipe() => GetPrivateRecipeFrom(null);
-
-    private Recipe GetPublicRecipeFrom(Chef? chef = null)
+    private static Recipe GetPublicRecipeFrom(Chef? chef = null)
     {
         var recipe = GetSampleRecipe(Identifier.Parse("35d2ec2f-1a56-4783-ad4b-c771fe128760"), chef);
         recipe.Visibility = Visibility.PUBLIC;
         return recipe;
     }
 
-    private Recipe GetPrivateRecipeFrom(Chef? chef = null)
+    private static Recipe GetPrivateRecipeFrom(Chef? chef = null)
     {
         var recipe = GetSampleRecipe(Identifier.Parse("1a52f22f-ceba-456f-84b5-19f9e6c0d8b9"), chef);
         recipe.Visibility = Visibility.PRIVATE;
         return recipe;
     }
 
-    private Recipe GetSampleRecipe(Identifier id, Chef? chef = null)
+    private static Recipe GetSampleRecipe(Identifier id, Chef? chef = null)
     {
         var username = chef?.Username ?? new Username("");
         return new Recipe(
@@ -121,7 +210,7 @@ public class ShowRecipeTest
         );
     }
 
-    private Chef GetSampleChef(Username username)
+    private static Chef GetSampleChef(Username username)
     {
         return new Chef(username, new Name("", ""), new HashedPassword(""));
     }
