@@ -4,13 +4,8 @@ using Server.Resources;
 
 namespace Server.Components;
 
-public class NewCookbookPage : ContainerComponent
+public class NewCookbookPage(TemplateLoader templateLoader) : ContainerComponent(templateLoader)
 {
-    public NewCookbookPage(TemplateLoader templateLoader)
-        : base(templateLoader)
-    {
-    }
-
     public override Task<string> RenderAsync()
     {
         throw new NotImplementedException();

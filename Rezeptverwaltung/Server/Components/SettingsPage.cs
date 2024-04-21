@@ -8,6 +8,11 @@ namespace Server.Components;
 
 public class SettingsPage : ContainerComponent
 {
+    public const string HEADER_SLOT = "Header";
+    public const string MESSAGE_SLOT = "Message";
+    public const string CHANGE_PASSWORD_ERRORS_SLOT = "ChangePasswordErrors";
+    public const string DELETE_PROFILE_ERRORS_SLOT = "DeleteProfileErrors";
+
     private readonly ImageUrlService imageUrlService;
 
     public Chef? CurrentChef { get; set; }
@@ -30,12 +35,12 @@ public class SettingsPage : ContainerComponent
             .LoadTemplate("SettingsPage.html")!
             .RenderAsync(new
             {
+                CurrentChef,
                 CurrentChefImage = chefImage,
-                Message = await GetRenderedSlottedChild("Message"),
-                ChangePasswordErrors = await GetRenderedSlottedChild("ChangePasswordErrors"),
-                DeleteProfileErrors = await GetRenderedSlottedChild("DeleteProfileErrors"),
-                Header = await GetRenderedSlottedChild("Header"),
-                CurrentChef
+                Header = await GetRenderedSlottedChild(HEADER_SLOT),
+                Message = await GetRenderedSlottedChild(MESSAGE_SLOT),
+                ChangePasswordErrors = await GetRenderedSlottedChild(CHANGE_PASSWORD_ERRORS_SLOT),
+                DeleteProfileErrors = await GetRenderedSlottedChild(DELETE_PROFILE_ERRORS_SLOT)
             });
     }
 }

@@ -39,21 +39,21 @@
         <div class="isolate flex flex-col gap-10 px-10">
             <section>
                 <h2 class="mb-3 text-2xl font-bold">Rezepte</h2>
-                {{ if string.empty(chef_recipes) }}
+                {{ if string.empty(recipes) }}
                 <p>Der Koch hat noch keine Rezepte veröffentlicht.</p>
-                {{ else }} {{ chef_recipes }} {{ end }}
+                {{ else }} {{ recipes }} {{ end }}
             </section>
             <section>
                 <h2 class="mb-3 text-2xl font-bold">Kochbücher</h2>
-                {{ if string.empty(chef_cookbooks) }}
+                {{ if string.empty(cookbooks) }}
                 <p>Der Koch hat noch keine Kochbücher veröffentlicht.</p>
-                {{ else }} {{ chef_cookbooks }} {{ end }}
+                {{ else }} {{ cookbooks }} {{ end }}
             </section>
             <section>
                 <h2 class="mb-3 text-2xl font-bold">Einkaufslisten</h2>
-                {{ if string.empty(chef_shopping_lists) }}
+                {{ if string.empty(shopping_lists) }}
                 <p>Der Koch hat noch keine Einkaufslisten veröffentlicht.</p>
-                {{ else }} {{ chef_shopping_lists }} {{ end }}
+                {{ else }} {{ shopping_lists }} {{ end }}
             </section>
         </div>
     </body>

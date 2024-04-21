@@ -4,12 +4,9 @@ using Server.Resources;
 
 namespace Server.Components;
 
-public class RegisterPage : ContainerComponent
+public class RegisterPage(TemplateLoader templateLoader) : ContainerComponent(templateLoader)
 {
-    public RegisterPage(TemplateLoader templateLoader)
-        : base(templateLoader)
-    {
-    }
+    public const string HEADER_SLOT = "Header";
 
     public override async Task<string> RenderAsync()
     {
@@ -17,8 +14,8 @@ public class RegisterPage : ContainerComponent
             .LoadTemplate("RegisterPage.html")!
             .RenderAsync(new
             {
-                ErrorMessages = await GetRenderedChildren(),
-                Header = await GetRenderedSlottedChild("Header")
+                Header = await GetRenderedSlottedChild(HEADER_SLOT),
+                Children = await GetRenderedChildren()
             });
     }
 }

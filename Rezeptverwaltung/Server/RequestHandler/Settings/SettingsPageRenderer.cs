@@ -79,10 +79,10 @@ public class SettingsPageRenderer
 
         header.CurrentChef = currentChef;
         settingsPage.CurrentChef = currentChef;
-        settingsPage.SlottedChildren["Header"] = header;
+        settingsPage.SlottedChildren[SettingsPage.HEADER_SLOT] = header;
         if (message is not null)
         {
-            settingsPage.SlottedChildren["Message"] = message;
+            settingsPage.SlottedChildren[SettingsPage.MESSAGE_SLOT] = message;
         }
 
         var htmlFile = await settingsPage.RenderAsync();

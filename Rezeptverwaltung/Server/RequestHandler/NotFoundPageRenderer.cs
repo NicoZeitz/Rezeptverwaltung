@@ -19,7 +19,7 @@ public class NotFoundPageRenderer
         var header = componentProvider.GetComponent<Header>();
 
         header.CurrentChef = currentChef;
-        notFoundPage.SlottedChildren["Header"] = header;
+        notFoundPage.SlottedChildren[NotFoundPage.HEADER_SLOT] = header;
         return notFoundPage.RenderAsync();
     }
 }

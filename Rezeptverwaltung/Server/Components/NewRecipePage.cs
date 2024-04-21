@@ -6,17 +6,14 @@ using Server.Resources;
 
 namespace Server.Components;
 
-public class NewRecipePage : ContainerComponent
+public class NewRecipePage(TemplateLoader templateLoader) : ContainerComponent(templateLoader)
 {
+    public const string HEADER_SLOT = "Header";
+
     public IEnumerable<Tag> Tags { get; set; } = [];
     public IEnumerable<Ingredient> Ingredients { get; set; } = [];
     public Recipe? Recipe { get; set; }
     public IEnumerable<Text> Units { get; set; } = [];
-
-    public NewRecipePage(TemplateLoader templateLoader)
-        : base(templateLoader)
-    {
-    }
 
     public override async Task<string> RenderAsync()
     {
@@ -28,7 +25,7 @@ public class NewRecipePage : ContainerComponent
                 Tags,
                 Units,
                 Ingredients,
-                Header = await GetRenderedSlottedChild("Header"),
+                Header = await GetRenderedSlottedChild(HEADER_SLOT),
                 Children = await GetRenderedChildren()
             });
     }

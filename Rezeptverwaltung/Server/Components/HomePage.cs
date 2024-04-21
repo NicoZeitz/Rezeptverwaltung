@@ -2,18 +2,15 @@
 
 namespace Server.Components;
 
-public class HomePage : ContainerComponent
+public class HomePage(TemplateLoader templateLoader) : ContainerComponent(templateLoader)
 {
-    public HomePage(TemplateLoader templateLoader)
-        : base(templateLoader)
-    {
-    }
+    public const string HEADER_SLOT = "Header";
 
     public override async Task<string> RenderAsync()
     {
         return await templateLoader.LoadTemplate("HomePage.html")!.RenderAsync(new
         {
-            Header = await GetRenderedSlottedChild("Header"),
+            Header = await GetRenderedSlottedChild(HEADER_SLOT),
             Children = await GetRenderedChildren()
         });
     }

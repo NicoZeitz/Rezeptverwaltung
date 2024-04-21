@@ -7,6 +7,8 @@ namespace Server.Components;
 
 public class RecipeDetailPage : ContainerComponent
 {
+    public const string HEADER_SLOT = "Header";
+
     public Recipe? Recipe { get; set; }
 
     private readonly ImageUrlService imageUrlService;
@@ -27,9 +29,9 @@ public class RecipeDetailPage : ContainerComponent
             .LoadTemplate("RecipeDetailPage.html")
             .RenderAsync(new
             {
+                Recipe,
                 RecipeImage = recipeImage,
-                Header = await GetRenderedSlottedChild("Header"),
-                Recipe
+                Header = await GetRenderedSlottedChild(HEADER_SLOT)
             })
             .AsTask();
     }

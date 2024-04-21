@@ -94,10 +94,10 @@ public partial class ChefDetailRequestHandler : HTMLRequestHandler
         shoppingListList.ShoppingLists = pageData.ShoppingLists;
         chefDetailPage.Chef = pageData.Chef;
 
-        chefDetailPage.SlottedChildren["Recipes"] = recipeList;
-        chefDetailPage.SlottedChildren["Cookbooks"] = cookbookList;
-        chefDetailPage.SlottedChildren["ShoppingLists"] = shoppingListList;
-        chefDetailPage.SlottedChildren["Header"] = header;
+        chefDetailPage.SlottedChildren[ChefDetailPage.HEADER_SLOT] = header;
+        chefDetailPage.SlottedChildren[ChefDetailPage.RECIPES_SLOT] = recipeList;
+        chefDetailPage.SlottedChildren[ChefDetailPage.COOKBOOKS_SLOT] = cookbookList;
+        chefDetailPage.SlottedChildren[ChefDetailPage.SHOPPING_LISTS_SLOT] = shoppingListList;
 
         return chefDetailPage;
     }

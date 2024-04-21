@@ -39,7 +39,7 @@ public class RegisterPageRenderer
         var registerPage = componentProvider.GetComponent<RegisterPage>();
 
         header.CurrentChef = currentChef;
-        registerPage.SlottedChildren["Header"] = header;
+        registerPage.SlottedChildren[RegisterPage.HEADER_SLOT] = header;
         registerPage.Children = errorMessages.Select(errorMessage => new DisplayableComponent(errorMessage));
 
         var htmlString = await registerPage.RenderAsync();

@@ -2,15 +2,10 @@
 
 namespace Server.Components;
 
-public abstract class ContainerComponent : TemplateComponent
+public abstract class ContainerComponent(TemplateLoader templateLoader) : TemplateComponent(templateLoader)
 {
     public IEnumerable<Component> Children { get; set; } = [];
     public IDictionary<string, Component> SlottedChildren { get; set; } = new Dictionary<string, Component>();
-
-    public ContainerComponent(TemplateLoader templateLoader)
-        : base(templateLoader)
-    {
-    }
 
     protected Component? GetSlottedChild(string name)
     {

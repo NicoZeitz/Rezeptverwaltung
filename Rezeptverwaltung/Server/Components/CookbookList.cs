@@ -3,13 +3,9 @@ using Server.Resources;
 
 namespace Server.Components;
 
-public class CookbookList : TemplateComponent
+public class CookbookList(TemplateLoader templateLoader) : TemplateComponent(templateLoader)
 {
     public IEnumerable<Cookbook> Cookbooks { get; set; } = [];
-
-    public CookbookList(TemplateLoader templateLoader)
-        : base(templateLoader)
-    { }
 
     public override Task<string> RenderAsync()
     {

@@ -3,14 +3,11 @@ using Server.Resources;
 
 namespace Server.Components;
 
-public class TagPage : ContainerComponent
+public class TagPage(TemplateLoader templateLoader) : ContainerComponent(templateLoader)
 {
-    public Tag? Tag { get; set; }
+    public const string HEADER_SLOT = "Header";
 
-    public TagPage(TemplateLoader templateLoader)
-        : base(templateLoader)
-    {
-    }
+    public Tag? Tag { get; set; }
 
     public override async Task<string> RenderAsync()
     {
@@ -20,7 +17,7 @@ public class TagPage : ContainerComponent
             {
                 Tag,
                 Children = await GetRenderedChildren(),
-                Header = await GetRenderedSlottedChild("Header")
+                Header = await GetRenderedSlottedChild(HEADER_SLOT)
             });
     }
 }

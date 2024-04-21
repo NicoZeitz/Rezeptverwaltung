@@ -4,13 +4,8 @@ using Server.Resources;
 
 namespace Server.Components;
 
-public class NewShoppingListPage : ContainerComponent
+public class NewShoppingListPage(TemplateLoader templateLoader) : ContainerComponent(templateLoader)
 {
-    public NewShoppingListPage(TemplateLoader templateLoader)
-        : base(templateLoader)
-    {
-    }
-
     public override Task<string> RenderAsync()
     {
         throw new NotImplementedException();

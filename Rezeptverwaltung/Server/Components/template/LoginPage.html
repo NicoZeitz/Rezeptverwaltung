@@ -39,7 +39,7 @@
                         required
                     />
                 </div>
-                {{ for error_message in error_messages }}
+                {{ for error_message in children }}
                 <span class="text-red-500"> {{ error_message }} </span>
                 {{ end }}
                 <button

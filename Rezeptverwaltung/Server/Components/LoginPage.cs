@@ -4,19 +4,16 @@ using Server.Resources;
 
 namespace Server.Components;
 
-public class LoginPage : ContainerComponent
+public class LoginPage(TemplateLoader templateLoader) : ContainerComponent(templateLoader)
 {
-    public LoginPage(TemplateLoader templateLoader)
-        : base(templateLoader)
-    {
-    }
+    public const string HEADER_SLOT = "Header";
 
     public override async Task<string> RenderAsync()
     {
         return await templateLoader.LoadTemplate("LoginPage.html")!.RenderAsync(new
         {
-            Header = await GetRenderedSlottedChild("Header"),
-            ErrorMessages = await GetRenderedChildren()
+            Header = await GetRenderedSlottedChild(HEADER_SLOT),
+            Children = await GetRenderedChildren()
         });
     }
 }

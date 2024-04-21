@@ -47,7 +47,7 @@ public class HomeRequestHandler : HTMLRequestHandler
         header.CurrentChef = currentChef;
         recipeList.Recipes = recipes;
 
-        homePage.SlottedChildren["Header"] = header;
+        homePage.SlottedChildren[HomePage.HEADER_SLOT] = header;
         homePage.Children = [recipeList];
 
         return await homePage.RenderAsync();

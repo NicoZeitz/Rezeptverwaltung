@@ -91,7 +91,7 @@
                     />
                 </div>
                 <div class="col-span-2 flex flex-col gap-1 justify-self-center">
-                    {{ for error_message in error_messages }}
+                    {{ for error_message in children }}
                     <span class="text-red-500"> {{ error_message }} </span>
                     {{ end }}
                 </div>

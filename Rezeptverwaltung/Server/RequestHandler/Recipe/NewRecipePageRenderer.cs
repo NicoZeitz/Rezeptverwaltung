@@ -39,12 +39,12 @@ public class NewRecipePageRenderer
         var newRecipePage = componentProvider.GetComponent<NewRecipePage>();
 
         header.CurrentChef = currentChef;
-        newRecipePage.SlottedChildren["Header"] = header;
+        newRecipePage.SlottedChildren[NewRecipePage.HEADER_SLOT] = header;
         newRecipePage.Children = errorMessages.Select(errorMessage => new DisplayableComponent(errorMessage));
         newRecipePage.Recipe = recipe;
         newRecipePage.Tags = tags;
         newRecipePage.Ingredients = ingredients;
-        newRecipePage.Units = new[] { new Text("g"), new Text("kg"), new Text("ml"), new Text("l") }; // TODO:
+        newRecipePage.Units = [new Text("g"), new Text("kg"), new Text("ml"), new Text("l")]; // TODO:
 
         var htmlString = await newRecipePage.RenderAsync();
         htmlFileWriter.WriteHtmlFile(response, htmlString, httpStatus);

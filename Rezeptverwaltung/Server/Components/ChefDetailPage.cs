@@ -7,6 +7,11 @@ namespace Server.Components;
 
 public class ChefDetailPage : ContainerComponent
 {
+    public const string HEADER_SLOT = "Header";
+    public const string RECIPES_SLOT = "Recipes";
+    public const string COOKBOOKS_SLOT = "Cookbooks";
+    public const string SHOPPING_LISTS_SLOT = "ShoppingLists";
+
     public Chef? Chef { get; set; }
 
     private readonly ImageUrlService imageUrlService;
@@ -29,12 +34,12 @@ public class ChefDetailPage : ContainerComponent
             .LoadTemplate("ChefDetailPage.html")
             .RenderAsync(new
             {
-                ChefImage = chefImage,
-                Header = await GetRenderedSlottedChild("Header"),
                 Chef,
-                ChefRecipes = await GetRenderedSlottedChild("Recipes"),
-                ChefCookbooks = await GetRenderedSlottedChild("Cookbooks"),
-                ChefShoppingLists = await GetRenderedSlottedChild("ShoppingLists")
+                ChefImage = chefImage,
+                Header = await GetRenderedSlottedChild(HEADER_SLOT),
+                Recipes = await GetRenderedSlottedChild(RECIPES_SLOT),
+                Cookbooks = await GetRenderedSlottedChild(COOKBOOKS_SLOT),
+                ShoppingLists = await GetRenderedSlottedChild(SHOPPING_LISTS_SLOT)
             });
     }
 }

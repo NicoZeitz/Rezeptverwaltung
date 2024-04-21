@@ -1,6 +1,7 @@
 using System.Net;
 using Core.Services;
 using Core.ValueObjects;
+using Server.Components;
 using Server.Session;
 
 namespace Server.RequestHandler;
@@ -48,7 +49,7 @@ public sealed class SettingsDeleteProfilePostData : SettingsPostData
                 response,
                 HttpStatusCode.BadRequest,
                 new Dictionary<string, IEnumerable<ErrorMessage>>() {
-                    { "DeleteProfileErrors", result.ErrorMessages }
+                    { SettingsPage.DELETE_PROFILE_ERRORS_SLOT, result.ErrorMessages }
                 }
             );
         }

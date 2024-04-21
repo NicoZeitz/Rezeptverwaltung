@@ -4,10 +4,8 @@ using System.Text;
 
 namespace Server.Components;
 
-public class ComponentSequence : ContainerComponent
+public class ComponentSequence(TemplateLoader templateLoader) : ContainerComponent(templateLoader)
 {
-    public ComponentSequence(TemplateLoader templateLoader) : base(templateLoader) { }
-
     public override async Task<string> RenderAsync()
     {
         return string.Join("", (await GetRenderedChildren()).Select(child => $"<span>{child}</span>"));

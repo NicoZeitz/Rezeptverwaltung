@@ -51,7 +51,7 @@ public partial class RecipeDetailRequestHandler : HTMLRequestHandler
 
         header.CurrentChef = pageData.CurrentChef;
         recipeDetailPage.Recipe = pageData.Recipe;
-        recipeDetailPage.SlottedChildren["Header"] = header;
+        recipeDetailPage.SlottedChildren[RecipeDetailPage.HEADER_SLOT] = header;
         return recipeDetailPage.RenderAsync();
     }
 

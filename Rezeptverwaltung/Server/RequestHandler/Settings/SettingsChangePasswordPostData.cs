@@ -53,7 +53,7 @@ public class SettingsChangePasswordPostData : SettingsPostData
                 response,
                 HttpStatusCode.BadRequest,
                 new Dictionary<string, IEnumerable<ErrorMessage>>() {
-                    { "ChangePasswordErrors", result.ErrorMessages }
+                    { SettingsPage.CHANGE_PASSWORD_ERRORS_SLOT, result.ErrorMessages }
                 }
             );
         }

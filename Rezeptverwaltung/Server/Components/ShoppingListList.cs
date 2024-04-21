@@ -3,14 +3,9 @@ using Server.Resources;
 
 namespace Server.Components;
 
-public class ShoppingListList : TemplateComponent
+public class ShoppingListList(TemplateLoader templateLoader) : TemplateComponent(templateLoader)
 {
     public IEnumerable<ShoppingList> ShoppingLists = [];
-
-    public ShoppingListList(TemplateLoader templateLoader)
-        : base(templateLoader)
-    {
-    }
 
     public override Task<string> RenderAsync()
     {

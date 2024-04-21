@@ -1,4 +1,5 @@
 using Core.ValueObjects;
+using Server.Components;
 using System.Net;
 
 namespace Server.RequestHandler;
@@ -56,7 +57,7 @@ public class SettingsRequestHandler : RequestHandler
                 response,
                 HttpStatusCode.BadRequest,
                 new Dictionary<string, IEnumerable<ErrorMessage>>() {
-                    { "DeleteProfileErrors",  postData.ErrorMessages }
+                    { SettingsPage.DELETE_PROFILE_ERRORS_SLOT,  postData.ErrorMessages }
                 }
             );
         }

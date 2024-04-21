@@ -37,8 +37,8 @@ public class LoginPageRenderer
         var loginPage = componentProvider.GetComponent<LoginPage>();
 
         header.CurrentChef = currentChef;
-        loginPage.SlottedChildren["Header"] = header;
-        loginPage.Children = errorMessage is null ? new Component[0] : [new DisplayableComponent(errorMessage)];
+        loginPage.SlottedChildren[LoginPage.HEADER_SLOT] = header;
+        loginPage.Children = errorMessage is null ? Array.Empty<Component>() : [new DisplayableComponent(errorMessage)];
         var htmlString = await loginPage.RenderAsync();
 
         htmlFileWriter.WriteHtmlFile(response, htmlString, httpStatus);

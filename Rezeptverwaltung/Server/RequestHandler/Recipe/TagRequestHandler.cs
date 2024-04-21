@@ -50,7 +50,7 @@ public partial class TagRequestHandler : HTMLRequestHandler
         recipeList.Recipes = recipes;
         tagPage.Tag = tag;
         tagPage.Children = [recipeList];
-        tagPage.SlottedChildren["Header"] = header;
+        tagPage.SlottedChildren[TagPage.HEADER_SLOT] = header;
         return tagPage.RenderAsync();
     }
 
