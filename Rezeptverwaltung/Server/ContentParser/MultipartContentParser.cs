@@ -35,7 +35,7 @@ internal class MultipartContentParser : ContentParser
         foreach (var file in multipartFormDataParser.Files)
         {
             var mimeType = MimeType.FromString(file.ContentType);
-            if (!mimeType.HasValue)
+            if (mimeType is null)
             {
                 continue;
             }

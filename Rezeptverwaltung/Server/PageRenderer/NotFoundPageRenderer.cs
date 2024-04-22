@@ -1,7 +1,7 @@
 using Core.Entities;
 using Server.Components;
 
-namespace Server.RequestHandler;
+namespace Server.PageRenderer;
 
 public class NotFoundPageRenderer
 {

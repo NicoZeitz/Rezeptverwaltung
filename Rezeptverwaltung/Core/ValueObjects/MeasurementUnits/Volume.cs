@@ -1,51 +1,28 @@
-﻿using Core.Interfaces;
-using Core.Services;
+﻿using Core.Data;
+using Core.Interfaces;
 
 namespace Core.ValueObjects.MeasurementUnits;
 
-public enum VolumeUnit
+public enum VolumeUnit : uint
 {
-    L,
-    ML
+    ml = 1,
+    l = 1000,
+    kl = 1000 * 1000,
 }
 
-public record class Volume(int Amount) : MeasurementUnit
+public record struct Volume(uint Amount) : MeasurementUnit
 {
-    public static Volume Deserialize(SerializedMeasurementUnit serializedMeasurementUnit)
+    public readonly string DisplayUnit => UnitEnumExtensions<VolumeUnit>.GetNameBelowValue(Amount)!;
+
+    public readonly string DisplayAmount
     {
-        switch (serializedMeasurementUnit.Unit)
+        get
         {
-            case nameof(VolumeUnit.L):
-                return new Volume(int.Parse(serializedMeasurementUnit.Amount));
-            case nameof(VolumeUnit.ML):
-            default:
-                // TODO: Dry Verletzung und Magic Number
-                return new Volume(int.Parse(serializedMeasurementUnit.Amount) / 1000);
+            var unitMultiplier = (double)UnitEnumExtensions<VolumeUnit>.GetEnumBelowValue(Amount)!;
+            var normalizedAmount = Amount / unitMultiplier;
+            return normalizedAmount.ToString("0.###");
         }
     }
 
-    public static SerializedMeasurementUnit Serialize(Volume measurementUnit)
-    {
-        return new SerializedMeasurementUnit(
-            nameof(Volume),
-            measurementUnit.Amount.ToString(),
-            nameof(VolumeUnit.ML)
-        );
-    }
-
-    public string display()
-    {
-        // TODO: Dry Verletzung und Magic Number
-        if (Amount < 1000)
-        {
-            return $"{Amount} ml";
-        }
-        else
-        {
-            // TODO: Dry Verletzung und Magic Number
-            return $"{Amount / 1000} l";
-        }
-    }
-
-    public override string ToString() => display();
+    public override readonly string ToString() => $"{DisplayAmount} {DisplayUnit}";
 }

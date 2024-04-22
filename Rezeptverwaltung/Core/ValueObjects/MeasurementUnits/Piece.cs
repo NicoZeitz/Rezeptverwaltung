@@ -1,32 +1,10 @@
 ﻿using Core.Interfaces;
-using Core.Services;
 
 namespace Core.ValueObjects.MeasurementUnits;
 
-public record class Piece(int Amount) : MeasurementUnit
+public record struct Piece(uint Amount) : MeasurementUnit
 {
-    public static Piece Deserialize(SerializedMeasurementUnit serializedMeasurementUnit)
-    {
-        return new Piece(int.Parse(serializedMeasurementUnit.Amount));
-    }
-
-    public static SerializedMeasurementUnit Serialize(Piece measurementUnit)
-    {
-        return new SerializedMeasurementUnit(
-            nameof(Piece),
-            measurementUnit.Amount.ToString(),
-            string.Empty
-        );
-    }
-
-    public string display()
-    {
-        if (Amount == 1)
-        {
-            return $"{Amount} Stück";
-        }
-        return $"{Amount} Stücke";
-    }
-
-    public override string ToString() => display();
+    public readonly string DisplayUnit => "x";
+    public readonly string DisplayAmount => Amount.ToString();
+    public override readonly string ToString() => $"{DisplayAmount} {DisplayUnit}";
 }

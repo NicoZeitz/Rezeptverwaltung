@@ -4,6 +4,7 @@ using Server.Components;
 using Server.ContentParser;
 using Server.Service;
 using Server.Session;
+using Server.ValueObjects.PostData;
 using System.Net;
 
 namespace Server.RequestHandler;
@@ -14,7 +15,7 @@ public class SettingsChangeProfilePostData : SettingsPostData
     public string? LastName { get; }
     public ContentData? ProfileImage { get; }
 
-    private readonly ChefChangeDataService chefChangeDataService;
+    private readonly ChangeChefDataService changeChefDataService;
     private readonly SessionService sessionService;
     private readonly SettingsPageRenderer settingsPageRenderer;
     private readonly ImageTypeMimeTypeConverter imageTypeMimeTypeConverter;
@@ -23,7 +24,7 @@ public class SettingsChangeProfilePostData : SettingsPostData
         string? firstName,
         string? lastName,
         ContentData? profileImage,
-        ChefChangeDataService chefChangeDataService,
+        ChangeChefDataService changeChefDataService,
         SessionService sessionService,
         SettingsPageRenderer settingsPageRenderer,
         ImageTypeMimeTypeConverter imageTypeMimeTypeConverter
@@ -34,7 +35,7 @@ public class SettingsChangeProfilePostData : SettingsPostData
         LastName = lastName;
         ProfileImage = profileImage;
 
-        this.chefChangeDataService = chefChangeDataService;
+        this.changeChefDataService = changeChefDataService;
         this.sessionService = sessionService;
         this.settingsPageRenderer = settingsPageRenderer;
         this.imageTypeMimeTypeConverter = imageTypeMimeTypeConverter;
@@ -45,20 +46,17 @@ public class SettingsChangeProfilePostData : SettingsPostData
         var chef = sessionService.GetCurrentChef(request);
         if (chef is null)
         {
-            return settingsPageRenderer.RenderPage(
-                request,
-                response,
-                HttpStatusCode.BadRequest,
-                new Dictionary<string, IEnumerable<ErrorMessage>>()
-            );
+            response.StatusCode = (int)HttpStatusCode.Unauthorized;
+            return Task.CompletedTask;
         }
 
         var image = GetImage();
-        chefChangeDataService.ChangeData(chef, FirstName, LastName, image);
+        changeChefDataService.ChangeData(chef, FirstName, LastName, image);
 
         return settingsPageRenderer.RenderPage(
             request,
             response,
+            chef,
             HttpStatusCode.SeeOther,
             new DisplayableComponent(new Text("Einstellungen erfolgreich geändert!"))
         );
@@ -72,7 +70,12 @@ public class SettingsChangeProfilePostData : SettingsPostData
         }
 
         var imageType = imageTypeMimeTypeConverter.ConvertMimeTypeToImageType(ProfileImage.FileMimeType!.Value);
-        return new Image(ProfileImage.FileData!, imageType!.Value);
+        if (imageType is null)
+        {
+            return null;
+        }
+
+        return new Image(ProfileImage.FileData!, imageType.Value);
     }
 }
 

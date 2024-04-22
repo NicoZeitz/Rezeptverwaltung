@@ -1,26 +1,22 @@
 using Core.Entities;
 using Core.ValueObjects;
 using Server.Components;
-using Server.Resources;
 using Server.Service;
 using System.Net;
 
-namespace Server.RequestHandler;
+namespace Server.PageRenderer;
 
-public class NewRecipePageRenderer
+public class RecipeEditPageRenderer
 {
     private readonly ComponentProvider componentProvider;
     private readonly HTMLFileWriter htmlFileWriter;
-    private readonly ImageUrlService imageUrlService;
 
-    public NewRecipePageRenderer(
+    public RecipeEditPageRenderer(
         ComponentProvider componentProvider,
-        HTMLFileWriter htmlFileWriter,
-        ImageUrlService imageUrlService)
+        HTMLFileWriter htmlFileWriter)
     {
         this.componentProvider = componentProvider;
         this.htmlFileWriter = htmlFileWriter;
-        this.imageUrlService = imageUrlService;
     }
 
     public async Task RenderPage(

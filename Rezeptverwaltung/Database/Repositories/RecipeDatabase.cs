@@ -1,8 +1,9 @@
 ﻿using Core.Entities;
 using Core.Interfaces;
 using Core.Repository;
-using Core.Services;
+using Core.Services.Serialization;
 using Core.ValueObjects;
+using Core.ValueObjects.MeasurementUnits;
 using Microsoft.Data.Sqlite;
 using System.Data;
 
@@ -340,14 +341,13 @@ public class RecipeDatabase : RecipeRepository
         var serializedMeasurementUnit = measurementUnitManager.SerializeInto(measurementUnit);
         var measurementUnitId = Identifier.NewId();
         using var reader = database.CreateSqlCommand(@$"
-                INSERT INTO measurement_units(id, discriminator, amount, unit)
+                INSERT INTO measurement_units(id, amount, unit)
                 VALUES (
                     {measurementUnitId.Id},
-                    {serializedMeasurementUnit.Name},
                     {serializedMeasurementUnit.Amount},
                     {serializedMeasurementUnit.Unit}
                 )
-                ON CONFLICT(discriminator, amount, unit) DO NOTHING
+                ON CONFLICT(amount, unit) DO NOTHING
                 RETURNING id
             ").ExecuteReader();
         if (reader.HasRows)
@@ -360,8 +360,7 @@ public class RecipeDatabase : RecipeRepository
         using var second_reader = database.CreateSqlCommand(@$"
             SELECT id
             FROM measurement_units
-            WHERE discriminator = {serializedMeasurementUnit.Name}
-            AND amount = {serializedMeasurementUnit.Amount}
+            WHERE amount = {serializedMeasurementUnit.Amount}
             AND unit = {serializedMeasurementUnit.Unit};
         ").ExecuteReader();
         second_reader.Read();
@@ -464,7 +463,6 @@ public class RecipeDatabase : RecipeRepository
                 preparation_quantity,
                 ingredient_name,
                 id as measurement_unit_id,
-                discriminator as measurement_unit_discriminator,
                 amount as measurement_unit_amount,
                 unit as measurement_unit_unit
             FROM weighted_ingredients
@@ -485,7 +483,6 @@ public class RecipeDatabase : RecipeRepository
 
             var ingredient = new Ingredient(reader.GetString("ingredient_name"));
             var serializedMeasurementUnit = new SerializedMeasurementUnit(
-                reader.GetString("measurement_unit_discriminator"),
                 reader.GetString("measurement_unit_amount"),
                 reader.GetString("measurement_unit_unit")
             );

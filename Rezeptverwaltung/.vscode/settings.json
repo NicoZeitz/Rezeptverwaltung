@@ -10,5 +10,14 @@
         "**/obj": true,
         "**/node_modules": true
     },
-    "cSpell.words": ["Datetime", "Hasher", "Isopoh", "MIMETYPES", "rezeptverwaltung", "Sqlite"]
+    "cSpell.words": [
+        "Datetime",
+        "dessertlöffel",
+        "Hasher",
+        "Isopoh",
+        "MIMETYPES",
+        "rezeptverwaltung",
+        "schöpfkelle",
+        "Sqlite"
+    ]
 }

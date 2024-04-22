@@ -91,7 +91,7 @@ public partial class ImageRequestHandler : RequestHandler
         }
 
         var image = imageService.GetImageFor(entity);
-        if (!image.HasValue)
+        if (image is null)
         {
             return notFoundRequestHandler.Handle(request, response);
         }

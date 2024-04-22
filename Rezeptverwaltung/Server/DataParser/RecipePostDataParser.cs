@@ -1,11 +1,13 @@
 using Core.Data;
-using Core.Services;
+using Core.Services.Serialization;
 using Core.ValueObjects;
+using Core.ValueObjects.MeasurementUnits;
 using Server.ContentParser;
+using Server.ValueObjects.PostData;
 
-namespace Server.RequestHandler;
+namespace Server.DataParser;
 
-public class RecipePostDataParser : DataParser<RecipePostData>
+public class RecipePostDataParser : DataParser<NewRecipePostData>
 {
     private readonly MeasurementUnitSerializationManager measurementUnitSerializationManager;
 
@@ -15,7 +17,7 @@ public class RecipePostDataParser : DataParser<RecipePostData>
         this.measurementUnitSerializationManager = measurementUnitSerializationManager;
     }
 
-    public override Result<RecipePostData> ExtractDataFromContent(IDictionary<string, ContentData> content)
+    protected override Result<NewRecipePostData> ExtractDataFromContent(IDictionary<string, ContentData> content)
     {
         if (!content.TryGetValue("title", out var title) && title!.IsText)
         {
@@ -40,11 +42,9 @@ public class RecipePostDataParser : DataParser<RecipePostData>
             var index = 0;
             while (
                 content.TryGetValue("ingredient_" + index + "_amount", out var amount) && amount!.IsText &&
-                content.TryGetValue("ingredient_" + index + "_unit", out var unit) && unit!.IsText &&
-                content.TryGetValue("ingredient_" + index + "_name", out var name) && name!.IsText)
+                content.TryGetValue("ingredient_" + index + "_unit", out var unit) && unit!.IsText)
             {
                 var measurementUnit = measurementUnitSerializationManager.DeserializeFrom(new SerializedMeasurementUnit(
-                    name.TextValue!,
                     unit.TextValue!,
                     amount.TextValue!
                 ));

@@ -1,58 +1,28 @@
-﻿using Core.Interfaces;
-using Core.Services;
+﻿using Core.Data;
+using Core.Interfaces;
 
 namespace Core.ValueObjects.MeasurementUnits;
 
-public enum WeightUnit
+public enum WeightUnit : uint
 {
-    G,
-    KG
+    g = 1,
+    kg = 1000,
+    t = 1000 * 1000,
 }
 
-public record struct Weight(int Amount) : MeasurementUnit
+public record struct Weight(uint Amount) : MeasurementUnit
 {
-    public const WeightUnit G = WeightUnit.G;
-    public const WeightUnit KG = WeightUnit.KG;
+    public readonly string DisplayUnit => UnitEnumExtensions<WeightUnit>.GetNameBelowValue(Amount)!;
 
-
-    public static Weight FromGram(int gram) => new Weight(gram);
-
-    // TODO: Dry Verletzung und Magic Number
-    public static Weight FromKilogram(double kilogram) => new Weight((int)(kilogram * 1000));
-
-    public static SerializedMeasurementUnit Serialize(Weight measurementUnit)
+    public readonly string DisplayAmount
     {
-        return new SerializedMeasurementUnit(
-            nameof(Weight),
-            measurementUnit.Amount.ToString(),
-            nameof(WeightUnit.G)
-        );
-    }
-
-    public static Weight Deserialize(SerializedMeasurementUnit serializedMeasurementUnit)
-    {
-        switch (serializedMeasurementUnit.Unit)
+        get
         {
-            case nameof(WeightUnit.KG):
-                return FromKilogram(double.Parse(serializedMeasurementUnit.Amount));
-            case nameof(WeightUnit.G):
-            default:
-                return FromGram(int.Parse(serializedMeasurementUnit.Amount));
+            var unitMultiplier = (double)UnitEnumExtensions<WeightUnit>.GetEnumBelowValue(Amount)!;
+            var normalizedAmount = Amount / unitMultiplier;
+            return normalizedAmount.ToString("0.###");
         }
     }
 
-    public string display()
-    {
-        if (Amount < 1000)
-        {
-            return $"{Amount} g";
-        }
-        else
-        {
-            // TODO: Dry Verletzung und Magic Number
-            return $"{Amount / 1000} kg";
-        }
-    }
-
-    public override string ToString() => display();
+    public override readonly string ToString() => $"{DisplayAmount} {DisplayUnit}";
 }

@@ -1,5 +1,8 @@
 ﻿using Core.Services;
 using Core.ValueObjects;
+using Server.DataParser;
+using Server.PageRenderer;
+using Server.Service;
 using Server.Session;
 using System.Net;
 
@@ -9,22 +12,25 @@ public class LoginRequestHandler : RequestHandler
 {
     private static readonly ErrorMessage INVALID_CREDENTIALS_ERROR_MESSAGE = new ErrorMessage("Benutzername und/oder Passwort falsch!");
 
-    private readonly ChefLoginService chefLoginService;
+    private readonly LoginChefService chefLoginService;
     private readonly SessionService sessionService;
     private readonly LoginPageRenderer loginPageRenderer;
     private readonly LoginPostDataParser loginPostDataParser;
+    private readonly RedirectService redirectService;
 
     public LoginRequestHandler(
-      ChefLoginService chefLoginService,
-      SessionService sessionService,
-      LoginPageRenderer loginPageRenderer,
-      LoginPostDataParser loginPostDataParser
-  )
+        LoginChefService chefLoginService,
+        SessionService sessionService,
+        LoginPageRenderer loginPageRenderer,
+        LoginPostDataParser loginPostDataParser,
+        RedirectService redirectService)
+        : base()
     {
         this.chefLoginService = chefLoginService;
         this.sessionService = sessionService;
         this.loginPageRenderer = loginPageRenderer;
         this.loginPostDataParser = loginPostDataParser;
+        this.redirectService = redirectService;
     }
 
     public bool CanHandle(HttpListenerRequest request)
@@ -85,8 +91,7 @@ public class LoginRequestHandler : RequestHandler
 
         sessionService.Login(request, response, chef);
 
-        response.StatusCode = (int)HttpStatusCode.SeeOther;
-        response.RedirectLocation = "/";
+        redirectService.RedirectToPage(response, "/");
         return Task.CompletedTask;
     }
 }

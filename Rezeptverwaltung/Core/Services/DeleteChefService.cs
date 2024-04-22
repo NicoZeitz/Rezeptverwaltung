@@ -6,13 +6,13 @@ using Core.ValueObjects;
 
 namespace Core.Services;
 
-public class ChefDeleteService
+public class DeleteChefService
 {
     private readonly ChefRepository chefRepository;
     private readonly ImageService imageService;
     private readonly PasswordHasher passwordHasher;
 
-    public ChefDeleteService(
+    public DeleteChefService(
         ChefRepository chefRepository,
         ImageService imageService,
         PasswordHasher passwordHasher)

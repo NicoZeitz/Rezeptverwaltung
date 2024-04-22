@@ -1,5 +1,4 @@
 ﻿using Core.Interfaces;
-using Core.Services;
 
 namespace Core.ValueObjects.MeasurementUnits;
 
@@ -11,38 +10,30 @@ public enum SpoonSize
     SERVING,
 }
 
-public record class Spoon(int Amount, SpoonSize Size) : MeasurementUnit
+public static class SpoonSizeExtensions
 {
-    public static Spoon Deserialize(SerializedMeasurementUnit serializedMeasurementUnit)
+    public static string ToDisplayUnit(this SpoonSize spoonSize) => spoonSize switch
     {
-        return new Spoon(int.Parse(serializedMeasurementUnit.Amount), SpoonSize.TABLE);
-    }
+        SpoonSize.TEA => "Teelöffel",
+        SpoonSize.DESSERT => "Dessertlöffel",
+        SpoonSize.TABLE => "Löffel",
+        SpoonSize.SERVING => "Schöpfkelle",
+        _ => throw new NotImplementedException(),
+    };
 
-    public static SerializedMeasurementUnit Serialize(Spoon measurementUnit)
+    public static SpoonSize? FromDisplayUnit(string displayUnit) => displayUnit.ToLower() switch
     {
-        return new SerializedMeasurementUnit(
-            nameof(Spoon),
-            measurementUnit.Amount.ToString(),
-            measurementUnit.Size switch
-            {
-                SpoonSize.TEA => nameof(SpoonSize.TEA),
-                SpoonSize.DESSERT => nameof(SpoonSize.DESSERT),
-                SpoonSize.TABLE => nameof(SpoonSize.TABLE),
-                SpoonSize.SERVING => nameof(SpoonSize.SERVING),
-            }
-        );
-    }
+        "teelöffel" => SpoonSize.TEA,
+        "dessertlöffel" => SpoonSize.DESSERT,
+        "löffel" => SpoonSize.TABLE,
+        "schöpfkelle" => SpoonSize.SERVING,
+        _ => null,
+    };
+}
 
-    public string display()
-    {
-        return Size switch
-        {
-            SpoonSize.TEA => $"{Amount} Teelöffel",
-            SpoonSize.DESSERT => $"{Amount} Dessertlöffel",
-            SpoonSize.TABLE => $"{Amount} Löffel",
-            SpoonSize.SERVING => $"{Amount} Schöpfkellen",
-        };
-    }
-
-    public override string ToString() => display();
+public record struct Spoon(uint Amount, SpoonSize Size) : MeasurementUnit
+{
+    public readonly string DisplayUnit => Size.ToDisplayUnit();
+    public readonly string DisplayAmount => Amount.ToString();
+    public override readonly string ToString() => $"{DisplayAmount} {DisplayUnit}";
 }

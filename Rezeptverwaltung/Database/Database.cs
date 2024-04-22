@@ -163,11 +163,10 @@ public class Database
 
         CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS measurement_units (
             id TEXT PRIMARY KEY,
-            discriminator TEXT NOT NULL,
             amount TEXT NOT NULL,
             unit TEXT NOT NULL,
 
-            UNIQUE(discriminator, amount, unit)
+            UNIQUE(amount, unit)
         );").ExecuteNonQuery();
 
         CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS weighted_ingredients (

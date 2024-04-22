@@ -5,12 +5,12 @@ using Core.ValueObjects;
 
 namespace Core.Services;
 
-public class ChefLoginService
+public class LoginChefService
 {
     private readonly ChefRepository chefRepository;
     private readonly PasswordHasher passwordHasher;
 
-    public ChefLoginService(ChefRepository chefRepository, PasswordHasher passwordHasher)
+    public LoginChefService(ChefRepository chefRepository, PasswordHasher passwordHasher)
     {
         this.chefRepository = chefRepository;
         this.passwordHasher = passwordHasher;

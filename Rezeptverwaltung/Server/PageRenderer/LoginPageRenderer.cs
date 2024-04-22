@@ -3,20 +3,23 @@ using Server.Components;
 using Server.Service;
 using System.Net;
 
-namespace Server.RequestHandler;
+namespace Server.PageRenderer;
 
 public class LoginPageRenderer
 {
     private readonly ComponentProvider componentProvider;
     private readonly HTMLFileWriter htmlFileWriter;
+    private readonly RedirectService redirectService;
 
     public LoginPageRenderer(
         ComponentProvider componentProvider,
-        HTMLFileWriter htmlFileWriter)
+        HTMLFileWriter htmlFileWriter,
+        RedirectService redirectService)
         : base()
     {
         this.componentProvider = componentProvider;
         this.htmlFileWriter = htmlFileWriter;
+        this.redirectService = redirectService;
     }
 
     public async Task RenderPage(
@@ -28,8 +31,7 @@ public class LoginPageRenderer
     {
         if (currentChef is not null)
         {
-            response.StatusCode = (int)HttpStatusCode.SeeOther;
-            response.Redirect("/");
+            redirectService.RedirectToPage(response, "/");
             return;
         }
 

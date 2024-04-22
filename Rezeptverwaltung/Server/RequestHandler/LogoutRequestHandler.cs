@@ -1,4 +1,5 @@
-﻿using Server.Session;
+﻿using Server.Service;
+using Server.Session;
 using System.Net;
 
 namespace Server.RequestHandler;
@@ -6,10 +7,15 @@ namespace Server.RequestHandler;
 public class LogoutRequestHandler : RequestHandler
 {
     private readonly SessionService sessionService;
+    private readonly RedirectService redirectService;
 
-    public LogoutRequestHandler(SessionService sessionService)
+    public LogoutRequestHandler(
+        SessionService sessionService,
+        RedirectService redirectService)
+        : base()
     {
         this.sessionService = sessionService;
+        this.redirectService = redirectService;
     }
 
     public bool CanHandle(HttpListenerRequest request) =>
@@ -20,8 +26,7 @@ public class LogoutRequestHandler : RequestHandler
     {
         sessionService.Logout(request, response);
 
-        response.StatusCode = (int)HttpStatusCode.SeeOther;
-        response.RedirectLocation = "/";
+        redirectService.RedirectToPage(response, "/");
         return Task.CompletedTask;
     }
 }

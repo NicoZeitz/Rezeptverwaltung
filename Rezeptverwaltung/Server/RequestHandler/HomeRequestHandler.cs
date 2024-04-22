@@ -1,6 +1,5 @@
 ﻿using Core.Services;
 using Server.Components;
-using Server.Resources;
 using Server.Service;
 using Server.Session;
 using System.Net;

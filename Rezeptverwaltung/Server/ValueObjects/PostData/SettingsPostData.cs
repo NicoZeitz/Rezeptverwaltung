@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace Server.RequestHandler;
+namespace Server.ValueObjects.PostData;
 
 public interface SettingsPostData
 {

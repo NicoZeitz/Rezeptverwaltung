@@ -280,8 +280,15 @@
                     />
                     <script type="text/javascript"></script>
                 </div>
+                <div
+                    class="flex flex-col gap-1 justify-self-center sm:col-span-2"
+                >
+                    {{ for error_message in children }}
+                    <span class="text-red-500"> {{ error_message }} </span>
+                    {{ end }}
+                </div>
                 <button
-                    class="col-span-2 col-start-1 mt-3 justify-self-center rounded-md bg-green-500 px-5 py-2 shadow-md"
+                    class="col-start-1 mt-3 justify-self-center rounded-md bg-green-500 px-5 py-2 shadow-md sm:col-span-2"
                     type="submit"
                 >
                     Rezept erstellen

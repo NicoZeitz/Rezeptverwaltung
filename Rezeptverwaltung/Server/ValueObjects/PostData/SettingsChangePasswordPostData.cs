@@ -1,10 +1,11 @@
-using System.Net;
 using Core.Services;
 using Core.ValueObjects;
 using Server.Components;
+using Server.RequestHandler;
 using Server.Session;
+using System.Net;
 
-namespace Server.RequestHandler;
+namespace Server.ValueObjects.PostData;
 
 public class SettingsChangePasswordPostData : SettingsPostData
 {
@@ -12,7 +13,7 @@ public class SettingsChangePasswordPostData : SettingsPostData
     public Password NewPassword { get; }
     public Password NewPasswordRepeated { get; }
 
-    private readonly ChefChangePasswordService chefChangePasswordService;
+    private readonly ChangeChefPasswordService changeChefPasswordService;
     private readonly SessionService sessionService;
     private readonly SettingsPageRenderer settingsPageRenderer;
 
@@ -20,19 +21,20 @@ public class SettingsChangePasswordPostData : SettingsPostData
         Password oldPassword,
         Password newPassword,
         Password newPasswordRepeated,
-        ChefChangePasswordService chefChangePasswordService,
+        ChangeChefPasswordService changeChefPasswordService,
         SessionService sessionService,
-        SettingsPageRenderer settingsPageRenderer
-    ) : base()
+        SettingsPageRenderer settingsPageRenderer)
+        : base()
     {
-        this.OldPassword = oldPassword;
-        this.NewPassword = newPassword;
-        this.NewPasswordRepeated = newPasswordRepeated;
-        this.chefChangePasswordService = chefChangePasswordService;
+        OldPassword = oldPassword;
+        NewPassword = newPassword;
+        NewPasswordRepeated = newPasswordRepeated;
+        this.changeChefPasswordService = changeChefPasswordService;
         this.sessionService = sessionService;
         this.settingsPageRenderer = settingsPageRenderer;
     }
 
+    // TODO: move back to SettingsRequestHandler
     public Task HandlePostRequest(HttpListenerRequest request, HttpListenerResponse response)
     {
         var chef = sessionService.GetCurrentChef(request);
@@ -41,16 +43,18 @@ public class SettingsChangePasswordPostData : SettingsPostData
             return settingsPageRenderer.RenderPage(
                 request,
                 response,
+                null,
                 HttpStatusCode.BadRequest,
                 new Dictionary<string, IEnumerable<ErrorMessage>>()
             );
         }
-        var result = chefChangePasswordService.ChangePassword(chef, OldPassword, NewPassword, NewPasswordRepeated);
+        var result = changeChefPasswordService.ChangePassword(chef, OldPassword, NewPassword, NewPasswordRepeated);
         if (result.IsError)
         {
             return settingsPageRenderer.RenderPage(
                 request,
                 response,
+                chef,
                 HttpStatusCode.BadRequest,
                 new Dictionary<string, IEnumerable<ErrorMessage>>() {
                     { SettingsPage.CHANGE_PASSWORD_ERRORS_SLOT, result.ErrorMessages }
@@ -61,6 +65,7 @@ public class SettingsChangePasswordPostData : SettingsPostData
         return settingsPageRenderer.RenderPage(
             request,
             response,
+            chef,
             HttpStatusCode.OK,
             new DisplayableComponent(new Text("Passwort erfolgreich geändert!"))
         );

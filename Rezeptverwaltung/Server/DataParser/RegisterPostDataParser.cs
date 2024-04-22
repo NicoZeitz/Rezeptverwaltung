@@ -1,15 +1,16 @@
 using Core.Data;
 using Core.ValueObjects;
 using Server.ContentParser;
+using Server.ValueObjects.PostData;
 
-namespace Server.RequestHandler;
+namespace Server.DataParser;
 
 public class RegisterPostDataParser : DataParser<RegisterPostData>
 {
     public RegisterPostDataParser(ContentParserFactory contentParserFactory)
         : base(contentParserFactory) { }
 
-    public override Result<RegisterPostData> ExtractDataFromContent(IDictionary<string, ContentData> content)
+    protected override Result<RegisterPostData> ExtractDataFromContent(IDictionary<string, ContentData> content)
     {
         if (!content.TryGetValue("username", out var username) && username!.IsText)
         {

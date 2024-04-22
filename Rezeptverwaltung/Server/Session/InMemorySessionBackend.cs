@@ -18,12 +18,12 @@ public class InMemorySessionBackend<T> : SessionBackend<T> where T : class
     {
         var sessionId = Identifier.NewId();
 
-        if (expiresAfter.HasValue)
+        if (expiresAfter is null)
         {
             sessions.Set(
                 sessionId.ToString(),
                 userObject,
-                dateTimeProvider.OffsetNow.Add(expiresAfter.Value.TimeSpan)
+                new CacheItemPolicy() { AbsoluteExpiration = ObjectCache.InfiniteAbsoluteExpiration }
             );
         }
         else
@@ -31,7 +31,7 @@ public class InMemorySessionBackend<T> : SessionBackend<T> where T : class
             sessions.Set(
                 sessionId.ToString(),
                 userObject,
-                new CacheItemPolicy() { AbsoluteExpiration = ObjectCache.InfiniteAbsoluteExpiration }
+                dateTimeProvider.OffsetNow.Add(expiresAfter.Value.TimeSpan)
             );
         }
 

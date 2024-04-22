@@ -4,12 +4,12 @@ using Core.ValueObjects;
 
 namespace Core.Services;
 
-public class ChefChangeDataService
+public class ChangeChefDataService
 {
     private readonly ChefRepository chefRepository;
     private readonly ImageService imageService;
 
-    public ChefChangeDataService(
+    public ChangeChefDataService(
         ChefRepository chefRepository,
         ImageService imageService)
         : base()
@@ -35,7 +35,7 @@ public class ChefChangeDataService
             chefRepository.Update(chef);
         }
 
-        if (image.HasValue)
+        if (image is not null)
         {
             imageService.SaveImage(chef, image.Value);
         }

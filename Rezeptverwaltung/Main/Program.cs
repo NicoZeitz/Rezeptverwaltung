@@ -3,6 +3,7 @@ using Core.Interfaces;
 using Core.Repository;
 using Core.Services;
 using Core.Services.Password;
+using Core.Services.Serialization;
 using Core.ValueObjects;
 using Database;
 using Database.Repositories;
@@ -13,6 +14,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Server;
 using Server.Components;
 using Server.ContentParser;
+using Server.DataParser;
+using Server.PageRenderer;
 using Server.RequestHandler;
 using Server.ResourceLoader;
 using Server.Resources;
@@ -115,24 +118,23 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     services.AddTransient<ShoppingListRepository, ShoppingListDatabase>();
 
     // Password Services
-    var passwordConditionCheckers = new PasswordConditionChecker[]
-    {
-        new PasswordLengthChecker(8),
-        new PasswordUppercaseChecker(),
-        new PasswordLowercaseChecker(),
-        new PasswordDigitChecker(),
-        new PasswordSpecialCharacterChecker()
-    };
-    services.AddSingleton(new AllowedPasswordChecker(passwordConditionCheckers));
+    var allowedPasswordChecker = new AllowedPasswordChecker();
+    allowedPasswordChecker.AddPasswordConditionChecker(new PasswordLengthChecker(8));
+    allowedPasswordChecker.AddPasswordConditionChecker(new PasswordUppercaseChecker());
+    allowedPasswordChecker.AddPasswordConditionChecker(new PasswordLowercaseChecker());
+    allowedPasswordChecker.AddPasswordConditionChecker(new PasswordDigitChecker());
+    allowedPasswordChecker.AddPasswordConditionChecker(new PasswordSpecialCharacterChecker());
+    services.AddSingleton(allowedPasswordChecker);
     services.AddTransient<DuplicatePasswordChecker>();
     services.AddTransient<PasswordHasher, Argon2PasswordHasher>();
 
     // Services
-    services.AddTransient<ChefLoginService>();
-    services.AddTransient<ChefRegisterService>();
-    services.AddTransient<ChefDeleteService>();
-    services.AddTransient<ChefChangeDataService>();
-    services.AddTransient<ChefChangePasswordService>();
+    services.AddTransient<CreateRecipeService>();
+    services.AddTransient<LoginChefService>();
+    services.AddTransient<RegisterChefService>();
+    services.AddTransient<DeleteChefService>();
+    services.AddTransient<ChangeChefDataService>();
+    services.AddTransient<ChangeChefPasswordService>();
     services.AddTransient<ImageService, FileSystemImageService>();
     services.AddTransient<MeasurementUnitCombiner>();
     services.AddTransient<MeasurementUnitSerializationManager>();
@@ -149,13 +151,15 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     // Server Services
     services.AddSingleton<SessionBackend<Chef>, InMemorySessionBackend<Chef>>();
     services.AddTransient<ContentParserFactory>();
+    services.AddTransient<RedirectService>();
     services.AddTransient<HTMLFileWriter>();
     services.AddTransient<ImageTypeMimeTypeConverter>();
     services.AddTransient<ImageUrlService>();
     services.AddTransient<LoginPageRenderer>();
     services.AddTransient<LoginPostDataParser>();
+    services.AddTransient<RecipePostDataParser>();
     services.AddTransient<MimeTypeDeterminer>();
-    services.AddTransient<NewRecipePageRenderer>();
+    services.AddTransient<RecipeEditPageRenderer>();
     services.AddTransient<NotFoundPageRenderer>();
     services.AddTransient<RegisterPageRenderer>();
     services.AddTransient<RegisterPostDataParser>();

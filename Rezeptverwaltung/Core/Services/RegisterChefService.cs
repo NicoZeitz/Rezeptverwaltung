@@ -6,14 +6,14 @@ using Core.ValueObjects;
 
 namespace Core.Services;
 
-public class ChefRegisterService
+public class RegisterChefService
 {
     private readonly ChefRepository chefRepository;
     private readonly PasswordHasher passwordHasher;
     private readonly AllowedPasswordChecker allowedPasswordChecker;
     private readonly ImageService imageService;
 
-    public ChefRegisterService(
+    public RegisterChefService(
         ChefRepository chefRepository,
         PasswordHasher passwordHasher,
         AllowedPasswordChecker allowedPasswordChecker,

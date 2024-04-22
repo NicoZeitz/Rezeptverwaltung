@@ -1,3 +1,4 @@
+using Core.Entities;
 using Core.ValueObjects;
 using Server.Components;
 using Server.Resources;
@@ -33,25 +34,28 @@ public class SettingsPageRenderer
     public Task RenderPage(
         HttpListenerRequest request,
         HttpListenerResponse response,
+        Chef currentChef,
         HttpStatusCode httpStatus,
         IDictionary<string, IEnumerable<ErrorMessage>> slottedErrorMessages = default!)
     {
         slottedErrorMessages ??= new Dictionary<string, IEnumerable<ErrorMessage>>();
-        return RenderPage(request, response, httpStatus, null, slottedErrorMessages);
+        return RenderPage(request, response, currentChef, httpStatus, null, slottedErrorMessages);
     }
 
     public Task RenderPage(
         HttpListenerRequest request,
         HttpListenerResponse response,
+        Chef currentChef,
         HttpStatusCode httpStatus,
         DisplayableComponent? message)
     {
-        return RenderPage(request, response, httpStatus, message, new Dictionary<string, IEnumerable<ErrorMessage>>());
+        return RenderPage(request, response, currentChef, httpStatus, message, new Dictionary<string, IEnumerable<ErrorMessage>>());
     }
 
     public async Task RenderPage(
         HttpListenerRequest request,
         HttpListenerResponse response,
+        Chef currentChef,
         HttpStatusCode httpStatus,
         DisplayableComponent? message,
         IDictionary<string, IEnumerable<ErrorMessage>> slottedErrorMessages)
@@ -60,14 +64,6 @@ public class SettingsPageRenderer
         var settingsPage = componentProvider.GetComponent<SettingsPage>();
 
         settingsPage.SlottedChildren = new Dictionary<string, Component>();
-
-        var currentChef = sessionService.GetCurrentChef(request);
-        if (currentChef is null)
-        {
-            await notFoundRequestHandler.Handle(request, response);
-            return;
-        }
-
 
         foreach (var (slotName, errorMessages) in slottedErrorMessages)
         {

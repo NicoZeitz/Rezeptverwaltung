@@ -2,70 +2,59 @@ using Core.Data;
 using Core.Services;
 using Core.ValueObjects;
 using Server.ContentParser;
+using Server.RequestHandler;
 using Server.Service;
 using Server.Session;
-using System.Net;
+using Server.ValueObjects.PostData;
 
-namespace Server.RequestHandler;
+namespace Server.DataParser;
 
-public class SettingsPostDataParser
+public class SettingsPostDataParser : DataParser<SettingsPostData>
 {
-    private static readonly ErrorMessage GENERIC_ERROR_MESSAGE = new ErrorMessage("Es ist ein Fehler aufgetreten.");
-
-    private readonly ChefChangePasswordService chefChangePasswordService;
-    private readonly ChefDeleteService chefDeleteService;
-    private readonly ChefChangeDataService chefChangeDataService;
+    private readonly ChangeChefPasswordService changeChefPasswordService;
+    private readonly DeleteChefService chefDeleteService;
+    private readonly ChangeChefDataService changeChefDataService;
     private readonly ImageTypeMimeTypeConverter imageTypeMimeTypeConverter;
-    private readonly ContentParserFactory contentParserFactory;
     private readonly SessionService sessionService;
     private readonly SettingsPageRenderer settingsPageRenderer;
-
+    private readonly RedirectService redirectService;
 
     public SettingsPostDataParser(
-        ChefChangePasswordService chefChangePasswordService,
+        ChangeChefPasswordService changeChefPasswordService,
         ContentParserFactory contentParserFactory,
         SessionService sessionService,
         SettingsPageRenderer settingsPageRenderer,
-        ChefDeleteService chefDeleteService,
-        ChefChangeDataService chefChangeDataService,
-        ImageTypeMimeTypeConverter imageTypeMimeTypeConverter)
-        : base()
+        DeleteChefService chefDeleteService,
+        ChangeChefDataService changeChefDataService,
+        ImageTypeMimeTypeConverter imageTypeMimeTypeConverter,
+        RedirectService redirectService)
+        : base(contentParserFactory)
     {
-        this.chefChangePasswordService = chefChangePasswordService;
+        this.changeChefPasswordService = changeChefPasswordService;
         this.chefDeleteService = chefDeleteService;
-        this.chefChangeDataService = chefChangeDataService;
+        this.changeChefDataService = changeChefDataService;
         this.imageTypeMimeTypeConverter = imageTypeMimeTypeConverter;
-        this.contentParserFactory = contentParserFactory;
         this.sessionService = sessionService;
         this.settingsPageRenderer = settingsPageRenderer;
+        this.redirectService = redirectService;
     }
 
-    public Result<SettingsPostData> ParsePostData(HttpListenerRequest request)
+    protected override Result<SettingsPostData> ExtractDataFromContent(IDictionary<string, ContentData> content)
     {
-        var contentParser = contentParserFactory.CreateContentParser(request.ContentType);
-        if (!contentParser.CanParse(request))
-        {
-            return Result<SettingsPostData>.Error(GENERIC_ERROR_MESSAGE);
-        }
-
-        var content = contentParser.ParseRequest(request);
         if (!content.TryGetValue("type", out var type) && type!.IsText)
         {
-            return Result<SettingsPostData>.Error(GENERIC_ERROR_MESSAGE);
+            return GENERIC_ERROR_RESULT;
         }
 
-        switch (type.TextValue!)
+        return type.TextValue! switch
         {
-            case "change-data":
-                return ParseChangeProfile(content);
-            case "change-password":
-                return ParseChangePassword(content);
-            case "delete-profile":
-                return ParseDeleteProfile(content);
-            default:
-                return Result<SettingsPostData>.Error(GENERIC_ERROR_MESSAGE);
-        }
+            "change-data" => ParseChangeProfile(content),
+            "change-password" => ParseChangePassword(content),
+            "delete-profile" => ParseDeleteProfile(content),
+            _ => GENERIC_ERROR_RESULT,
+        };
     }
+
     private Result<SettingsPostData> ParseChangeProfile(IDictionary<string, ContentData> content)
     {
         content.TryGetValue("first_name", out var firstName);
@@ -76,14 +65,14 @@ public class SettingsPostDataParser
            (lastName is not null && !lastName.IsText) ||
            (profileImage is not null && !profileImage.IsFile))
         {
-            return Result<SettingsPostData>.Error(GENERIC_ERROR_MESSAGE);
+            return GENERIC_ERROR_RESULT;
         }
 
         return Result<SettingsPostData>.Successful(new SettingsChangeProfilePostData(
             firstName?.TextValue,
             lastName?.TextValue,
             profileImage,
-            chefChangeDataService,
+            changeChefDataService,
             sessionService,
             settingsPageRenderer,
             imageTypeMimeTypeConverter
@@ -94,22 +83,22 @@ public class SettingsPostDataParser
     {
         if (!content.TryGetValue("old_password", out var oldPassword) && oldPassword!.IsText)
         {
-            return Result<SettingsPostData>.Error(GENERIC_ERROR_MESSAGE);
+            return GENERIC_ERROR_RESULT;
         }
         if (!content.TryGetValue("new_password", out var newPassword) && newPassword!.IsText)
         {
-            return Result<SettingsPostData>.Error(GENERIC_ERROR_MESSAGE);
+            return GENERIC_ERROR_RESULT;
         }
         if (!content.TryGetValue("new_password_repeat", out var newPasswordRepeat) && newPasswordRepeat!.IsText)
         {
-            return Result<SettingsPostData>.Error(GENERIC_ERROR_MESSAGE);
+            return GENERIC_ERROR_RESULT;
         }
 
         return Result<SettingsPostData>.Successful(new SettingsChangePasswordPostData(
             new Password(oldPassword.TextValue!),
             new Password(newPassword.TextValue!),
             new Password(newPasswordRepeat.TextValue!),
-            chefChangePasswordService,
+            changeChefPasswordService,
             sessionService,
             settingsPageRenderer
         ));
@@ -119,14 +108,15 @@ public class SettingsPostDataParser
     {
         if (!content.TryGetValue("password", out var password) && password!.IsText)
         {
-            return Result<SettingsPostData>.Error(GENERIC_ERROR_MESSAGE);
+            return GENERIC_ERROR_RESULT;
         }
 
         return Result<SettingsPostData>.Successful(new SettingsDeleteProfilePostData(
             new Password(password.TextValue!),
             chefDeleteService,
             sessionService,
-            settingsPageRenderer
+            settingsPageRenderer,
+            redirectService
         ));
     }
 }
