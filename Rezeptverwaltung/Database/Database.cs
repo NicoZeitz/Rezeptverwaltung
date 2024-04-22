@@ -6,9 +6,9 @@ namespace Database;
 
 public class Database
 {
-    public static Database Instance => _instance.Value;
+    public static Database Instance => instance.Value;
 
-    private static readonly Lazy<Database> _instance = new(() => new Database());
+    private static readonly Lazy<Database> instance = new(() => new Database());
     private SqliteConnection? connection = default!;
     private Logger? logger = default!;
 
