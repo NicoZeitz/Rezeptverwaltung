@@ -75,7 +75,7 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
 
     // Logger
     services.AddSingleton<Logger>(provider => new LogLevelLogger(
-        new DatetimeLogger(
+        new DateTimeLogger(
             new SplitLogger(
                 new LogLevelFilter(
                     new ColorLogger(

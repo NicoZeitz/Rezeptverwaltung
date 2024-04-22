@@ -2,11 +2,11 @@ using Core.Interfaces;
 
 namespace Logging;
 
-public class DatetimeLogger : LoggerDecorator
+public class DateTimeLogger : LoggerDecorator
 {
     private readonly DateTimeProvider dateTimeProvider;
 
-    public DatetimeLogger(Logger logger, DateTimeProvider dateTimeProvider) : base(logger)
+    public DateTimeLogger(Logger logger, DateTimeProvider dateTimeProvider) : base(logger)
     {
         this.dateTimeProvider = dateTimeProvider;
     }
