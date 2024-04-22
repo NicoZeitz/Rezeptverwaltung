@@ -29,6 +29,8 @@ public class MeasurementUnitSerializationManager
                 return new PieceSerializer().Deserialize(serializedMeasurementUnit);
             case "prise":
                 return new PinchSerializer().Deserialize(serializedMeasurementUnit);
+            case "tasse":
+                return new CupSerializer().Deserialize(serializedMeasurementUnit);
             case "teelöffel":
             case "dessertlöffel":
             case "löffel":
@@ -54,6 +56,8 @@ public class MeasurementUnitSerializationManager
                 return new VolumeSerializer().Serialize(volume);
             case Weight weight:
                 return new WeightSerializer().Serialize(weight);
+            case Cup cup:
+                return new CupSerializer().Serialize(cup);
             default:
                 throw new ArgumentException("Unknown measurement unit");
         }
