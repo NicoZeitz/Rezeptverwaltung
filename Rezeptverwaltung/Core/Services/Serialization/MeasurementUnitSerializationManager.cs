@@ -14,8 +14,6 @@ public class MeasurementUnitSerializationManager
             Unit = serializedMeasurementUnit.Unit.ToLower()
         };
 
-        Console.WriteLine("Deserializing measurement unit");
-        Console.WriteLine(serializedMeasurementUnit);
         // TODO: Open-closed principle violation
         switch (serializedMeasurementUnit.Unit)
         {
@@ -37,7 +35,6 @@ public class MeasurementUnitSerializationManager
             case "schöpfkelle":
                 return new SpoonSerializer().Deserialize(serializedMeasurementUnit);
             default:
-                Console.WriteLine("Unknown measurement unit");
                 return null;
         }
     }
