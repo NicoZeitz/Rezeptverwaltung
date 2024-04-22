@@ -4,6 +4,7 @@ public readonly struct ImageType : IEquatable<ImageType>
 {
     public static readonly ImageType PNG = new ImageType("PNG");
     public static readonly ImageType JPEG = new ImageType("JPEG");
+    public static readonly ImageType JPG = new ImageType("JPG");
     public static readonly ImageType GIF = new ImageType("GIF");
     public static readonly ImageType SVG = new ImageType("SVG");
     public static readonly ImageType WEBP = new ImageType("WEBP");
@@ -22,6 +23,7 @@ public readonly struct ImageType : IEquatable<ImageType>
         {
             "png" => PNG,
             "jpeg" => JPEG,
+            "jpg" => JPG,
             "gif" => GIF,
             "svg" => SVG,
             "webp" => WEBP,
@@ -30,7 +32,7 @@ public readonly struct ImageType : IEquatable<ImageType>
         };
     }
 
-    public static readonly ImageType[] ALL_IMAGE_TYPES = [PNG, JPEG, GIF, SVG, WEBP, ICO];
+    public static readonly ImageType[] ALL_IMAGE_TYPES = [PNG, JPEG, JPG, GIF, SVG, WEBP, ICO];
 
     public bool Equals(ImageType other) => FileExtension == other.FileExtension;
 
