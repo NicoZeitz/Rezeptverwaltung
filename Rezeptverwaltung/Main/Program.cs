@@ -95,7 +95,7 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
 
     // Database
     // This is very ugly but we wanted to try out what it means to use a
-    // hardcoded singleton anyways 😉
+    // hardcoded singleton anyways 😉 (savage mode ✔️)
     services.AddSingleton(provider => Database.Database.Instance.Initialize(
         provider.GetRequiredService<DatabaseConfiguration>(),
         provider.GetRequiredService<Logger>()
