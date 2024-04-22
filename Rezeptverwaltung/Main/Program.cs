@@ -137,7 +137,14 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     services.AddTransient<ChangeChefPasswordService>();
     services.AddTransient<ImageService, FileSystemImageService>();
     services.AddTransient<MeasurementUnitCombiner>();
-    services.AddTransient<MeasurementUnitSerializationManager>();
+    var measurementUnitSerializationManager = new MeasurementUnitSerializationManager();
+    measurementUnitSerializationManager.RegisterSerializer(new CupSerializer());
+    measurementUnitSerializationManager.RegisterSerializer(new PieceSerializer());
+    measurementUnitSerializationManager.RegisterSerializer(new PinchSerializer());
+    measurementUnitSerializationManager.RegisterSerializer(new SpoonSerializer());
+    measurementUnitSerializationManager.RegisterSerializer(new VolumeSerializer());
+    measurementUnitSerializationManager.RegisterSerializer(new WeightSerializer());
+    services.AddSingleton(measurementUnitSerializationManager);
     services.AddTransient<ShoppingListEntriesCreator>();
     services.AddTransient<ShowChefs>();
     services.AddTransient<ShowCookbooks>();
