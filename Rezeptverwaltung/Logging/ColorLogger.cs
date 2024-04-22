@@ -2,10 +2,8 @@ using Core.Interfaces;
 
 namespace Logging;
 
-public class ColorLogger : LoggerDecorator
+public class ColorLogger(Logger logger) : LoggerDecorator(logger)
 {
-    public ColorLogger(Logger logger) : base(logger) { }
-
     public override void Log(LogLevel level, string message)
     {
         Console.ForegroundColor = level switch
