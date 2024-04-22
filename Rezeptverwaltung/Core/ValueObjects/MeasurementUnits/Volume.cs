@@ -10,11 +10,11 @@ public enum VolumeUnit : uint
     kl = 1000 * 1000,
 }
 
-public record struct Volume(uint Amount) : MeasurementUnit
+public record class Volume(uint Amount) : MeasurementUnit
 {
-    public readonly string DisplayUnit => UnitEnumExtensions<VolumeUnit>.GetNameBelowValue(Amount)!;
+    public string DisplayUnit => UnitEnumExtensions<VolumeUnit>.GetNameBelowValue(Amount)!;
 
-    public readonly string DisplayAmount
+    public string DisplayAmount
     {
         get
         {
@@ -24,5 +24,5 @@ public record struct Volume(uint Amount) : MeasurementUnit
         }
     }
 
-    public override readonly string ToString() => $"{DisplayAmount} {DisplayUnit}";
+    public override string ToString() => $"{DisplayAmount} {DisplayUnit}";
 }

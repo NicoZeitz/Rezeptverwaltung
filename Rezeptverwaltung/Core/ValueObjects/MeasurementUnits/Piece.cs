@@ -2,9 +2,9 @@
 
 namespace Core.ValueObjects.MeasurementUnits;
 
-public record struct Piece(uint Amount) : MeasurementUnit
+public record class Piece(uint Amount) : MeasurementUnit
 {
-    public readonly string DisplayUnit => "x";
-    public readonly string DisplayAmount => Amount.ToString();
-    public override readonly string ToString() => $"{DisplayAmount} {DisplayUnit}";
+    public string DisplayUnit => "x";
+    public string DisplayAmount => Amount.ToString();
+    public override string ToString() => $"{DisplayAmount} {DisplayUnit}";
 }

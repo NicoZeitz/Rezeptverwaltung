@@ -31,9 +31,9 @@ public static class SpoonSizeExtensions
     };
 }
 
-public record struct Spoon(uint Amount, SpoonSize Size) : MeasurementUnit
+public record class Spoon(uint Amount, SpoonSize Size) : MeasurementUnit
 {
-    public readonly string DisplayUnit => Size.ToDisplayUnit();
-    public readonly string DisplayAmount => Amount.ToString();
-    public override readonly string ToString() => $"{DisplayAmount} {DisplayUnit}";
+    public string DisplayUnit => Size.ToDisplayUnit();
+    public string DisplayAmount => Amount.ToString();
+    public override string ToString() => $"{DisplayAmount} {DisplayUnit}";
 }

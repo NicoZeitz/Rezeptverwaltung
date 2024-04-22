@@ -10,11 +10,11 @@ public enum WeightUnit : uint
     t = 1000 * 1000,
 }
 
-public record struct Weight(uint Amount) : MeasurementUnit
+public record class Weight(uint Amount) : MeasurementUnit
 {
-    public readonly string DisplayUnit => UnitEnumExtensions<WeightUnit>.GetNameBelowValue(Amount)!;
+    public string DisplayUnit => UnitEnumExtensions<WeightUnit>.GetNameBelowValue(Amount)!;
 
-    public readonly string DisplayAmount
+    public string DisplayAmount
     {
         get
         {
@@ -24,5 +24,5 @@ public record struct Weight(uint Amount) : MeasurementUnit
         }
     }
 
-    public override readonly string ToString() => $"{DisplayAmount} {DisplayUnit}";
+    public override string ToString() => $"{DisplayAmount} {DisplayUnit}";
 }
