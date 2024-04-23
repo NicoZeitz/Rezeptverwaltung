@@ -15,16 +15,3 @@ public record struct NewRecipePostData(
     IList<PreparationStep> PreparationSteps,
     ContentData Image
 );
-
-public record struct EditRecipePostData(
-    Identifier RecipeId,
-    Text Title,
-    Text Description,
-    Portion Portion,
-    Duration Duration,
-    Visibility Visibility,
-    IEnumerable<Tag> Tags,
-    IEnumerable<WeightedIngredient> Ingredients,
-    IList<PreparationStep> PreparationSteps,
-    ContentData Image
-);

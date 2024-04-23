@@ -22,8 +22,6 @@ using Server.Resources;
 using Server.Service;
 using Server.Session;
 
-// TODO: Not found should always return 404
-
 var configuration = new ApplicationConfiguration();
 var provider = configureServices(configuration);
 var server = provider.GetRequiredService<Server.Server>();
@@ -39,13 +37,10 @@ server.AddRequestHandler(provider.GetRequiredService<SettingsRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<RecipeDetailRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<TagRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<NewRecipeRequestHandler>());
-server.AddRequestHandler(provider.GetRequiredService<EditRecipeRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<CookbookDetailRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<NewCookbookRequestHandler>());
-server.AddRequestHandler(provider.GetRequiredService<EditCookbookRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<ShoppingListDetailRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<NewShoppingListRequestHandler>());
-server.AddRequestHandler(provider.GetRequiredService<EditShoppingListRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<ImageRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<StaticRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<NotFoundRequestHandler>());
@@ -54,14 +49,6 @@ var recipeRepository = provider.GetRequiredService<RecipeRepository>();
 var cookbookRepository = provider.GetRequiredService<CookbookRepository>();
 var shoppingListRepository = provider.GetRequiredService<ShoppingListRepository>();
 var chefRepository = provider.GetRequiredService<ChefRepository>();
-
-// chefRepository.Add(
-//    new Chef(
-//        new Username("MeisterkochFabian"),
-//        new Name("Fabian", "Wolf"),
-//        provider.GetRequiredService<PasswordHasher>().HashPassword(new Password("wolf"))
-//    )
-// );
 
 var serverCancellationToken = new CancellationToken();
 server.Run(serverCancellationToken).GetAwaiter().GetResult();
@@ -100,7 +87,7 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
 
     // Database
     // This is very ugly but we wanted to try out what it means to use a
-    // hardcoded singleton anyways 😉 (savage mode ✔️)
+    // hardcoded singleton anyways 😉
     services.AddSingleton(provider => Database.Database.Instance.Initialize(
         provider.GetRequiredService<DatabaseConfiguration>(),
         provider.GetRequiredService<Logger>()
@@ -131,6 +118,10 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     services.AddTransient<PasswordHasher, Argon2PasswordHasher>();
 
     // Services
+    services.AddTransient<CreateCookbookService>();
+    services.AddTransient<DeleteCookbookService>();
+    services.AddTransient<CreateShoppingListService>();
+    services.AddTransient<DeleteShoppingListService>();
     services.AddTransient<CreateRecipeService>();
     services.AddTransient<DeleteRecipeService>();
     services.AddTransient<LoginChefService>();
@@ -219,9 +210,6 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     services.AddTransient<ChefDetailRequestHandler>();
     services.AddTransient<DeleteRecipeRequestHandler>();
     services.AddTransient<CookbookDetailRequestHandler>();
-    services.AddTransient<EditCookbookRequestHandler>();
-    services.AddTransient<EditRecipeRequestHandler>();
-    services.AddTransient<EditShoppingListRequestHandler>();
     services.AddTransient<HomeRequestHandler>();
     services.AddTransient<ImageRequestHandler>();
     services.AddTransient<LoginRequestHandler>();

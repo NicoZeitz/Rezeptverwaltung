@@ -7,10 +7,3 @@ public record struct NewShoppingListPostData(
     Visibility Visibility,
     IEnumerable<PortionedRecipe> PortionedRecipes
 );
-
-public record struct EditShoppingListPostData(
-    Identifier Identifier,
-    Text Title,
-    Visibility Visibility,
-    IEnumerable<PortionedRecipe> PortionedRecipes
-);

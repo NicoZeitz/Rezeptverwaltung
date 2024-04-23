@@ -11,13 +11,13 @@ public class ShoppingList : IEquatable<ShoppingList>, UniqueIdentity, AccessRigh
     public Username Creator { get; }
     public IList<PortionedRecipe> PortionedRecipes { get; }
 
-    public ShoppingList(Identifier id, Text title, Visibility visibility, Username creator, IList<PortionedRecipe> portionedRecipes)
+    public ShoppingList(Identifier id, Text title, Visibility visibility, Username creator, IEnumerable<PortionedRecipe> portionedRecipes)
     {
         Identifier = id;
         Title = title;
         Visibility = visibility;
         Creator = creator;
-        PortionedRecipes = portionedRecipes;
+        PortionedRecipes = portionedRecipes.ToList();
     }
 
     public string GetUniqueIdentity() => Identifier.Id.ToString();
