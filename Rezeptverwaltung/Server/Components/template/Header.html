@@ -9,6 +9,19 @@
             Rezeptverwaltung
         </h1>
     </a>
+    <form
+        action="/"
+        method="get"
+        enctype="application/x-www-form-urlencoded"
+        class="flex flex-grow gap-2"
+    >
+        <input
+            type="search"
+            name="search"
+            placeholder="Suche"
+            class="flex-grow rounded-md bg-gray-200 p-1"
+        />
+    </form>
     {{ if chef }}
     <a class="w-fit flex-shrink" href="/recipe/new">Neues Rezept</a>
     <a class="w-fit flex-shrink" href="/cookbook/new">Neues Kochbuch</a>

@@ -126,6 +126,7 @@ public class RecipeDatabase : RecipeRepository
 
     public IEnumerable<Recipe> FindByTitle(Text title)
     {
+        var query = $"%{title.Value.ToLower()}%";
         var command = database.CreateSqlCommand(@$"
             SELECT
                 id,
@@ -137,7 +138,7 @@ public class RecipeDatabase : RecipeRepository
                 portion_denominator,
                 preparation_time
             FROM recipes
-            WHERE title = {title.Value};
+            WHERE LOWER(title) LIKE {query} COLLATE NOCASE;
         ");
         return GetRecipesFromSqlCommand(command);
     }

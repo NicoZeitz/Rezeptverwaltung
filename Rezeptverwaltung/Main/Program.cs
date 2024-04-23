@@ -27,6 +27,7 @@ var provider = configureServices(configuration);
 var server = provider.GetRequiredService<Server.Server>();
 
 server.AddRequestHandler(provider.GetRequiredService<FaviconRequestHandler>());
+server.AddRequestHandler(provider.GetRequiredService<SearchRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<HomeRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<DeleteRecipeRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<RegisterRequestHandler>());
@@ -204,9 +205,11 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     services.AddTransient<SettingsPage>();
     services.AddTransient<ShoppingListDetailPage>();
     services.AddTransient<TagPage>();
+    services.AddTransient<SearchPage>();
 
     // Request Handlers
     services.AddTransient<FaviconRequestHandler>(provider => new FaviconRequestHandler(provider.GetRequiredKeyedService<ResourceLoader>("ASSETS")));
+    services.AddTransient<SearchRequestHandler>();
     services.AddTransient<ChefDetailRequestHandler>();
     services.AddTransient<DeleteRecipeRequestHandler>();
     services.AddTransient<CookbookDetailRequestHandler>();

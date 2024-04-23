@@ -53,6 +53,15 @@ public class ShowRecipes
             .FirstOrDefault();
     }
 
+    public IEnumerable<Recipe> ShowRecipesForQuery(Text query, Chef? viewer)
+    {
+        var retrievalGraph = CreateRetrievalGraph(
+            viewer,
+            new SimpleListRetrieval<Recipe>(recipeRepository.FindByTitle(query))
+        );
+        return retrievalGraph.Retrieve();
+    }
+
     public IEnumerable<Recipe> ShowRecipesForTag(Tag tag, Chef? viewer)
     {
         var retrievalGraph = CreateRetrievalGraph(
