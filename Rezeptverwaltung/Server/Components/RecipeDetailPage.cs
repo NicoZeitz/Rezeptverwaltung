@@ -10,6 +10,7 @@ public class RecipeDetailPage : ContainerComponent
     public const string HEADER_SLOT = "Header";
 
     public Recipe? Recipe { get; set; }
+    public Chef? CurrentChef { get; set; }
 
     private readonly ImageUrlService imageUrlService;
 
@@ -30,6 +31,7 @@ public class RecipeDetailPage : ContainerComponent
             .RenderAsync(new
             {
                 Recipe,
+                CurrentChef,
                 RecipeImage = recipeImage,
                 Header = await GetRenderedSlottedChild(HEADER_SLOT)
             })

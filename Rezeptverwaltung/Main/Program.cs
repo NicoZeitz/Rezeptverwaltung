@@ -30,6 +30,7 @@ var server = provider.GetRequiredService<Server.Server>();
 
 server.AddRequestHandler(provider.GetRequiredService<FaviconRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<HomeRequestHandler>());
+server.AddRequestHandler(provider.GetRequiredService<DeleteRecipeRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<RegisterRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<LoginRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<LogoutRequestHandler>());
@@ -131,6 +132,7 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
 
     // Services
     services.AddTransient<CreateRecipeService>();
+    services.AddTransient<DeleteRecipeService>();
     services.AddTransient<LoginChefService>();
     services.AddTransient<RegisterChefService>();
     services.AddTransient<DeleteChefService>();
@@ -215,6 +217,7 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     // Request Handlers
     services.AddTransient<FaviconRequestHandler>(provider => new FaviconRequestHandler(provider.GetRequiredKeyedService<ResourceLoader>("ASSETS")));
     services.AddTransient<ChefDetailRequestHandler>();
+    services.AddTransient<DeleteRecipeRequestHandler>();
     services.AddTransient<CookbookDetailRequestHandler>();
     services.AddTransient<EditCookbookRequestHandler>();
     services.AddTransient<EditRecipeRequestHandler>();
