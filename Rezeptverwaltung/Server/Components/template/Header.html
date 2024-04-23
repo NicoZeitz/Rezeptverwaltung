@@ -9,12 +9,12 @@
             Rezeptverwaltung
         </h1>
     </a>
+    {{ if chef }}
     <a class="w-fit flex-shrink" href="/recipe/new">Neues Rezept</a>
     <a class="w-fit flex-shrink" href="/cookbook/new">Neues Kochbuch</a>
     <a class="w-fit flex-shrink" href="/shopping-list/new"
         >Neue Einkaufsliste</a
     >
-    {{ if chef }}
     <form
         action="/logout"
         method="post"
@@ -25,7 +25,10 @@
     </form>
 
     <!-- src="{{ chef_image_url }}" -->
-    <div class="flex aspect-square h-full max-h-full flex-col">
+    <a
+        href="/chef/{{ chef.username }}"
+        class="flex aspect-square h-full max-h-full flex-col"
+    >
         <div
             class="grid aspect-square h-full items-center overflow-clip rounded-t-full"
         >
@@ -40,7 +43,7 @@
             class="h-4 w-full flex-shrink-0 truncate text-center"
             >{{ chef.username }}</span
         >
-    </div>
+    </a>
     <a href="/settings">
         <svg
             xmlns="http://www.w3.org/2000/svg"

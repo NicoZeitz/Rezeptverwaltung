@@ -2,11 +2,11 @@
 
 namespace Core.ValueObjects;
 
-public record struct Rational<NumerType>(NumerType Numerator, NumerType Denominator) where NumerType : IBinaryInteger<NumerType>
+public record struct Rational<NumberType>(NumberType Numerator, NumberType Denominator) where NumberType : IBinaryInteger<NumberType>
 {
     public override string ToString()
     {
-        if (NumerType.One == Denominator)
+        if (NumberType.One == Denominator)
             return $"{Numerator}";
 
         return $"{Numerator}/{Denominator}";

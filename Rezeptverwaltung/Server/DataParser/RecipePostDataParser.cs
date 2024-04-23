@@ -1,4 +1,3 @@
-using System.Net;
 using Core.Data;
 using Core.Services.Serialization;
 using Core.ValueObjects;
@@ -6,6 +5,7 @@ using Core.ValueObjects.MeasurementUnits;
 using Server.ContentParser;
 using Server.Session;
 using Server.ValueObjects.PostData;
+using System.Net;
 
 namespace Server.DataParser;
 
@@ -70,7 +70,7 @@ public class RecipePostDataParser : DataParser<NewRecipePostData>
 
         var visibility = Visibility.PUBLIC;
         if (content.TryGetValue("visibility", out var visibilityContent) &&
-            visibilityContent!.IsText ||
+            visibilityContent!.IsText &&
             visibilityContent!.TextValue!.ToLower() == "on")
         {
             visibility = Visibility.PRIVATE;
