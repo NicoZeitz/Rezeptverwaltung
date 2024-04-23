@@ -12,14 +12,14 @@ namespace Server.RequestHandler;
 
 public class NewRecipeRequestHandler : AuthorizedRequestHandler
 {
-    private readonly RecipeEditPageRenderer newRecipePageRenderer;
+    private readonly NewRecipePageRenderer newRecipePageRenderer;
     private readonly RecipePostDataParser recipePostDataParser;
     private readonly CreateRecipeService createRecipeService;
     private readonly ImageTypeMimeTypeConverter imageTypeMimeTypeConverter;
     private readonly RedirectService redirectService;
 
     public NewRecipeRequestHandler(
-        RecipeEditPageRenderer newRecipePageRenderer,
+        NewRecipePageRenderer newRecipePageRenderer,
         SessionService sessionService,
         RecipePostDataParser recipePostDataParser,
         CreateRecipeService createRecipeService,

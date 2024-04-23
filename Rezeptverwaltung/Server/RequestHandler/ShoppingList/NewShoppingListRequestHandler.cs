@@ -1,15 +1,12 @@
+using Server.PageRenderer;
 using Server.Service;
+using Server.Session;
 using System.Net;
 
 namespace Server.RequestHandler;
 
-public class NewShoppingListRequestHandler : HTMLRequestHandler
+public class NewShoppingListRequestHandler(HTMLFileWriter htmlFileWriter, NotFoundPageRenderer notFoundPageRenderer, SessionService sessionService) : HTMLRequestHandler(htmlFileWriter, notFoundPageRenderer, sessionService)
 {
-    public NewShoppingListRequestHandler(HTMLFileWriter htmlFileWriter)
-        : base(htmlFileWriter)
-    {
-    }
-
     public override bool CanHandle(HttpListenerRequest request) =>
         request.HttpMethod == HttpMethod.Get.Method
         && request.Url?.AbsolutePath == "/shopping-list/new";

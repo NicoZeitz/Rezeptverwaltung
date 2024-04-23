@@ -18,6 +18,11 @@ public class RecipeList : TemplateComponent
 
     public override Task<string> RenderAsync()
     {
+        if (!Recipes.Any())
+        {
+            return Task.FromResult("");
+        }
+
         var recipes = Recipes.Select(recipe => new RecipeWithImage(
             recipe,
             imageUrlService.GetImageUrlForRecipe(recipe)

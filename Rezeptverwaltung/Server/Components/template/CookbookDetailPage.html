@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>📘 {{ cookbook.title }} — Rezeptverwaltung</title>
+        <link rel="stylesheet" href="/assets/styles.css" />
+        <link rel="favicon" href="/assets/favicon.ico" />
+    </head>
+    <body>
+        {{ header }}
+        <main class="mx-auto grid max-w-[80ch] px-2 pb-4 pt-3">
+            <h1 class="mb-2 text-3xl">{{ cookbook.title }}</h1>
+            <p class="mb-5">{{ cookbook.description }}</p>
+            <h2 class="mb-2 text-xl">Rezepte:</h2>
+            {{ for child in children}} {{child}} {{end}}
+        </main>
+    </body>
+</html>

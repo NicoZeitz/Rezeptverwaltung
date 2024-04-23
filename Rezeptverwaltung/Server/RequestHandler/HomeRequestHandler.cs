@@ -1,5 +1,6 @@
 ﻿using Core.Services;
 using Server.Components;
+using Server.PageRenderer;
 using Server.Service;
 using Server.Session;
 using System.Net;
@@ -9,18 +10,17 @@ namespace Server.RequestHandler;
 public class HomeRequestHandler : HTMLRequestHandler
 {
     private readonly ComponentProvider componentProvider;
-    private readonly SessionService sessionService;
     private readonly ShowRecipes showRecipes;
 
     public HomeRequestHandler(
         ComponentProvider componentProvider,
         HTMLFileWriter htmlFileWriter,
         SessionService sessionService,
+        NotFoundPageRenderer notFoundPageRenderer,
         ShowRecipes showRecipes)
-        : base(htmlFileWriter)
+        : base(htmlFileWriter, notFoundPageRenderer, sessionService)
     {
         this.componentProvider = componentProvider;
-        this.sessionService = sessionService;
         this.showRecipes = showRecipes;
     }
 

@@ -88,8 +88,6 @@ public class Database
                 OR name='tags'
                 OR name='recipe_tags'
                 OR name='shopping_list_recipes'
-                OR name='chef_recipes'
-                OR name='chef_saved_recipes'
                 OR name='cookbook_recipes'
             );
         ").ExecuteReader();
@@ -98,7 +96,7 @@ public class Database
             return false;
 
         reader.Read();
-        return reader.GetInt32(0) == 14;
+        return reader.GetInt32(0) == 12;
     }
 
     private void CreateTables()
@@ -221,36 +219,6 @@ public class Database
                 ON DELETE CASCADE,
             FOREIGN KEY(shopping_list_id)
                 REFERENCES shopping_list(id)
-                ON UPDATE CASCADE
-                ON DELETE CASCADE
-        );").ExecuteNonQuery();
-
-        CreateSqlCommand($@"CREATE TABLE IF NOT EXISTS chef_recipes (
-            chef_username TEXT NOT NULL COLLATE NOCASE,
-            recipe_id TEXT NOT NULL COLLATE NOCASE,
-
-            PRIMARY KEY(chef_username, recipe_id),
-            FOREIGN KEY(chef_username)
-                REFERENCES chefs(username)
-                ON UPDATE CASCADE
-                ON DELETE CASCADE,
-            FOREIGN KEY(recipe_id)
-                REFERENCES recipes(id)
-                ON UPDATE CASCADE
-                ON DELETE CASCADE
-        );").ExecuteNonQuery();
-
-        CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS chef_saved_recipes (
-            chef_username TEXT NOT NULL COLLATE NOCASE,
-            recipe_id TEXT NOT NULL COLLATE NOCASE,
-
-            PRIMARY KEY(chef_username, recipe_id),
-            FOREIGN KEY(chef_username)
-                REFERENCES chefs(username)
-                ON UPDATE CASCADE
-                ON DELETE CASCADE,
-            FOREIGN KEY(recipe_id)
-                REFERENCES recipes(id)
                 ON UPDATE CASCADE
                 ON DELETE CASCADE
         );").ExecuteNonQuery();
