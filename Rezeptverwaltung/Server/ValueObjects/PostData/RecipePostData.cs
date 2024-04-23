@@ -10,9 +10,9 @@ public record struct NewRecipePostData(
     Duration Duration,
     Visibility Visibility,
     Username Chef,
-    Tag[] Tags,
-    WeightedIngredient[] Ingredients,
-    PreparationStep[] PreparationSteps,
+    IEnumerable<Tag> Tags,
+    IEnumerable<WeightedIngredient> Ingredients,
+    IList<PreparationStep> PreparationSteps,
     ContentData Image
 );
 
@@ -23,8 +23,8 @@ public record struct EditRecipePostData(
     Portion Portion,
     Duration Duration,
     Visibility Visibility,
-    Tag[] Tags,
-    WeightedIngredient[] Ingredients,
-    PreparationStep[] PreparationSteps,
+    IEnumerable<Tag> Tags,
+    IEnumerable<WeightedIngredient> Ingredients,
+    IList<PreparationStep> PreparationSteps,
     ContentData Image
 );

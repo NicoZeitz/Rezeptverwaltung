@@ -1,3 +1,4 @@
+using System.Net;
 using Core.Data;
 using Core.Services;
 using Core.ValueObjects;
@@ -39,7 +40,7 @@ public class SettingsPostDataParser : DataParser<SettingsPostData>
         this.redirectService = redirectService;
     }
 
-    protected override Result<SettingsPostData> ExtractDataFromContent(IDictionary<string, ContentData> content)
+    protected override Result<SettingsPostData> ExtractDataFromContent(IDictionary<string, ContentData> content, HttpListenerRequest request)
     {
         if (!content.TryGetValue("type", out var type) && type!.IsText)
         {

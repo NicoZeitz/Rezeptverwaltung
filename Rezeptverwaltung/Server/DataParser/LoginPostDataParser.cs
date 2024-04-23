@@ -1,4 +1,5 @@
-﻿using Core.Data;
+﻿using System.Net;
+using Core.Data;
 using Core.ValueObjects;
 using Server.ContentParser;
 using Server.RequestHandler;
@@ -7,7 +8,7 @@ namespace Server.DataParser;
 
 public class LoginPostDataParser(ContentParserFactory contentParserFactory) : DataParser<LoginPostData>(contentParserFactory)
 {
-    protected override Result<LoginPostData> ExtractDataFromContent(IDictionary<string, ContentData> content)
+    protected override Result<LoginPostData> ExtractDataFromContent(IDictionary<string, ContentData> content, HttpListenerRequest request)
     {
         if (!content.TryGetValue("username", out var username) && username!.IsText)
         {

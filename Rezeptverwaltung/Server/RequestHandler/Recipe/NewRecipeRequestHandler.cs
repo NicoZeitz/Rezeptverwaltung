@@ -1,4 +1,6 @@
+using Core.Entities;
 using Core.Services;
+using Core.Services.Serialization;
 using Core.ValueObjects;
 using Server.DataParser;
 using Server.PageRenderer;
@@ -8,11 +10,9 @@ using System.Net;
 
 namespace Server.RequestHandler;
 
-public class NewRecipeRequestHandler : RequestHandler
+public class NewRecipeRequestHandler : AuthorizedRequestHandler
 {
     private readonly RecipeEditPageRenderer newRecipePageRenderer;
-    private readonly SessionService sessionService;
-    private readonly ShowRecipes showRecipes;
     private readonly RecipePostDataParser recipePostDataParser;
     private readonly CreateRecipeService createRecipeService;
     private readonly ImageTypeMimeTypeConverter imageTypeMimeTypeConverter;
@@ -21,64 +21,54 @@ public class NewRecipeRequestHandler : RequestHandler
     public NewRecipeRequestHandler(
         RecipeEditPageRenderer newRecipePageRenderer,
         SessionService sessionService,
-        ShowRecipes showRecipes,
         RecipePostDataParser recipePostDataParser,
         CreateRecipeService createRecipeService,
         ImageTypeMimeTypeConverter imageTypeMimeTypeConverter,
-        RedirectService redirectService)
-        : base()
+        RedirectService redirectService,
+        NotFoundPageRenderer notFoundPageRenderer,
+        HTMLFileWriter htmlFileWriter)
+        : base(htmlFileWriter, notFoundPageRenderer, sessionService)
     {
         this.newRecipePageRenderer = newRecipePageRenderer;
-        this.sessionService = sessionService;
-        this.showRecipes = showRecipes;
         this.recipePostDataParser = recipePostDataParser;
         this.createRecipeService = createRecipeService;
         this.imageTypeMimeTypeConverter = imageTypeMimeTypeConverter;
         this.redirectService = redirectService;
     }
 
-    public bool CanHandle(HttpListenerRequest request) =>
+    public override bool CanHandle(HttpListenerRequest request) =>
         (request.HttpMethod == HttpMethod.Get.Method || request.HttpMethod == HttpMethod.Post.Method)
         && request.Url?.AbsolutePath == "/recipe/new";
 
-    public Task Handle(HttpListenerRequest request, HttpListenerResponse response)
+    public override Task Handle(HttpListenerRequest request, HttpListenerResponse response, Chef currentChef)
     {
         if (request.HttpMethod == HttpMethod.Get.Method)
         {
-            return HandleGetRequest(request, response);
+            return HandleGetRequest(request, response, currentChef);
         }
         else
         {
-            return HandlePostRequest(request, response);
+            return HandlePostRequest(request, response, currentChef);
         }
     }
 
-    private Task HandleGetRequest(HttpListenerRequest request, HttpListenerResponse response)
+    private Task HandleGetRequest(HttpListenerRequest request, HttpListenerResponse response, Chef currentChef)
     {
-        var currentChef = sessionService.GetCurrentChef(request);
-        var tags = showRecipes.ShowAllTags(currentChef);
-        var ingredients = showRecipes.ShowAllIngredients(currentChef);
         return newRecipePageRenderer.RenderPage(
             response,
             HttpStatusCode.OK,
             null,
-            currentChef,
-            tags,
-            ingredients
+            currentChef
         );
     }
 
-    private Task HandlePostRequest(HttpListenerRequest request, HttpListenerResponse response)
+    private Task HandlePostRequest(HttpListenerRequest request, HttpListenerResponse response, Chef currentChef)
     {
-        var currentChef = sessionService.GetCurrentChef(request);
         if (currentChef is null)
         {
             response.StatusCode = (int)HttpStatusCode.BadRequest;
             return Task.CompletedTask;
         }
-
-        var tags = showRecipes.ShowAllTags(currentChef);
-        var ingredients = showRecipes.ShowAllIngredients(currentChef);
 
         var data = recipePostDataParser.ParsePostData(request);
         if (data.IsError)
@@ -88,8 +78,6 @@ public class NewRecipeRequestHandler : RequestHandler
                 HttpStatusCode.BadRequest,
                 null,
                 currentChef,
-                tags,
-                ingredients,
                 data.ErrorMessages
             );
         }
@@ -102,9 +90,7 @@ public class NewRecipeRequestHandler : RequestHandler
                 HttpStatusCode.BadRequest,
                 null,
                 currentChef,
-                tags,
-                ingredients,
-                [new ErrorMessage("Bilddatei nicht erlaubt! Bitte lade ein anderes Bild hoch")] // TODO: error messages into own class static attributes for dry
+                [ErrorMessages.INVALID_IMAGE_MIME_TYPE]
             );
         }
 

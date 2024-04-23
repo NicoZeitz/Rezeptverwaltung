@@ -25,4 +25,5 @@ public record class Weight(uint Amount) : MeasurementUnit
     }
 
     public override string ToString() => $"{DisplayAmount} {DisplayUnit}";
+    public string display() => ToString();
 }

@@ -26,9 +26,9 @@ public class CreateRecipeService
         Visibility visibility,
         Portion portion,
         Duration duration,
-        Tag[] tags,
-        PreparationStep[] preparationSteps,
-        WeightedIngredient[] ingredients,
+        IEnumerable<Tag> tags,
+        IList<PreparationStep> preparationSteps,
+        IEnumerable<WeightedIngredient> ingredients,
         Image image)
     {
         var recipe = new Recipe(

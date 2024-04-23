@@ -8,4 +8,5 @@ public static class ErrorMessages
     public static readonly ErrorMessage INVALID_CREDENTIALS_ERROR_MESSAGE = new("Benutzername und/oder Passwort falsch!");
     public static readonly ErrorMessage INVALID_IMAGE_MIME_TYPE = new("Bilddatei nicht erlaubt! Bitte lade ein anderes Bild hoch.");
     public static readonly ErrorMessage PASSWORDS_DO_NOT_MATCH = new("Passwörter stimmen nicht überein!");
+    public static readonly ErrorMessage NO_PREPARATION_STEPS = new("Es wurden keine Zubereitungsschritte angegeben.");
 }

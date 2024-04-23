@@ -24,8 +24,8 @@ public abstract class DataParser<T>
         }
 
         var content = contentParser.ParseRequest(request);
-        return ExtractDataFromContent(content);
+        return ExtractDataFromContent(content, request);
     }
 
-    protected abstract Result<T> ExtractDataFromContent(IDictionary<string, ContentData> content);
+    protected abstract Result<T> ExtractDataFromContent(IDictionary<string, ContentData> content, HttpListenerRequest request);
 }

@@ -278,9 +278,12 @@ public class RecipeDatabase : RecipeRepository
 
     private void InsertTagsForRecipe(Recipe recipe)
     {
+        if (recipe.Tags.Count == 0)
+            return;
+
         database.CreateSqlCommand(@$"
             INSERT INTO tags(name)
-            VALUES {recipe.Tags.Select(tag => tag.Text)}
+            VALUES ({recipe.Tags.Select(tag => tag.Text)})
             ON CONFLICT(name) DO NOTHING;
         ").ExecuteNonQuery();
 

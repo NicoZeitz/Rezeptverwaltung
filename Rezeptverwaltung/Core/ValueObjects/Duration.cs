@@ -21,4 +21,23 @@ public record struct Duration(TimeSpan TimeSpan) : IComparable<Duration>
 
         return string.Format(@"{0:hh}:{0:mm}:{0:ss}", TimeSpan);
     }
+
+    public static Duration? Parse(string durationString)
+    {
+        // HH:mm or mm or HH:mm:ss
+        var parts = durationString.Split(':');
+        if (parts.Length == 1)
+        {
+            return new Duration(TimeSpan.FromMinutes(int.Parse(parts[0])));
+        }
+        if (parts.Length == 2)
+        {
+            return new Duration(TimeSpan.FromMinutes(int.Parse(parts[0]) * 60 + int.Parse(parts[1])));
+        }
+        if (parts.Length == 3)
+        {
+            return new Duration(TimeSpan.FromMinutes(int.Parse(parts[0]) * 60 + int.Parse(parts[1]) + int.Parse(parts[2])));
+        }
+        return null;
+    }
 }

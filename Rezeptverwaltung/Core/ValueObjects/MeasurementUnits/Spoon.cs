@@ -36,4 +36,5 @@ public record class Spoon(uint Amount, SpoonSize Size) : MeasurementUnit
     public string DisplayUnit => Size.ToDisplayUnit();
     public string DisplayAmount => Amount.ToString();
     public override string ToString() => $"{DisplayAmount} {DisplayUnit}";
+    public string display() => ToString();
 }

@@ -2,13 +2,13 @@ namespace Core.ValueObjects;
 
 public readonly struct ImageType : IEquatable<ImageType>
 {
-    public static readonly ImageType PNG = new ImageType("PNG");
-    public static readonly ImageType JPEG = new ImageType("JPEG");
-    public static readonly ImageType JPG = new ImageType("JPG");
-    public static readonly ImageType GIF = new ImageType("GIF");
-    public static readonly ImageType SVG = new ImageType("SVG");
-    public static readonly ImageType WEBP = new ImageType("WEBP");
-    public static readonly ImageType ICO = new ImageType("ICO");
+    public static readonly ImageType PNG = new ImageType("png");
+    public static readonly ImageType JPEG = new ImageType("jpeg");
+    public static readonly ImageType JPG = new ImageType("jpg");
+    public static readonly ImageType GIF = new ImageType("gif");
+    public static readonly ImageType SVG = new ImageType("svg");
+    public static readonly ImageType WEBP = new ImageType("webp");
+    public static readonly ImageType ICO = new ImageType("ico");
 
     public readonly string FileExtension;
 

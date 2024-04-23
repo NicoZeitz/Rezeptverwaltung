@@ -13,6 +13,7 @@
             class="mx-auto grid max-w-full grid-cols-1 justify-items-center gap-5 px-4 pb-32 pt-10 sm:max-w-[130ch] sm:grid-cols-2"
         >
             <form
+                id="new-recipe-form"
                 class="grid w-[min(100%,130ch)] grid-cols-subgrid gap-x-4 gap-y-2 sm:col-span-2"
                 action="/recipe/new"
                 method="post"
@@ -298,7 +299,7 @@
             <script type="text/javascript">
                 const tags = new Set();
 
-                const form = document.querySelector("form");
+                const form = document.querySelector("#new-recipe-form");
                 const tagInput = document.getElementById("tag-input");
                 const tagOutput = document.getElementById("tag-output");
                 const tagTemplate = document.getElementById("tag-template");

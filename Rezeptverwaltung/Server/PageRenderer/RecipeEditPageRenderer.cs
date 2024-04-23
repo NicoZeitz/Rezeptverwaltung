@@ -1,4 +1,6 @@
 using Core.Entities;
+using Core.Services;
+using Core.Services.Serialization;
 using Core.ValueObjects;
 using Server.Components;
 using Server.Service;
@@ -10,13 +12,19 @@ public class RecipeEditPageRenderer
 {
     private readonly ComponentProvider componentProvider;
     private readonly HTMLFileWriter htmlFileWriter;
+    private readonly MeasurementUnitSerializationManager measurementUnitSerializationManager;
+    private readonly ShowRecipes showRecipes;
 
     public RecipeEditPageRenderer(
         ComponentProvider componentProvider,
-        HTMLFileWriter htmlFileWriter)
+        HTMLFileWriter htmlFileWriter,
+        MeasurementUnitSerializationManager measurementUnitSerializationManager,
+        ShowRecipes showRecipes)
     {
         this.componentProvider = componentProvider;
         this.htmlFileWriter = htmlFileWriter;
+        this.measurementUnitSerializationManager = measurementUnitSerializationManager;
+        this.showRecipes = showRecipes;
     }
 
     public async Task RenderPage(
@@ -24,12 +32,13 @@ public class RecipeEditPageRenderer
         HttpStatusCode httpStatus,
         Recipe? recipe,
         Chef? currentChef,
-        IEnumerable<Tag> tags,
-        IEnumerable<Ingredient> ingredients,
-        IEnumerable<ErrorMessage> errorMessages = default!
-    )
+        IEnumerable<ErrorMessage> errorMessages = default!)
     {
         errorMessages ??= [];
+
+        var tags = showRecipes.ShowAllTags(currentChef);
+        var ingredients = showRecipes.ShowAllIngredients(currentChef);
+        var units = measurementUnitSerializationManager.UnitsToDeserialize.Select(unit => new Text(unit));
 
         var header = componentProvider.GetComponent<Header>();
         var newRecipePage = componentProvider.GetComponent<NewRecipePage>();
@@ -40,7 +49,7 @@ public class RecipeEditPageRenderer
         newRecipePage.Recipe = recipe;
         newRecipePage.Tags = tags;
         newRecipePage.Ingredients = ingredients;
-        newRecipePage.Units = [new Text("g"), new Text("kg"), new Text("ml"), new Text("l")]; // TODO:
+        newRecipePage.Units = units;
 
         var htmlString = await newRecipePage.RenderAsync();
         htmlFileWriter.WriteHtmlFile(response, htmlString, httpStatus);
