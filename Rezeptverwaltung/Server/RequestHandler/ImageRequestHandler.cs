@@ -2,6 +2,7 @@ using Core.Interfaces;
 using Core.Services;
 using Core.ValueObjects;
 using Server.Service;
+using Server.Session;
 using System.Net;
 using System.Text.RegularExpressions;
 
@@ -14,6 +15,7 @@ public partial class ImageRequestHandler : RequestHandler
     private readonly NotFoundRequestHandler notFoundRequestHandler;
     private readonly ShowChefs showChefs;
     private readonly ShowRecipes showRecipes;
+    private readonly SessionService sessionService;
 
     [GeneratedRegex("^/images/chef/(?<chef_username>[A-Z0-9_ ]+)/?$", RegexOptions.NonBacktracking | RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 1000)]
     private static partial Regex chefImageUrlPathRegex();
@@ -26,7 +28,8 @@ public partial class ImageRequestHandler : RequestHandler
         ImageTypeMimeTypeConverter imageTypeMimeTypeConverter,
         NotFoundRequestHandler notFoundRequestHandler,
         ShowChefs showChefs,
-        ShowRecipes showRecipes)
+        ShowRecipes showRecipes,
+        SessionService sessionService)
         : base()
     {
         this.imageService = imageService;
@@ -34,6 +37,7 @@ public partial class ImageRequestHandler : RequestHandler
         this.notFoundRequestHandler = notFoundRequestHandler;
         this.showChefs = showChefs;
         this.showRecipes = showRecipes;
+        this.sessionService = sessionService;
     }
 
     public bool CanHandle(HttpListenerRequest request)
@@ -77,8 +81,9 @@ public partial class ImageRequestHandler : RequestHandler
 
     private Task HandleRecipeImageRequest(HttpListenerRequest request, HttpListenerResponse response)
     {
+        var currentChef = sessionService.GetCurrentChef(request);
         var recipeId = Identifier.Parse(recipeImageUrlPathRegex().Match(request.Url?.AbsolutePath ?? "")!.Groups["recipe_id"]!.Value);
-        var recipe = showRecipes.ShowSingleRecipe(recipeId, null);
+        var recipe = showRecipes.ShowSingleRecipe(recipeId, currentChef);
         return WriteImageForNullableEntity(request, response, recipe);
     }
 
