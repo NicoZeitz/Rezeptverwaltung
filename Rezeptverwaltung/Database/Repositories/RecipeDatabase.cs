@@ -45,7 +45,7 @@ public class RecipeDatabase : RecipeRepository
     {
         database.CreateSqlCommand(@$"
             DELETE FROM recipes
-            WHERE id = {recipe.Identifier.Id}
+            WHERE id = {recipe.Identifier.Id};
         ").ExecuteNonQuery();
     }
 
@@ -61,7 +61,7 @@ public class RecipeDatabase : RecipeRepository
                 portion_numerator,
                 portion_denominator,
                 preparation_time
-            FROM recipes
+            FROM recipes;
         ");
         return GetRecipesFromSqlCommand(command);
     }
@@ -79,7 +79,7 @@ public class RecipeDatabase : RecipeRepository
                 portion_denominator,
                 preparation_time
             FROM recipes
-            WHERE chef = {chef.Username.Name}
+            WHERE chef = {chef.Username.Name};
         ");
         return GetRecipesFromSqlCommand(command);
     }
@@ -97,11 +97,11 @@ public class RecipeDatabase : RecipeRepository
                 portion_denominator,
                 preparation_time
             FROM recipes
-            WHERE id IN (
+            WHERE id COLLATE NOCASE IN (
                 SELECT recipe_id
                 FROM recipe_tags
                 WHERE tag_name = {tag.Text}
-            )
+            );
         ");
         return GetRecipesFromSqlCommand(command);
     }
@@ -119,7 +119,7 @@ public class RecipeDatabase : RecipeRepository
                 portion_denominator,
                 preparation_time
             FROM recipes
-            WHERE id = {identifier.Id}
+            WHERE id = {identifier.Id};
         ");
         return GetRecipesFromSqlCommand(command).FirstOrDefault();
     }
@@ -137,7 +137,7 @@ public class RecipeDatabase : RecipeRepository
                 portion_denominator,
                 preparation_time
             FROM recipes
-            WHERE title = {title.Value}
+            WHERE title = {title.Value};
         ");
         return GetRecipesFromSqlCommand(command);
     }
@@ -155,11 +155,11 @@ public class RecipeDatabase : RecipeRepository
                 portion_denominator,
                 preparation_time
             FROM recipes
-            WHERE id IN (
+            WHERE id COLLATE NOCASE IN (
                 SELECT recipe_id
                 FROM cookbook_recipes
                 WHERE cookbook_id = {cookbook.Identifier.Id}
-            )
+            );
         ");
         return GetRecipesFromSqlCommand(command);
     }
@@ -177,11 +177,11 @@ public class RecipeDatabase : RecipeRepository
                 portion_denominator,
                 preparation_time
             FROM recipes
-            WHERE id IN (
+            WHERE id COLLATE NOCASE IN (
                 SELECT recipe_id
                 FROM shopping_list_recipes
                 WHERE shopping_list_id = {shoppingList.Identifier.Id}
-            )
+            );
         ");
         return GetRecipesFromSqlCommand(command);
     }
@@ -256,7 +256,7 @@ public class RecipeDatabase : RecipeRepository
                 {recipe.Portion.Amount.Numerator},
                 {recipe.Portion.Amount.Denominator},
                 {recipe.PreparationTime.TimeSpan}
-            )
+            );
         ").ExecuteNonQuery();
     }
 
@@ -272,7 +272,7 @@ public class RecipeDatabase : RecipeRepository
                 portion_numerator = {recipe.Portion.Amount.Numerator},
                 portion_denominator = {recipe.Portion.Amount.Denominator},
                 preparation_time = {recipe.PreparationTime.TimeSpan}
-            WHERE id = {recipe.Identifier.Id}
+            WHERE id = {recipe.Identifier.Id};
         ").ExecuteNonQuery();
     }
 
@@ -283,7 +283,7 @@ public class RecipeDatabase : RecipeRepository
 
         database.CreateSqlCommand(@$"
             INSERT INTO tags(name)
-            VALUES ({recipe.Tags.Select(tag => tag.Text)})
+            VALUES {recipe.Tags.Select(tag => tag.Text)}
             ON CONFLICT(name) DO NOTHING;
         ").ExecuteNonQuery();
 
@@ -307,7 +307,7 @@ public class RecipeDatabase : RecipeRepository
                     {recipe.Identifier.Id},
                     {i},
                     {preparationStep.Description.Value}
-                )
+                );
             ").ExecuteNonQuery();
         }
     }
@@ -325,7 +325,7 @@ public class RecipeDatabase : RecipeRepository
                     {recipe.Identifier.Id},
                     {measurementUnitId.Id},
                     {weightedIngredient.Ingredient.Name}
-                )
+                );
             ").ExecuteNonQuery();
         }
     }
@@ -351,7 +351,7 @@ public class RecipeDatabase : RecipeRepository
                     {serializedMeasurementUnit.Unit}
                 )
                 ON CONFLICT(amount, unit) DO NOTHING
-                RETURNING id
+                RETURNING id;
             ").ExecuteReader();
         if (reader.HasRows)
         {
@@ -374,7 +374,7 @@ public class RecipeDatabase : RecipeRepository
     {
         database.CreateSqlCommand(@$"
             DELETE FROM recipe_tags
-            WHERE recipe_id = {recipe.Identifier.Id}
+            WHERE recipe_id = {recipe.Identifier.Id};
         ").ExecuteNonQuery();
     }
 
@@ -382,7 +382,7 @@ public class RecipeDatabase : RecipeRepository
     {
         database.CreateSqlCommand(@$"
             DELETE FROM preparation_steps
-            WHERE recipe_id = {recipe.Identifier.Id}
+            WHERE recipe_id = {recipe.Identifier.Id};
         ").ExecuteNonQuery();
     }
 
@@ -390,7 +390,7 @@ public class RecipeDatabase : RecipeRepository
     {
         database.CreateSqlCommand(@$"
             DELETE FROM weighted_ingredients
-            WHERE recipe_id = {recipe.Identifier.Id}
+            WHERE recipe_id = {recipe.Identifier.Id};
         ").ExecuteNonQuery();
     }
 
@@ -411,7 +411,7 @@ public class RecipeDatabase : RecipeRepository
                 recipe_id,
                 tag_name
             FROM recipe_tags
-            WHERE recipe_id IN ({recipes.Select(recipe => recipe.Identifier.Id)})
+            WHERE recipe_id COLLATE NOCASE IN ({recipes.Select(recipe => recipe.Identifier.Id.ToString())});
         ");
 
         using var reader = command.ExecuteReader();
@@ -438,8 +438,8 @@ public class RecipeDatabase : RecipeRepository
                 step_number,
                 description
             FROM preparation_steps
-            WHERE recipe_id IN ({recipes.Select(recipe => recipe.Identifier.Id)})
-            ORDER BY step_number ASC
+            WHERE recipe_id COLLATE NOCASE IN ({recipes.Select(recipe => recipe.Identifier.Id.ToString())})
+            ORDER BY step_number ASC;
         ");
 
         using var reader = command.ExecuteReader();
@@ -471,7 +471,7 @@ public class RecipeDatabase : RecipeRepository
             FROM weighted_ingredients
             INNER JOIN measurement_units
             ON weighted_ingredients.preparation_quantity = measurement_units.id
-            WHERE recipe_id IN ({recipes.Select(recipe => recipe.Identifier.Id)})
+            WHERE recipe_id COLLATE NOCASE IN ({recipes.Select(recipe => recipe.Identifier.Id.ToString())});
         ");
 
         using var reader = command.ExecuteReader();
@@ -486,8 +486,8 @@ public class RecipeDatabase : RecipeRepository
 
             var ingredient = new Ingredient(reader.GetString("ingredient_name"));
             var serializedMeasurementUnit = new SerializedMeasurementUnit(
-                reader.GetString("measurement_unit_amount"),
-                reader.GetString("measurement_unit_unit")
+                reader.GetString("measurement_unit_unit"),
+                reader.GetString("measurement_unit_amount")
             );
             var measurementUnit = measurementUnitManager.DeserializeFrom(serializedMeasurementUnit);
             if (measurementUnit is null)

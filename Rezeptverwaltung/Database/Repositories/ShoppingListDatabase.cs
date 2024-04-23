@@ -145,7 +145,7 @@ public class ShoppingListDatabase : ShoppingListRepository
                 title,
                 visibility,
                 creator,
-                new List<PortionedRecipe>()
+                []
             );
         }
     }

@@ -27,7 +27,7 @@ public class ChefDatabase : ChefRepository
                 {chef.Name.FirstName},
                 {chef.Name.LastName},
                 {chef.HashedPassword.Hash}
-            )
+            );
         ").ExecuteNonQuery();
     }
 
@@ -39,7 +39,7 @@ public class ChefDatabase : ChefRepository
                 first_name = {chef.Name.FirstName},
                 last_name = {chef.Name.LastName},
                 password = {chef.HashedPassword.Hash}
-            WHERE username = {chef.Username.Name}
+            WHERE username = {chef.Username.Name};
         ").ExecuteNonQuery();
     }
 
@@ -47,7 +47,7 @@ public class ChefDatabase : ChefRepository
     {
         database.CreateSqlCommand(@$"
             DELETE FROM chefs
-            WHERE username = {chef.Username.Name}
+            WHERE username = {chef.Username.Name};
         ").ExecuteNonQuery();
     }
 
@@ -56,7 +56,7 @@ public class ChefDatabase : ChefRepository
         var command = database.CreateSqlCommand(@$"
             SELECT first_name, last_name, password
             FROM chefs
-            WHERE username = {username.Name}
+            WHERE username = {username.Name};
         ");
 
         using var reader = command.ExecuteReader();

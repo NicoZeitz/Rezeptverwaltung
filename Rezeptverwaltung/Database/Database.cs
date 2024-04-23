@@ -104,15 +104,15 @@ public class Database
     private void CreateTables()
     {
         CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS chefs (
-            username TEXT PRIMARY KEY,
+            username TEXT PRIMARY KEY COLLATE NOCASE,
             first_name TEXT,
             last_name TEXT,
             password TEXT NOT NULL CHECK(password LIKE '$argon2id$v=%')
         );").ExecuteNonQuery();
 
         CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS recipes (
-            id TEXT PRIMARY KEY,
-            chef TEXT NOT NULL,
+            id TEXT PRIMARY KEY COLLATE NOCASE,
+            chef TEXT NOT NULL COLLATE NOCASE,
             title TEXT NOT NULL,
             description TEXT,
             visibility TEXT NOT NULL,
@@ -127,26 +127,26 @@ public class Database
         );").ExecuteNonQuery();
 
         CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS cookbooks (
-            id TEXT PRIMARY KEY,
+            id TEXT PRIMARY KEY COLLATE NOCASE,
             title TEXT NOT NULL,
             description TEXT,
             visibility TEXT NOT NULL,
-            creator TEXT NOT NULL,
+            creator TEXT NOT NULL COLLATE NOCASE,
 
             FOREIGN KEY(creator) REFERENCES chefs(username)
         );").ExecuteNonQuery();
 
         CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS shopping_list (
-            id TEXT PRIMARY KEY,
+            id TEXT PRIMARY KEY COLLATE NOCASE,
             title TEXT NOT NULL,
             visibility TEXT NOT NULL,
-            creator TEXT NOT NULL,
+            creator TEXT NOT NULL COLLATE NOCASE,
 
             FOREIGN KEY(creator) REFERENCES chefs(username)
         );").ExecuteNonQuery();
 
         CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS preparation_steps (
-            recipe_id TEXT NOT NULL,
+            recipe_id TEXT NOT NULL COLLATE NOCASE,
             step_number INTEGER NOT NULL,
             description TEXT NOT NULL,
 
@@ -162,7 +162,7 @@ public class Database
         );").ExecuteNonQuery();
 
         CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS measurement_units (
-            id TEXT PRIMARY KEY,
+            id TEXT PRIMARY KEY COLLATE NOCASE,
             amount TEXT NOT NULL,
             unit TEXT NOT NULL,
 
@@ -170,8 +170,8 @@ public class Database
         );").ExecuteNonQuery();
 
         CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS weighted_ingredients (
-            recipe_id TEXT NOT NULL,
-            preparation_quantity TEXT NOT NULL,
+            recipe_id TEXT NOT NULL COLLATE NOCASE,
+            preparation_quantity TEXT NOT NULL COLLATE NOCASE,
             ingredient_name TEXT NOT NULL,
 
             PRIMARY KEY(recipe_id, preparation_quantity, ingredient_name),
@@ -194,7 +194,7 @@ public class Database
         );").ExecuteNonQuery();
 
         CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS recipe_tags (
-            recipe_id TEXT NOT NULL,
+            recipe_id TEXT NOT NULL COLLATE NOCASE,
             tag_name TEXT NOT NULL,
 
             PRIMARY KEY(recipe_id, tag_name),
@@ -209,8 +209,8 @@ public class Database
         );").ExecuteNonQuery();
 
         CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS shopping_list_recipes (
-            recipe_id TEXT NOT NULL,
-            shopping_list_id TEXT NOT NULL,
+            recipe_id TEXT NOT NULL COLLATE NOCASE,
+            shopping_list_id TEXT NOT NULL COLLATE NOCASE,
             portion_numerator INTEGER NOT NULL,
             portion_denominator INTEGER NOT NULL CHECK(portion_denominator <> 0),
 
@@ -226,8 +226,8 @@ public class Database
         );").ExecuteNonQuery();
 
         CreateSqlCommand($@"CREATE TABLE IF NOT EXISTS chef_recipes (
-            chef_username TEXT NOT NULL,
-            recipe_id TEXT NOT NULL,
+            chef_username TEXT NOT NULL COLLATE NOCASE,
+            recipe_id TEXT NOT NULL COLLATE NOCASE,
 
             PRIMARY KEY(chef_username, recipe_id),
             FOREIGN KEY(chef_username)
@@ -241,8 +241,8 @@ public class Database
         );").ExecuteNonQuery();
 
         CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS chef_saved_recipes (
-            chef_username TEXT NOT NULL,
-            recipe_id TEXT NOT NULL,
+            chef_username TEXT NOT NULL COLLATE NOCASE,
+            recipe_id TEXT NOT NULL COLLATE NOCASE,
 
             PRIMARY KEY(chef_username, recipe_id),
             FOREIGN KEY(chef_username)
@@ -256,8 +256,8 @@ public class Database
         );").ExecuteNonQuery();
 
         CreateSqlCommand(@$"CREATE TABLE IF NOT EXISTS cookbook_recipes (
-            cookbook_id TEXT NOT NULL,
-            recipe_id TEXT NOT NULL,
+            cookbook_id TEXT NOT NULL COLLATE NOCASE,
+            recipe_id TEXT NOT NULL COLLATE NOCASE,
 
             PRIMARY KEY(cookbook_id, recipe_id),
             FOREIGN KEY(cookbook_id)

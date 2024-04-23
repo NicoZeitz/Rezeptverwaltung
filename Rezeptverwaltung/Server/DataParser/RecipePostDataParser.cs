@@ -85,7 +85,7 @@ public class RecipePostDataParser : DataParser<NewRecipePostData>
         var tags = new List<Tag>();
         {
             var index = 0;
-            while (content.TryGetValue("tag_" + index, out var tag) && tag!.IsText)
+            while (content.TryGetValue("tags_" + index, out var tag) && tag!.IsText)
             {
                 tags.Add(new Tag(tag.TextValue!));
                 index++;

@@ -16,6 +16,7 @@
         "Hasher",
         "Isopoh",
         "MIMETYPES",
+        "NOCASE",
         "rezeptverwaltung",
         "schöpfkelle",
         "Sqlite"
