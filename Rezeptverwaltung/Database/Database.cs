@@ -12,9 +12,7 @@ public class Database
     private SqliteConnection? connection = default!;
     private Logger? logger = default!;
 
-    private Database() : base()
-    {
-    }
+    private Database() : base() { }
 
     public Database Initialize(DatabaseConfiguration configuration, Logger? logger)
     {
