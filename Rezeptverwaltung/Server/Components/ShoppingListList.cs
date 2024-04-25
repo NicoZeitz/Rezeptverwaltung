@@ -3,11 +3,18 @@ using Server.Resources;
 
 namespace Server.Components;
 
-public class ShoppingListList(TemplateLoader templateLoader) : TemplateComponent(templateLoader)
+public class ShoppingListList : Component
 {
+    private readonly TemplateLoader templateLoader;
+
+    public ShoppingListList(TemplateLoader templateLoader)
+    {
+        this.templateLoader = templateLoader;
+    }
+
     public IEnumerable<ShoppingList> ShoppingLists = [];
 
-    public override Task<string> RenderAsync()
+    public Task<string> RenderAsync()
     {
         if (!ShoppingLists.Any())
         {

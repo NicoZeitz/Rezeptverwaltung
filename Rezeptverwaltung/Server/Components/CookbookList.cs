@@ -3,11 +3,18 @@ using Server.Resources;
 
 namespace Server.Components;
 
-public class CookbookList(TemplateLoader templateLoader) : TemplateComponent(templateLoader)
+public class CookbookList : Component
 {
     public IEnumerable<Cookbook> Cookbooks { get; set; } = [];
 
-    public override Task<string> RenderAsync()
+    private readonly TemplateLoader templateLoader;
+
+    public CookbookList(TemplateLoader templateLoader)
+    {
+        this.templateLoader = templateLoader;
+    }
+
+    public Task<string> RenderAsync()
     {
         if (!Cookbooks.Any())
         {

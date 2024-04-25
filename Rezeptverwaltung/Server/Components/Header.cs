@@ -4,19 +4,21 @@ using Server.Service;
 
 namespace Server.Components;
 
-public class Header : TemplateComponent
+public class Header : Component
 {
     public Chef? CurrentChef { get; set; }
 
     private readonly ImageUrlService imageUrlService;
+    private readonly TemplateLoader templateLoader;
 
-    public Header(TemplateLoader templateLoader, ImageUrlService imageUrlService)
-        : base(templateLoader)
+    public Header(ImageUrlService imageUrlService, TemplateLoader templateLoader)
+        : base()
     {
         this.imageUrlService = imageUrlService;
+        this.templateLoader = templateLoader;
     }
 
-    public override Task<string> RenderAsync()
+    public Task<string> RenderAsync()
     {
         return templateLoader
             .LoadTemplate("Header.html")!

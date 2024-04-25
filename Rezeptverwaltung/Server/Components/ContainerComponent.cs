@@ -2,10 +2,17 @@
 
 namespace Server.Components;
 
-public abstract class ContainerComponent(TemplateLoader templateLoader) : TemplateComponent(templateLoader)
+public abstract class ContainerComponent : Component
 {
     public IEnumerable<Component> Children { get; set; } = [];
     public IDictionary<string, Component> SlottedChildren { get; set; } = new Dictionary<string, Component>();
+
+    protected readonly TemplateLoader templateLoader;
+
+    public ContainerComponent(TemplateLoader templateLoader)
+    {
+        this.templateLoader = templateLoader;
+    }
 
     protected Component? GetSlottedChild(string name)
     {
@@ -32,4 +39,6 @@ public abstract class ContainerComponent(TemplateLoader templateLoader) : Templa
     {
         return Task.WhenAll(GetChildren().Select(child => child.RenderAsync()));
     }
+
+    public abstract Task<string> RenderAsync();
 }

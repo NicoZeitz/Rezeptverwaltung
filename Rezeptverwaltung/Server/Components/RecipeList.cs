@@ -4,19 +4,21 @@ using Server.Service;
 
 namespace Server.Components;
 
-public class RecipeList : TemplateComponent
+public class RecipeList : Component
 {
     public IEnumerable<Recipe> Recipes { get; set; } = [];
 
     private readonly ImageUrlService imageUrlService;
+    private readonly TemplateLoader templateLoader;
 
     public RecipeList(TemplateLoader templateLoader, ImageUrlService imageUrlService)
-        : base(templateLoader)
+        : base()
     {
+        this.templateLoader = templateLoader;
         this.imageUrlService = imageUrlService;
     }
 
-    public override Task<string> RenderAsync()
+    public Task<string> RenderAsync()
     {
         if (!Recipes.Any())
         {
