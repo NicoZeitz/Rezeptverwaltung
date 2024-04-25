@@ -34,7 +34,6 @@ public class SettingsChangePasswordPostData : SettingsPostData
         this.settingsPageRenderer = settingsPageRenderer;
     }
 
-    // TODO: move back to SettingsRequestHandler
     public Task HandlePostRequest(HttpListenerRequest request, HttpListenerResponse response)
     {
         var chef = sessionService.GetCurrentChef(request);
