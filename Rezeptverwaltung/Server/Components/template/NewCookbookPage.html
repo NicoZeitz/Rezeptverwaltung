@@ -9,8 +9,9 @@
     </head>
     <body>
         {{ header }}
-        <main class="grid max-w-full justify-items-center px-4">
+        <main class="grid max-w-full justify-items-center px-4 pt-10">
             <form
+                id="new-cookbook-form"
                 class="grid w-[min(100%,80ch)] gap-x-4 gap-y-2"
                 action="/cookbook/new"
                 method="post"
@@ -23,6 +24,7 @@
                     class="rounded-md bg-gray-200 p-1"
                     type="text"
                     id="title"
+                    required
                     name="title"
                 />
                 <label
@@ -33,6 +35,7 @@
                 <textarea
                     class="rounded-md bg-gray-200 p-1"
                     name="description"
+                    required
                     id="description"
                 ></textarea>
                 <label
@@ -53,14 +56,16 @@
                     >
                     <select
                         multiple
-                        name="recipe-select"
                         id="recipe-select"
                         class="rounded-md bg-gray-200 p-1"
                     >
                         <!-- <option disabled selected value class="hidden"></option> -->
                         {{ for recipe in recipes }}
-                        <option value="{{ recipe.Identifier }}">
-                            {{ recipe.Title }} von {{ recipe.Chef }}
+                        <option
+                            value="{{ recipe.identifier | html.url_escape }}"
+                        >
+                            {{ recipe.title | html.escape }} von {{ recipe.chef
+                            | html.escape }}
                         </option>
                         {{ end }}
                     </select>
@@ -72,6 +77,24 @@
                 >
                     Kochbuch erstellen
                 </button>
+                <script type="text/javascript">
+                    const form = document.querySelector("#new-cookbook-form");
+                    const select = form.querySelector("#recipe-select");
+
+                    form.onsubmit = (event) => {
+                        const selected = Array.from(select.selectedOptions).map(
+                            (option) => option.value,
+                        );
+                        let index = 0;
+                        for (const option of select.selectedOptions) {
+                            const input = document.createElement("input");
+                            input.type = "hidden";
+                            input.name = "recipe_" + index++;
+                            input.value = option.value;
+                            form.appendChild(input);
+                        }
+                    };
+                </script>
             </form>
         </main>
     </body>

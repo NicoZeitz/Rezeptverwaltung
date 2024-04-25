@@ -9,6 +9,11 @@ public class CookbookList(TemplateLoader templateLoader) : TemplateComponent(tem
 
     public override Task<string> RenderAsync()
     {
+        if (!Cookbooks.Any())
+        {
+            return Task.FromResult("");
+        }
+
         return templateLoader
             .LoadTemplate("CookbookList.html")!
             .RenderAsync(new

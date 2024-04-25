@@ -1,6 +1,7 @@
 using Core.Services;
 using Core.ValueObjects;
 using Server.Components;
+using Server.PageRenderer;
 using Server.Service;
 using Server.Session;
 using System.Net;
@@ -15,7 +16,6 @@ public partial class TagRequestHandler : HTMLRequestHandler
 
     private readonly ComponentProvider componentProvider;
     private readonly ShowRecipes showRecipes;
-    private readonly SessionService sessionService;
     private readonly URLEncoder urlEncoder;
 
     public TagRequestHandler(
@@ -23,12 +23,12 @@ public partial class TagRequestHandler : HTMLRequestHandler
         ComponentProvider componentProvider,
         ShowRecipes showRecipes,
         SessionService sessionService,
+        NotFoundPageRenderer notFoundPageRenderer,
         URLEncoder urlEncoder)
-        : base(htmlFileWriter)
+        : base(htmlFileWriter, notFoundPageRenderer, sessionService)
     {
         this.componentProvider = componentProvider;
         this.showRecipes = showRecipes;
-        this.sessionService = sessionService;
         this.urlEncoder = urlEncoder;
     }
 

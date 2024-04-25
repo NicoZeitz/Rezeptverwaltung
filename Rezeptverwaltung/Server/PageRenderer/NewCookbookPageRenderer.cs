@@ -8,14 +8,14 @@ using System.Net;
 
 namespace Server.PageRenderer;
 
-public class RecipeEditPageRenderer
+public class NewCookbookPageRenderer
 {
     private readonly ComponentProvider componentProvider;
     private readonly HTMLFileWriter htmlFileWriter;
     private readonly MeasurementUnitSerializationManager measurementUnitSerializationManager;
     private readonly ShowRecipes showRecipes;
 
-    public RecipeEditPageRenderer(
+    public NewCookbookPageRenderer(
         ComponentProvider componentProvider,
         HTMLFileWriter htmlFileWriter,
         MeasurementUnitSerializationManager measurementUnitSerializationManager,
@@ -30,7 +30,7 @@ public class RecipeEditPageRenderer
     public async Task RenderPage(
         HttpListenerResponse response,
         HttpStatusCode httpStatus,
-        Recipe? recipe,
+        IEnumerable<Recipe> recipes,
         Chef? currentChef,
         IEnumerable<ErrorMessage> errorMessages = default!)
     {
@@ -41,17 +41,14 @@ public class RecipeEditPageRenderer
         var units = measurementUnitSerializationManager.UnitsToDeserialize.Select(unit => new Text(unit));
 
         var header = componentProvider.GetComponent<Header>();
-        var newRecipePage = componentProvider.GetComponent<NewRecipePage>();
+        var newCookbookPage = componentProvider.GetComponent<NewCookbookPage>();
 
         header.CurrentChef = currentChef;
-        newRecipePage.SlottedChildren[NewRecipePage.HEADER_SLOT] = header;
-        newRecipePage.Children = errorMessages.Select(errorMessage => new DisplayableComponent(errorMessage));
-        newRecipePage.Recipe = recipe;
-        newRecipePage.Tags = tags;
-        newRecipePage.Ingredients = ingredients;
-        newRecipePage.Units = units;
+        newCookbookPage.SlottedChildren[NewRecipePage.HEADER_SLOT] = header;
+        newCookbookPage.Children = errorMessages.Select(errorMessage => new DisplayableComponent(errorMessage));
+        newCookbookPage.Recipes = recipes;
 
-        var htmlString = await newRecipePage.RenderAsync();
+        var htmlString = await newCookbookPage.RenderAsync();
         htmlFileWriter.WriteHtmlFile(response, htmlString, httpStatus);
     }
 

@@ -37,9 +37,8 @@
         <button type="submit" class="text-red-500">Logout</button>
     </form>
 
-    <!-- src="{{ chef_image_url }}" -->
     <a
-        href="/chef/{{ chef.username }}"
+        href="/chef/{{ chef.username | html.url_escape }}"
         class="flex aspect-square h-full max-h-full flex-col"
     >
         <div
@@ -47,14 +46,14 @@
         >
             <img
                 class="aspect-square h-full rounded-t-full object-cover"
-                src="{{ chef_image_url }}"
-                alt="Profilbild von {{ chef.username }}"
+                src="{{ chef_image_url | html.url_escape }}"
+                alt="Profilbild von {{ chef.username | html.escape }}"
             />
         </div>
         <span
             style="font-size: 0.65rem; line-height: 1rem"
             class="h-4 w-full flex-shrink-0 truncate text-center"
-            >{{ chef.username }}</span
+            >{{ chef.username | html.escape }}</span
         >
     </a>
     <a href="/settings">

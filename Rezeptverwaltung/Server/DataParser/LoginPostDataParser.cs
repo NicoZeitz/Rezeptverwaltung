@@ -3,10 +3,11 @@ using Core.Data;
 using Core.ValueObjects;
 using Server.ContentParser;
 using Server.RequestHandler;
+using Server.Service;
 
 namespace Server.DataParser;
 
-public class LoginPostDataParser(ContentParserFactory contentParserFactory) : DataParser<LoginPostData>(contentParserFactory)
+public class LoginPostDataParser(ContentParserFactory contentParserFactory, HTMLSanitizer htmlSanitizer) : DataParser<LoginPostData>(contentParserFactory, htmlSanitizer)
 {
     protected override Result<LoginPostData> ExtractDataFromContent(IDictionary<string, ContentData> content, HttpListenerRequest request)
     {
@@ -20,8 +21,8 @@ public class LoginPostDataParser(ContentParserFactory contentParserFactory) : Da
         }
 
         return Result<LoginPostData>.Successful(new LoginPostData(
-            new Username(username.TextValue!),
-            new Password(password.TextValue!)
+            new Username(htmlSanitizer.Sanitize(username.TextValue!)),
+            new Password(htmlSanitizer.Sanitize(password.TextValue!))
         ));
     }
 }

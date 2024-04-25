@@ -18,7 +18,7 @@ public class ShoppingListDatabase : ShoppingListRepository
     public void Add(ShoppingList shoppingList)
     {
         database.CreateSqlCommand(@$"
-            INSERT INTO shopping_lists (id, title, visibility, creator)
+            INSERT INTO shopping_list (id, title, visibility, creator)
             VALUES ({shoppingList.Identifier.Id}, {shoppingList.Title.Value}, {shoppingList.Visibility}, {shoppingList.Creator.Name});
         ").ExecuteNonQuery();
 
@@ -28,7 +28,7 @@ public class ShoppingListDatabase : ShoppingListRepository
     public void Update(ShoppingList shoppingList)
     {
         database.CreateSqlCommand(@$"
-            UPDATE shopping_lists
+            UPDATE shopping_list
             SET
                 title = {shoppingList.Title.Value},
                 visibility = {shoppingList.Visibility},
@@ -48,7 +48,7 @@ public class ShoppingListDatabase : ShoppingListRepository
     public void Remove(ShoppingList shoppingList)
     {
         database.CreateSqlCommand(@$"
-            DELETE FROM shopping_lists
+            DELETE FROM shopping_list
             WHERE id = {shoppingList.Identifier.Id};
         ").ExecuteNonQuery();
     }
@@ -63,9 +63,9 @@ public class ShoppingListDatabase : ShoppingListRepository
                 creator,
                 recipe_id
                 portion
-            FROM shopping_lists
+            FROM shopping_list
             INNER JOIN shopping_list_recipes
-            ON shopping_lists.id = shopping_list_recipes.shopping_list_id
+            ON shopping_list.id = shopping_list_recipes.shopping_list_id
             WHERE id = {identifier.Id};
         ");
         return GetShoppingListsFromSqlCommand(command).FirstOrDefault();
@@ -81,9 +81,9 @@ public class ShoppingListDatabase : ShoppingListRepository
                 creator,
                 recipe_id
                 portion
-            FROM shopping_lists
+            FROM shopping_list
             INNER JOIN shopping_list_recipes
-            ON shopping_lists.id = shopping_list_recipes.shopping_list_id
+            ON shopping_list.id = shopping_list_recipes.shopping_list_id
             WHERE creator = {chef.Username.Name}
             ORDER BY id;
         ");
@@ -131,7 +131,7 @@ public class ShoppingListDatabase : ShoppingListRepository
                 continue;
             }
 
-            if (lastShoppingList != null)
+            if (lastShoppingList is not null)
             {
                 yield return lastShoppingList;
             }
@@ -147,6 +147,11 @@ public class ShoppingListDatabase : ShoppingListRepository
                 creator,
                 []
             );
+        }
+
+        if (lastShoppingList is not null)
+        {
+            yield return lastShoppingList;
         }
     }
 }

@@ -9,6 +9,11 @@ public class ShoppingListList(TemplateLoader templateLoader) : TemplateComponent
 
     public override Task<string> RenderAsync()
     {
+        if (!ShoppingLists.Any())
+        {
+            return Task.FromResult("");
+        }
+
         return templateLoader
             .LoadTemplate("ShoppingListList.html")!
             .RenderAsync(new

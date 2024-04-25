@@ -12,8 +12,6 @@ namespace Server.RequestHandler;
 public partial class ChefDetailRequestHandler : HTMLRequestHandler
 {
     private readonly ComponentProvider componentProvider;
-    private readonly NotFoundPageRenderer notFoundPageRenderer;
-    private readonly SessionService sessionService;
     private readonly ShowChefs showChefs;
     private readonly ShowCookbooks showCookbooks;
     private readonly ShowRecipes showRecipes;
@@ -31,11 +29,9 @@ public partial class ChefDetailRequestHandler : HTMLRequestHandler
         ShowCookbooks showCookbooks,
         ShowRecipes showRecipes,
         ShowShoppingLists showShoppingLists)
-        : base(htmlFileWriter)
+        : base(htmlFileWriter, notFoundPageRenderer, sessionService)
     {
         this.componentProvider = componentProvider;
-        this.notFoundPageRenderer = notFoundPageRenderer;
-        this.sessionService = sessionService;
         this.showChefs = showChefs;
         this.showCookbooks = showCookbooks;
         this.showRecipes = showRecipes;

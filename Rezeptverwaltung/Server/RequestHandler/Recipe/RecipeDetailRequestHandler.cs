@@ -1,4 +1,5 @@
-﻿using Core.Services;
+﻿using Core.Entities;
+using Core.Services;
 using Core.ValueObjects;
 using Server.Components;
 using Server.PageRenderer;
@@ -12,8 +13,6 @@ namespace Server.RequestHandler;
 public partial class RecipeDetailRequestHandler : HTMLRequestHandler
 {
     private readonly ComponentProvider componentProvider;
-    private readonly NotFoundPageRenderer notFoundPageRenderer;
-    private readonly SessionService sessionService;
     private readonly ShowRecipes showRecipes;
 
     [GeneratedRegex("^/recipe/(?<recipe_id>[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-4[a-fA-F0-9]{3}-[89AB][a-fA-F0-9]{3}-[a-fA-F0-9]{12})/?$", RegexOptions.NonBacktracking | RegexOptions.IgnoreCase, matchTimeoutMilliseconds: 1000)]
@@ -25,11 +24,9 @@ public partial class RecipeDetailRequestHandler : HTMLRequestHandler
         NotFoundPageRenderer notFoundPageRenderer,
         SessionService sessionService,
         ShowRecipes showRecipes)
-        : base(htmlFileWriter)
+        : base(htmlFileWriter, notFoundPageRenderer, sessionService)
     {
         this.componentProvider = componentProvider;
-        this.notFoundPageRenderer = notFoundPageRenderer;
-        this.sessionService = sessionService;
         this.showRecipes = showRecipes;
     }
 
@@ -42,9 +39,7 @@ public partial class RecipeDetailRequestHandler : HTMLRequestHandler
         var pageData = ExtractDataFromRequest(request);
         if (pageData.Recipe is null)
         {
-            // return notFoundPageRenderer.RenderPage()
-            // return notFoundRequestHandler.HandleHtmlFileRequest(request);
-            return Task.FromResult("TODO: NOT FOUND");
+            return ReturnNotFound();
         }
 
         var header = componentProvider.GetComponent<Header>();
@@ -74,5 +69,5 @@ public partial class RecipeDetailRequestHandler : HTMLRequestHandler
         return Identifier.Parse(recipeUrlPathRegex().Match(request.Url!.AbsolutePath).Groups["recipe_id"].Value);
     }
 
-    private record struct RecipeDetailPageData(Core.Entities.Chef? CurrentChef, Core.Entities.Recipe? Recipe);
+    private record struct RecipeDetailPageData(Chef? CurrentChef, Recipe? Recipe);
 }

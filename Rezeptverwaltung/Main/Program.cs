@@ -28,8 +28,10 @@ var server = provider.GetRequiredService<Server.Server>();
 
 server.AddRequestHandler(provider.GetRequiredService<FaviconRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<SearchRequestHandler>());
+server.AddRequestHandler(provider.GetRequiredService<NewCookbookRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<HomeRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<DeleteRecipeRequestHandler>());
+server.AddRequestHandler(provider.GetRequiredService<DeleteCookbookRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<RegisterRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<LoginRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<LogoutRequestHandler>());
@@ -125,6 +127,7 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     services.AddTransient<DeleteShoppingListService>();
     services.AddTransient<CreateRecipeService>();
     services.AddTransient<DeleteRecipeService>();
+    services.AddTransient<DeleteCookbookRequestHandler>();
     services.AddTransient<LoginChefService>();
     services.AddTransient<RegisterChefService>();
     services.AddTransient<DeleteChefService>();
@@ -160,8 +163,11 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     services.AddTransient<LoginPageRenderer>();
     services.AddTransient<LoginPostDataParser>();
     services.AddTransient<RecipePostDataParser>();
+    services.AddTransient<CookbookPostDataParser>();
     services.AddTransient<MimeTypeDeterminer>();
-    services.AddTransient<RecipeEditPageRenderer>();
+    services.AddTransient<NewRecipePageRenderer>();
+    services.AddTransient<HTMLSanitizer>();
+    services.AddTransient<NewCookbookPageRenderer>();
     services.AddTransient<NotFoundPageRenderer>();
     services.AddTransient<RegisterPageRenderer>();
     services.AddTransient<RegisterPostDataParser>();
@@ -198,6 +204,7 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     services.AddTransient<LoginPage>();
     services.AddTransient<NewCookbookPage>();
     services.AddTransient<NewRecipePage>();
+    services.AddTransient<NewCookbookPage>();
     services.AddTransient<NewShoppingListPage>();
     services.AddTransient<NotFoundPage>();
     services.AddTransient<RecipeDetailPage>();
@@ -219,6 +226,7 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     services.AddTransient<LogoutRequestHandler>();
     services.AddTransient<NewCookbookRequestHandler>();
     services.AddTransient<NewRecipeRequestHandler>();
+    services.AddTransient<NewCookbookPage>();
     services.AddTransient<NewShoppingListRequestHandler>();
     services.AddTransient<NotFoundRequestHandler>();
     services.AddTransient<RecipeDetailRequestHandler>();

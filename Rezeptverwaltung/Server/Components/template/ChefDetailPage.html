@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>🧑‍🍳 {{ chef.username }} — Rezeptverwaltung</title>
+        <title>🧑‍🍳 {{ chef.username | html.escape }} — Rezeptverwaltung</title>
         <link rel="stylesheet" href="/assets/styles.css" />
         <link rel="favicon" href="/assets/favicon.ico" />
     </head>
@@ -12,7 +12,7 @@
         <main class="relative">
             <div
                 class="-z-10 h-80 scale-105 bg-cover bg-center blur-xl"
-                style="background-image: url({{ chef_image }})"
+                style="background-image: url({{ chef_image | html.url_escape }})"
             ></div>
             <div
                 class="min-h-50 relative -top-14 -mb-32 grid place-items-center content-start justify-center bg-white pt-10 sm:gap-10"
@@ -20,9 +20,11 @@
                 <section
                     class="col-span-1 col-start-1 row-start-2 place-self-start pb-32 sm:row-start-1 sm:pb-0"
                 >
-                    <h1 class="mb-2 text-3xl">{{ chef.username }}</h1>
-                    <h2>Vorname: {{ chef.name.first_name }}</h2>
-                    <h2>Nachname: {{ chef.name.last_name }}</h2>
+                    <h1 class="mb-2 text-3xl">
+                        {{ chef.username | html.escape }}
+                    </h1>
+                    <h2>Vorname: {{ chef.name.first_name | html.escape }}</h2>
+                    <h2>Nachname: {{ chef.name.last_name | html.escape }}</h2>
                 </section>
                 <div
                     class="relative -top-28 col-span-1 -mb-20 block aspect-square h-52 w-52 rounded-xl bg-white p-2 sm:col-start-2 sm:mb-0"
@@ -30,8 +32,8 @@
                     <picture class="contents">
                         <img
                             class="h-full w-full rounded-xl object-cover"
-                            src="{{ chef_image }}"
-                            alt="Bild von {{ chef.username }}"
+                            src="{{ chef_image | html.url_escape }}"
+                            alt="Bild von {{ chef.username | html.escape }}"
                         />
                     </picture>
                 </div>

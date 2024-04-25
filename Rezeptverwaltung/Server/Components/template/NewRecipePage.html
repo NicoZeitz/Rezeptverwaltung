@@ -8,7 +8,7 @@
         <link rel="favicon" href="/assets/favicon.ico" />
     </head>
     <body>
-        {{ header }} {{ recipe }} {{ error_messages }}
+        {{ header }}
         <main
             class="mx-auto grid max-w-full grid-cols-1 justify-items-center gap-5 px-4 pb-32 pt-10 sm:max-w-[130ch] sm:grid-cols-2"
         >
@@ -132,7 +132,9 @@
                     </template>
                     <datalist id="tag-list">
                         {{ for tag in tags }}
-                        <option value="{{ tag }}">{{ tag }}</option>
+                        <option value="{{ tag | html.escape }}">
+                            {{ tag | html.escape }}
+                        </option>
                         {{ end }}
                     </datalist>
                     <div
@@ -158,7 +160,9 @@
                 </table>
                 <datalist id="ingredient-list">
                     {{ for ingredient in ingredients }}
-                    <option value="{{ ingredient }}">{{ ingredient }}</option>
+                    <option value="{{ ingredient | html.escape }}">
+                        {{ ingredient | html.escape }}
+                    </option>
                     {{ end }}
                 </datalist>
                 <template id="ingredient-template">
@@ -178,7 +182,9 @@
                                 required
                             >
                                 {{ for unit in units }}
-                                <option value="{{ unit }}">{{ unit }}</option>
+                                <option value="{{ unit | html.escape }}">
+                                    {{ unit | html.escape }}
+                                </option>
                                 {{ end }}
                             </select>
                         </td>
@@ -286,7 +292,9 @@
                     class="flex flex-col gap-1 justify-self-center sm:col-span-2"
                 >
                     {{ for error_message in children }}
-                    <span class="text-red-500"> {{ error_message }} </span>
+                    <span class="text-red-500">
+                        {{ error_message | html.escape }}
+                    </span>
                     {{ end }}
                 </div>
                 <button

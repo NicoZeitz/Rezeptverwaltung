@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>📘 {{ cookbook.title | html.escape }} — Rezeptverwaltung</title>
+        <link rel="stylesheet" href="/assets/styles.css" />
+        <link rel="favicon" href="/assets/favicon.ico" />
+    </head>
+    <body>
+        {{ header }}
+        <main class="mx-auto grid max-w-[80ch] px-2 pb-4 pt-3">
+            <div class="flex">
+                <h1 class="mb-2 mr-auto text-3xl">
+                    {{ cookbook.title | html.escape }}
+                </h1>
+                {{ if cookbook.creator == current_chef?.username }}
+                <form
+                    action="/cookbook/{{ cookbook.identifier | html.url_escape }}/delete"
+                    method="post"
+                    enctype="application/x-www-form-urlencoded"
+                    display="flex items-start"
+                >
+                    <button
+                        class="rounded-md bg-red-500 px-3 py-2 text-white"
+                        type="submit"
+                    >
+                        Löschen
+                    </button>
+                </form>
+                {{ end }}
+            </div>
+            <p class="mb-5">{{ cookbook.description | html.escape }}</p>
+            <h2 class="mb-2 text-xl">Rezepte:</h2>
+            {{ for child in children}} {{child}} {{end}}
+        </main>
+    </body>
+</html>

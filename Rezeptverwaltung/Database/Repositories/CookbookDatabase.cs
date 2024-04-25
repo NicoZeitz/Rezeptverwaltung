@@ -103,7 +103,7 @@ public class CookbookDatabase : CookbookRepository
                 continue;
             }
 
-            if (lastCookbook != null)
+            if (lastCookbook is not null)
             {
                 yield return lastCookbook;
             }
@@ -120,6 +120,11 @@ public class CookbookDatabase : CookbookRepository
                 visibility,
                 [recipeId]
             );
+        }
+
+        if (lastCookbook is not null)
+        {
+            yield return lastCookbook;
         }
     }
 
