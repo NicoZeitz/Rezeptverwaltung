@@ -48,11 +48,6 @@ server.AddRequestHandler(provider.GetRequiredService<ImageRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<StaticRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<NotFoundRequestHandler>());
 
-var recipeRepository = provider.GetRequiredService<RecipeRepository>();
-var cookbookRepository = provider.GetRequiredService<CookbookRepository>();
-var shoppingListRepository = provider.GetRequiredService<ShoppingListRepository>();
-var chefRepository = provider.GetRequiredService<ChefRepository>();
-
 var serverCancellationToken = new CancellationToken();
 server.Run(serverCancellationToken).GetAwaiter().GetResult();
 

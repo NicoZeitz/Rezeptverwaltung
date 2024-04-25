@@ -4,7 +4,6 @@ using System.Net;
 
 namespace Main;
 
-// TODO: Interface Segregation
 public class ApplicationConfiguration : DatabaseConfiguration, ServerConfiguration
 {
     public Core.ValueObjects.Directory ApplicationDirectory;
