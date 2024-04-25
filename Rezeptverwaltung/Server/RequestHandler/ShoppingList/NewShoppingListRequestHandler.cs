@@ -38,7 +38,7 @@ public class NewShoppingListRequestHandler : RequestHandler
     }
 
     public bool CanHandle(HttpListenerRequest request) =>
-        request.HttpMethod == HttpMethod.Get.Method
+        (request.HttpMethod == HttpMethod.Get.Method || request.HttpMethod == HttpMethod.Post.Method)
         && request.Url?.AbsolutePath == "/shopping-list/new";
 
     public Task Handle(HttpListenerRequest request, HttpListenerResponse response)

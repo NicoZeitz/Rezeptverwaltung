@@ -62,7 +62,8 @@ public class ShoppingListDatabase : ShoppingListRepository
                 visibility,
                 creator,
                 recipe_id
-                portion
+                portion_numerator,
+                portion_denominator
             FROM shopping_list
             INNER JOIN shopping_list_recipes
             ON shopping_list.id = shopping_list_recipes.shopping_list_id
@@ -80,7 +81,8 @@ public class ShoppingListDatabase : ShoppingListRepository
                 visibility,
                 creator,
                 recipe_id
-                portion
+                portion_numerator,
+                portion_denominator
             FROM shopping_list
             INNER JOIN shopping_list_recipes
             ON shopping_list.id = shopping_list_recipes.shopping_list_id
@@ -95,8 +97,8 @@ public class ShoppingListDatabase : ShoppingListRepository
         foreach (var portionedRecipe in shoppingList.PortionedRecipes)
         {
             database.CreateSqlCommand(@$"
-                INSERT INTO shopping_list_recipes (recipe_id, shopping_list_id, portion)
-                VALUES ({portionedRecipe.RecipeIdentifier.Id}, {shoppingList.Identifier.Id}, {portionedRecipe.Portion.Amount});
+                INSERT INTO shopping_list_recipes (recipe_id, shopping_list_id, portion_numerator, portion_denominator)
+                VALUES ({portionedRecipe.RecipeIdentifier.Id}, {shoppingList.Identifier.Id}, {portionedRecipe.Portion.Amount.Numerator}, {portionedRecipe.Portion.Amount.Denominator});
             ").ExecuteNonQuery();
         }
     }

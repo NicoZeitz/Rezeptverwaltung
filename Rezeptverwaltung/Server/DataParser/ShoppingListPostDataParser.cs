@@ -47,8 +47,8 @@ public class ShoppingListPostDataParser : DataParser<NewShoppingListPostData>
             var index = 0;
             while (
                 content.TryGetValue("recipe_" + index, out var recipeId) && recipeId!.IsText &&
-                content.TryGetValue("portion_denominator" + index, out var portionDenominator) && portionDenominator!.IsText &&
-                content.TryGetValue("portion_numerator" + index, out var portionNumerator) && portionNumerator!.IsText)
+                content.TryGetValue("portion_denominator_" + index, out var portionDenominator) && portionDenominator!.IsText &&
+                content.TryGetValue("portion_numerator_" + index, out var portionNumerator) && portionNumerator!.IsText)
             {
                 var recipeIdentifier = Identifier.Parse(htmlSanitizer.Sanitize(recipeId.TextValue!));
                 if (recipeIdentifier is null)

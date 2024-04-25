@@ -44,16 +44,11 @@
             class="grid aspect-square h-full items-center overflow-clip rounded-t-full"
         >
             <img
-                class="aspect-square h-full rounded-t-full object-cover"
+                class="aspect-square h-full rounded-full object-cover"
                 src="{{ chef_image_url | html.url_escape }}"
                 alt="Profilbild von {{ chef.username | html.escape }}"
             />
         </div>
-        <span
-            style="font-size: 0.65rem; line-height: 1rem"
-            class="h-4 w-full flex-shrink-0 truncate text-center"
-            >{{ chef.username | html.escape }}</span
-        >
     </a>
     <a href="/settings">
         <svg
