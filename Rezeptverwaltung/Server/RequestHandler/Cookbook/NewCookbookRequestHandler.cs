@@ -8,38 +8,45 @@ using System.Net;
 
 namespace Server.RequestHandler;
 
-public class NewCookbookRequestHandler : AuthorizedRequestHandler
+public class NewCookbookRequestHandler : RequestHandler
 {
-    private readonly NewCookbookPageRenderer newCookbookPageRenderer;
     private readonly CookbookPostDataParser cookbookPostDataParser;
     private readonly CreateCookbookService createCookbookService;
+    private readonly NewCookbookPageRenderer newCookbookPageRenderer;
+    private readonly NotFoundRequestHandler notFoundRequestHandler;
     private readonly RedirectService redirectService;
+    private readonly SessionService sessionService;
     private readonly ShowRecipes showRecipes;
 
     public NewCookbookRequestHandler(
-        NewCookbookPageRenderer newCookbookPageRenderer,
         CookbookPostDataParser cookbookPostDataParser,
-        ShowRecipes showRecipes,
         CreateCookbookService createCookbookService,
-        SessionService sessionService,
-        NotFoundPageRenderer notFoundPageRenderer,
+        NewCookbookPageRenderer newCookbookPageRenderer,
+        NotFoundRequestHandler notFoundRequestHandler,
         RedirectService redirectService,
-        HTMLFileWriter htmlFileWriter)
-        : base(htmlFileWriter, notFoundPageRenderer, sessionService)
+        SessionService sessionService,
+        ShowRecipes showRecipes)
+        : base()
     {
-        this.newCookbookPageRenderer = newCookbookPageRenderer;
         this.cookbookPostDataParser = cookbookPostDataParser;
         this.createCookbookService = createCookbookService;
+        this.newCookbookPageRenderer = newCookbookPageRenderer;
+        this.notFoundRequestHandler = notFoundRequestHandler;
         this.redirectService = redirectService;
+        this.sessionService = sessionService;
         this.showRecipes = showRecipes;
     }
 
-    public override bool CanHandle(HttpListenerRequest request) =>
+    public bool CanHandle(HttpListenerRequest request) =>
         (request.HttpMethod == HttpMethod.Get.Method || request.HttpMethod == HttpMethod.Post.Method)
         && request.Url?.AbsolutePath == "/cookbook/new";
 
-    public override Task Handle(HttpListenerRequest request, HttpListenerResponse response, Chef currentChef)
+    public Task Handle(HttpListenerRequest request, HttpListenerResponse response)
     {
+        var currentChef = sessionService.GetCurrentChef(request);
+        if (currentChef is null)
+            return notFoundRequestHandler.Handle(request, response);
+
         if (request.HttpMethod == HttpMethod.Get.Method)
         {
             return HandleGetRequest(request, response, currentChef);

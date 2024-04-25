@@ -28,6 +28,7 @@ public class NotFoundRequestHandler : RequestHandler
     {
         var currentChef = sessionService.GetCurrentChef(request);
         var htmlString = await notFoundPageRenderer.RenderPage(currentChef);
+        response.StatusCode = (int)HttpStatusCode.NotFound;
         htmlFileWriter.WriteHtmlFile(response, htmlString, HttpStatusCode.NotFound);
     }
 }

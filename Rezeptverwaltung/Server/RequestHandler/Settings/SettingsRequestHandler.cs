@@ -9,24 +9,27 @@ using System.Net;
 
 namespace Server.RequestHandler;
 
-public class SettingsRequestHandler : AuthorizedRequestHandler
+public class SettingsRequestHandler : RequestHandler
 {
+    private readonly NotFoundRequestHandler notFoundRequestHandler;
+    private readonly SessionService sessionService;
     private readonly SettingsPageRenderer settingsPageRenderer;
     private readonly SettingsPostDataParser settingsPostDataParser;
 
     public SettingsRequestHandler(
+        NotFoundRequestHandler notFoundRequestHandler,
+        SessionService sessionService,
         SettingsPageRenderer settingsPageRenderer,
-        SettingsPostDataParser settingsPostDataParser,
-        HTMLFileWriter htmlFileWriter,
-        NotFoundPageRenderer notFoundPageRenderer,
-        SessionService sessionService)
-        : base(htmlFileWriter, notFoundPageRenderer, sessionService)
+        SettingsPostDataParser settingsPostDataParser)
+        : base()
     {
+        this.notFoundRequestHandler = notFoundRequestHandler;
+        this.sessionService = sessionService;
         this.settingsPageRenderer = settingsPageRenderer;
         this.settingsPostDataParser = settingsPostDataParser;
     }
 
-    public override bool CanHandle(HttpListenerRequest request)
+    public bool CanHandle(HttpListenerRequest request)
     {
         if (request.Url?.AbsolutePath != "/settings")
         {
@@ -41,8 +44,12 @@ public class SettingsRequestHandler : AuthorizedRequestHandler
         return request.HttpMethod == HttpMethod.Post.Method && request.HasEntityBody;
     }
 
-    public override Task Handle(HttpListenerRequest request, HttpListenerResponse response, Chef currentChef)
+    public Task Handle(HttpListenerRequest request, HttpListenerResponse response)
     {
+        var currentChef = sessionService.GetCurrentChef(request);
+        if (currentChef is null)
+            return notFoundRequestHandler.Handle(request, response);
+
         if (request.HttpMethod == HttpMethod.Get.Method)
         {
             return settingsPageRenderer.RenderPage(

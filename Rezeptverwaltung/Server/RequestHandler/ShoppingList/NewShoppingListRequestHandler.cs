@@ -8,38 +8,45 @@ using System.Net;
 
 namespace Server.RequestHandler;
 
-public class NewShoppingListRequestHandler : AuthorizedRequestHandler
+public class NewShoppingListRequestHandler : RequestHandler
 {
-    private readonly NewShoppingListPageRenderer newShoppingListPageRenderer;
-    private readonly ShoppingListPostDataParser shoppingListPostDataParser;
     private readonly CreateShoppingListService createShoppingListService;
+    private readonly NewShoppingListPageRenderer newShoppingListPageRenderer;
+    private readonly NotFoundRequestHandler notFoundRequestHandler;
     private readonly RedirectService redirectService;
+    private readonly SessionService sessionService;
+    private readonly ShoppingListPostDataParser shoppingListPostDataParser;
     private readonly ShowRecipes showRecipes;
 
     public NewShoppingListRequestHandler(
-        NewShoppingListPageRenderer newShoppingListPageRenderer,
-        ShoppingListPostDataParser shoppingListPostDataParser,
-        ShowRecipes showRecipes,
         CreateShoppingListService createShoppingListService,
-        SessionService sessionService,
-        NotFoundPageRenderer notFoundPageRenderer,
+        NewShoppingListPageRenderer newShoppingListPageRenderer,
+        NotFoundRequestHandler notFoundRequestHandler,
         RedirectService redirectService,
-        HTMLFileWriter htmlFileWriter)
-        : base(htmlFileWriter, notFoundPageRenderer, sessionService)
+        SessionService sessionService,
+        ShoppingListPostDataParser shoppingListPostDataParser,
+        ShowRecipes showRecipes)
+        : base()
     {
         this.newShoppingListPageRenderer = newShoppingListPageRenderer;
         this.shoppingListPostDataParser = shoppingListPostDataParser;
         this.createShoppingListService = createShoppingListService;
         this.redirectService = redirectService;
+        this.sessionService = sessionService;
+        this.notFoundRequestHandler = notFoundRequestHandler;
         this.showRecipes = showRecipes;
     }
 
-    public override bool CanHandle(HttpListenerRequest request) =>
+    public bool CanHandle(HttpListenerRequest request) =>
         request.HttpMethod == HttpMethod.Get.Method
         && request.Url?.AbsolutePath == "/shopping-list/new";
 
-    public override Task Handle(HttpListenerRequest request, HttpListenerResponse response, Chef currentChef)
+    public Task Handle(HttpListenerRequest request, HttpListenerResponse response)
     {
+        var currentChef = sessionService.GetCurrentChef(request);
+        if (currentChef is null)
+            return notFoundRequestHandler.Handle(request, response);
+
         if (request.HttpMethod == HttpMethod.Get.Method)
         {
             return HandleGetRequest(request, response, currentChef);
