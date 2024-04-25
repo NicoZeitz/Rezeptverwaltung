@@ -1,9 +1,9 @@
-﻿using System.Net;
-using Core.Data;
+﻿using Core.Data;
 using Core.ValueObjects;
 using Server.ContentParser;
 using Server.RequestHandler;
 using Server.Service;
+using System.Net;
 
 namespace Server.DataParser;
 

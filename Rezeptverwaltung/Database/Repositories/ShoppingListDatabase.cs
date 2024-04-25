@@ -117,11 +117,11 @@ public class ShoppingListDatabase : ShoppingListRepository
 
         while (reader.Read())
         {
-            var id = Identifier.Parse(reader.GetString("id"));
+            var id = Identifier.Parse(reader.GetString("id"))!.Value;
             if (id == lastShoppingList?.Identifier)
             {
                 var portionedRecipe = new PortionedRecipe(
-                    Identifier.Parse(reader.GetString("recipe_id")),
+                    Identifier.Parse(reader.GetString("recipe_id"))!.Value,
                     new Portion(new Rational<int>(
                         reader.GetInt32("portion_numerator"),
                         reader.GetInt32("portion_denominator")

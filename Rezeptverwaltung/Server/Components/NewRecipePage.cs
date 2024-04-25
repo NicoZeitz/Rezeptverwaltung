@@ -1,6 +1,4 @@
-﻿
-
-using Core.Entities;
+﻿using Core.Entities;
 using Core.ValueObjects;
 using Server.Resources;
 

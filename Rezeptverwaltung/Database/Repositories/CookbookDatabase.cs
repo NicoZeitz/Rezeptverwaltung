@@ -94,8 +94,8 @@ public class CookbookDatabase : CookbookRepository
 
         while (reader.Read())
         {
-            var id = Identifier.Parse(reader.GetString("id"));
-            var recipeId = Identifier.Parse(reader.GetString("recipe_id"));
+            var id = Identifier.Parse(reader.GetString("id"))!.Value;
+            var recipeId = Identifier.Parse(reader.GetString("recipe_id"))!.Value;
 
             if (id == lastCookbook?.Identifier)
             {

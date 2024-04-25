@@ -1,4 +1,3 @@
-using Core.Data;
 using Core.Entities;
 using Core.Repository;
 using Core.ValueObjects;

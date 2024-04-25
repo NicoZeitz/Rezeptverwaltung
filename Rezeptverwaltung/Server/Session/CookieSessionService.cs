@@ -36,7 +36,13 @@ public class CookieSessionService : SessionService
             return null;
         }
 
-        return sessionBackend.GetBySessionId(Identifier.Parse(sessionId));
+        var identifier = Identifier.Parse(sessionId);
+        if (identifier is null)
+        {
+            return null;
+        }
+
+        return sessionBackend.GetBySessionId(identifier.Value);
     }
 
     public void Login(HttpListenerRequest request, HttpListenerResponse response, Chef chef)
@@ -56,9 +62,23 @@ public class CookieSessionService : SessionService
     {
         if (request.Cookies[SESSION_COOKIE_NAME] is Cookie cookie)
         {
-            sessionBackend.RemoveSession(Identifier.Parse(cookie.Value));
-        };
+            RemoveCookieFromSessionBackend(cookie);
+        }
 
+        ClearResponseCookie(response);
+    }
+
+    private void RemoveCookieFromSessionBackend(Cookie cookie)
+    {
+        var sessionId = Identifier.Parse(cookie.Value);
+        if (sessionId is not null)
+        {
+            sessionBackend.RemoveSession(sessionId.Value);
+        }
+    }
+
+    private void ClearResponseCookie(HttpListenerResponse response)
+    {
         response.SetCookie(new Cookie(SESSION_COOKIE_NAME, "")
         {
             Expired = true,

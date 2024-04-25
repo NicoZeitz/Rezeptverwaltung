@@ -65,9 +65,7 @@ public partial class RecipeDetailRequestHandler : HTMLRequestHandler
     }
 
     private Identifier GetRecipeIdFromRequest(HttpListenerRequest request)
-    {
-        return Identifier.Parse(recipeUrlPathRegex().Match(request.Url!.AbsolutePath).Groups["recipe_id"].Value);
-    }
+        => Identifier.Parse(recipeUrlPathRegex().Match(request.Url!.AbsolutePath).Groups["recipe_id"].Value)!.Value;
 
     private record struct RecipeDetailPageData(Chef? CurrentChef, Recipe? Recipe);
 }

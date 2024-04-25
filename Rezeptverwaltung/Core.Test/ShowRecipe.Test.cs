@@ -181,14 +181,14 @@ public class ShowRecipeTest
 
     private static Recipe GetPublicRecipeFrom(Chef? chef = null)
     {
-        var recipe = GetSampleRecipe(Identifier.Parse("35d2ec2f-1a56-4783-ad4b-c771fe128760"), chef);
+        var recipe = GetSampleRecipe(Identifier.Parse("35d2ec2f-1a56-4783-ad4b-c771fe128760")!.Value, chef);
         recipe.Visibility = Visibility.PUBLIC;
         return recipe;
     }
 
     private static Recipe GetPrivateRecipeFrom(Chef? chef = null)
     {
-        var recipe = GetSampleRecipe(Identifier.Parse("1a52f22f-ceba-456f-84b5-19f9e6c0d8b9"), chef);
+        var recipe = GetSampleRecipe(Identifier.Parse("1a52f22f-ceba-456f-84b5-19f9e6c0d8b9")!.Value, chef);
         recipe.Visibility = Visibility.PRIVATE;
         return recipe;
     }

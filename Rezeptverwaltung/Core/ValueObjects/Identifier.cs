@@ -2,11 +2,18 @@
 
 public record struct Identifier(Guid Id) : IComparable<Identifier>
 {
-    public override string ToString() => Id.ToString();
+    public override readonly string ToString() => Id.ToString();
 
     public static Identifier NewId() => new Identifier(Guid.NewGuid());
 
-    public static Identifier Parse(string value) => new Identifier(Guid.Parse(value));
+    public static Identifier? Parse(string value)
+    {
+        if (Guid.TryParse(value, out var id))
+        {
+            return new Identifier(id);
+        }
+        return null;
+    }
 
-    public int CompareTo(Identifier other) => Id.CompareTo(other.Id);
+    public readonly int CompareTo(Identifier other) => Id.CompareTo(other.Id);
 }

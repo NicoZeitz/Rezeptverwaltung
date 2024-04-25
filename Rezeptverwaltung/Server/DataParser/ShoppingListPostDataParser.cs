@@ -8,11 +8,11 @@ using System.Net;
 
 namespace Server.DataParser;
 
-public class CookbookPostDataParser : DataParser<NewCookbookPostData>
+public class ShoppingListPostDataParser : DataParser<NewShoppingListPostData>
 {
     private readonly SessionService sessionService;
 
-    public CookbookPostDataParser(
+    public ShoppingListPostDataParser(
         ContentParserFactory contentParserFactory,
         HTMLSanitizer htmlSanitizer,
         SessionService sessionService)
@@ -21,13 +21,9 @@ public class CookbookPostDataParser : DataParser<NewCookbookPostData>
         this.sessionService = sessionService;
     }
 
-    protected override Result<NewCookbookPostData> ExtractDataFromContent(IDictionary<string, ContentData> content, HttpListenerRequest request)
+    protected override Result<NewShoppingListPostData> ExtractDataFromContent(IDictionary<string, ContentData> content, HttpListenerRequest request)
     {
         if (!content.TryGetValue("title", out var title) || !title!.IsText)
-        {
-            return GENERIC_ERROR_RESULT;
-        }
-        if (!content.TryGetValue("description", out var description) || !description!.IsText)
         {
             return GENERIC_ERROR_RESULT;
         }
@@ -46,10 +42,13 @@ public class CookbookPostDataParser : DataParser<NewCookbookPostData>
             return GENERIC_ERROR_RESULT;
         }
 
-        var recipes = new List<Identifier>();
+        var recipes = new List<PortionedRecipe>();
         {
             var index = 0;
-            while (content.TryGetValue("recipe_" + index, out var recipeId) && recipeId!.IsText)
+            while (
+                content.TryGetValue("recipe_" + index, out var recipeId) && recipeId!.IsText &&
+                content.TryGetValue("portion_denominator" + index, out var portionDenominator) && portionDenominator!.IsText &&
+                content.TryGetValue("portion_numerator" + index, out var portionNumerator) && portionNumerator!.IsText)
             {
                 var recipeIdentifier = Identifier.Parse(htmlSanitizer.Sanitize(recipeId.TextValue!));
                 if (recipeIdentifier is null)
@@ -57,14 +56,26 @@ public class CookbookPostDataParser : DataParser<NewCookbookPostData>
                     break;
                 }
 
-                recipes.Add(recipeIdentifier!.Value);
+                if (!int.TryParse(portionDenominator.TextValue!, out var portionDenominatorValue))
+                {
+                    return GENERIC_ERROR_RESULT;
+                }
+                if (!int.TryParse(portionNumerator.TextValue!, out var portionNumeratorValue))
+                {
+                    return GENERIC_ERROR_RESULT;
+                }
+
+                var portion = new Portion(new Rational<int>(
+                    portionDenominatorValue,
+                    portionNumeratorValue
+                ));
+                recipes.Add(new PortionedRecipe(recipeIdentifier.Value, portion));
                 index++;
             }
         }
 
-        return Result<NewCookbookPostData>.Successful(new NewCookbookPostData(
+        return Result<NewShoppingListPostData>.Successful(new NewShoppingListPostData(
             new Text(htmlSanitizer.Sanitize(title.TextValue!)),
-            new Text(htmlSanitizer.Sanitize(description.TextValue!)),
             currentChef,
             visibility,
             recipes

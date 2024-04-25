@@ -1,9 +1,9 @@
-using System.Net;
-using System.Text.RegularExpressions;
 using Core.Services;
 using Core.ValueObjects;
 using Server.Service;
 using Server.Session;
+using System.Net;
+using System.Text.RegularExpressions;
 
 namespace Server.RequestHandler;
 
@@ -27,7 +27,6 @@ public partial class DeleteRecipeRequestHandler : RequestHandler
         this.redirectService = redirectService;
     }
 
-
     public bool CanHandle(HttpListenerRequest request) =>
         request.HttpMethod == HttpMethod.Post.Method &&
         deleteRecipeUrlPathRegex().IsMatch(request.Url?.AbsolutePath ?? "");
@@ -49,7 +48,13 @@ public partial class DeleteRecipeRequestHandler : RequestHandler
         }
 
         var recipeId = Identifier.Parse(match.Groups["recipe_id"].Value);
-        var ok = deleteRecipeService.DeleteRecipe(recipeId, currentChef);
+        if (recipeId is null)
+        {
+            response.StatusCode = (int)HttpStatusCode.NotFound;
+            return Task.CompletedTask;
+        }
+
+        var ok = deleteRecipeService.DeleteRecipe(recipeId.Value, currentChef);
         if (!ok)
         {
             response.StatusCode = (int)HttpStatusCode.Forbidden;

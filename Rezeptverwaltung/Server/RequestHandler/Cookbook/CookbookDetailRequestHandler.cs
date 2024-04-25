@@ -73,9 +73,7 @@ public partial class CookbookDetailRequestHandler : HTMLRequestHandler
     }
 
     private Identifier GetCookbookIdFromRequest(HttpListenerRequest request)
-    {
-        return Identifier.Parse(cookbookUrlPathRegex().Match(request.Url!.AbsolutePath).Groups["cookbook_id"].Value);
-    }
+         => Identifier.Parse(cookbookUrlPathRegex().Match(request.Url!.AbsolutePath).Groups["cookbook_id"].Value)!.Value;
 
     private record struct CookbookDetailPageData(Chef? CurrentChef, Cookbook? Cookbook, IEnumerable<Recipe> Recipes);
 }

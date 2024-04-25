@@ -24,31 +24,9 @@ using Server.Session;
 
 var configuration = new ApplicationConfiguration();
 var provider = configureServices(configuration);
-var server = provider.GetRequiredService<Server.Server>();
-
-server.AddRequestHandler(provider.GetRequiredService<FaviconRequestHandler>());
-server.AddRequestHandler(provider.GetRequiredService<SearchRequestHandler>());
-server.AddRequestHandler(provider.GetRequiredService<NewCookbookRequestHandler>());
-server.AddRequestHandler(provider.GetRequiredService<HomeRequestHandler>());
-server.AddRequestHandler(provider.GetRequiredService<DeleteRecipeRequestHandler>());
-server.AddRequestHandler(provider.GetRequiredService<DeleteCookbookRequestHandler>());
-server.AddRequestHandler(provider.GetRequiredService<RegisterRequestHandler>());
-server.AddRequestHandler(provider.GetRequiredService<LoginRequestHandler>());
-server.AddRequestHandler(provider.GetRequiredService<LogoutRequestHandler>());
-server.AddRequestHandler(provider.GetRequiredService<ChefDetailRequestHandler>());
-server.AddRequestHandler(provider.GetRequiredService<SettingsRequestHandler>());
-server.AddRequestHandler(provider.GetRequiredService<RecipeDetailRequestHandler>());
-server.AddRequestHandler(provider.GetRequiredService<TagRequestHandler>());
-server.AddRequestHandler(provider.GetRequiredService<NewRecipeRequestHandler>());
-server.AddRequestHandler(provider.GetRequiredService<CookbookDetailRequestHandler>());
-server.AddRequestHandler(provider.GetRequiredService<NewCookbookRequestHandler>());
-server.AddRequestHandler(provider.GetRequiredService<ShoppingListDetailRequestHandler>());
-server.AddRequestHandler(provider.GetRequiredService<NewShoppingListRequestHandler>());
-server.AddRequestHandler(provider.GetRequiredService<ImageRequestHandler>());
-server.AddRequestHandler(provider.GetRequiredService<StaticRequestHandler>());
-server.AddRequestHandler(provider.GetRequiredService<NotFoundRequestHandler>());
-
 var serverCancellationToken = new CancellationToken();
+var server = provider.GetRequiredService<Server.Server>();
+configureServerRoutes(server);
 server.Run(serverCancellationToken).GetAwaiter().GetResult();
 
 IServiceProvider configureServices(ApplicationConfiguration configuration)
@@ -60,28 +38,7 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     services.AddSingleton<ServerConfiguration>(configuration);
 
     // Logger
-    services.AddSingleton<Logger>(provider => new LogLevelLogger(
-        new DateTimeLogger(
-            new SplitLogger(
-                new LogLevelFilter(
-                    new ColorLogger(
-                        new ConsoleLogger()
-                    ),
-                    LogLevel.Info
-                ),
-                new LogLevelFilter(
-                    new FileLogger(
-                        new Core.ValueObjects.File(
-                            configuration.ApplicationDirectory.Join(new Core.ValueObjects.Directory("logs")),
-                            FileName.From("rezeptverwaltung.log")
-                        )
-                    ),
-                    LogLevel.Trace
-                )
-            ),
-            provider.GetRequiredService<DateTimeProvider>()
-        )
-    ));
+    services.AddSingleton<Logger>(provider => createLogger(provider));
 
     // Database
     // This is very ugly but we wanted to try out what it means to use a
@@ -116,20 +73,24 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     services.AddTransient<PasswordHasher, Argon2PasswordHasher>();
 
     // Services
-    services.AddTransient<CreateCookbookService>();
-    services.AddTransient<DeleteCookbookService>();
-    services.AddTransient<CreateShoppingListService>();
-    services.AddTransient<DeleteShoppingListService>();
-    services.AddTransient<CreateRecipeService>();
-    services.AddTransient<DeleteRecipeService>();
-    services.AddTransient<DeleteCookbookRequestHandler>();
-    services.AddTransient<LoginChefService>();
-    services.AddTransient<RegisterChefService>();
-    services.AddTransient<DeleteChefService>();
     services.AddTransient<ChangeChefDataService>();
     services.AddTransient<ChangeChefPasswordService>();
+    services.AddTransient<CreateCookbookService>();
+    services.AddTransient<CreateRecipeService>();
+    services.AddTransient<CreateShoppingListService>();
+    services.AddTransient<DeleteChefService>();
+    services.AddTransient<DeleteCookbookService>();
+    services.AddTransient<DeleteRecipeService>();
+    services.AddTransient<DeleteShoppingListService>();
     services.AddTransient<ImageService, FileSystemImageService>();
+    services.AddTransient<LoginChefService>();
     services.AddTransient<MeasurementUnitCombiner>();
+    services.AddTransient<RegisterChefService>();
+    services.AddTransient<ShoppingListEntriesCreator>();
+    services.AddTransient<ShowChefs>();
+    services.AddTransient<ShowCookbooks>();
+    services.AddTransient<ShowRecipes>();
+    services.AddTransient<ShowShoppingLists>();
     var measurementUnitSerializationManager = new MeasurementUnitSerializationManager();
     measurementUnitSerializationManager.RegisterSerializer(new CupSerializer());
     measurementUnitSerializationManager.RegisterSerializer(new PieceSerializer());
@@ -138,34 +99,30 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     measurementUnitSerializationManager.RegisterSerializer(new VolumeSerializer());
     measurementUnitSerializationManager.RegisterSerializer(new WeightSerializer());
     services.AddSingleton(measurementUnitSerializationManager);
-    services.AddTransient<ShoppingListEntriesCreator>();
-    services.AddTransient<ShowChefs>();
-    services.AddTransient<ShowCookbooks>();
-    services.AddTransient<ShowRecipes>();
-    services.AddTransient<ShowShoppingLists>();
 
     // Database Services
     services.AddTransient<DateTimeProvider, DefaultDateTimeProvider>();
     services.AddTransient<ParameterNameGenerator>();
 
     // Server Services
-    services.AddSingleton<SessionBackend<Chef>, InMemorySessionBackend<Chef>>();
     services.AddTransient<ContentParserFactory>();
-    services.AddTransient<RedirectService>();
+    services.AddTransient<CookbookPostDataParser>();
     services.AddTransient<HTMLFileWriter>();
+    services.AddTransient<HTMLSanitizer>();
     services.AddTransient<ImageTypeMimeTypeConverter>();
     services.AddTransient<ImageUrlService>();
     services.AddTransient<LoginPageRenderer>();
     services.AddTransient<LoginPostDataParser>();
-    services.AddTransient<RecipePostDataParser>();
-    services.AddTransient<CookbookPostDataParser>();
     services.AddTransient<MimeTypeDeterminer>();
-    services.AddTransient<NewRecipePageRenderer>();
-    services.AddTransient<HTMLSanitizer>();
     services.AddTransient<NewCookbookPageRenderer>();
+    services.AddTransient<NewRecipePageRenderer>();
+    services.AddTransient<NewShoppingListPageRenderer>();
     services.AddTransient<NotFoundPageRenderer>();
+    services.AddTransient<RecipePostDataParser>();
+    services.AddTransient<RedirectService>();
     services.AddTransient<RegisterPageRenderer>();
     services.AddTransient<RegisterPostDataParser>();
+    services.AddSingleton<SessionBackend<Chef>, InMemorySessionBackend<Chef>>();
     services.AddTransient<SessionService, CookieSessionService>();
     services.AddTransient<SettingsPageRenderer>();
     services.AddTransient<SettingsPostDataParser>();
@@ -198,34 +155,36 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     services.AddTransient<HomePage>();
     services.AddTransient<LoginPage>();
     services.AddTransient<NewCookbookPage>();
-    services.AddTransient<NewRecipePage>();
     services.AddTransient<NewCookbookPage>();
+    services.AddTransient<NewRecipePage>();
     services.AddTransient<NewShoppingListPage>();
     services.AddTransient<NotFoundPage>();
     services.AddTransient<RecipeDetailPage>();
     services.AddTransient<RegisterPage>();
+    services.AddTransient<SearchPage>();
     services.AddTransient<SettingsPage>();
     services.AddTransient<ShoppingListDetailPage>();
     services.AddTransient<TagPage>();
-    services.AddTransient<SearchPage>();
 
     // Request Handlers
     services.AddTransient<FaviconRequestHandler>(provider => new FaviconRequestHandler(provider.GetRequiredKeyedService<ResourceLoader>("ASSETS")));
-    services.AddTransient<SearchRequestHandler>();
     services.AddTransient<ChefDetailRequestHandler>();
-    services.AddTransient<DeleteRecipeRequestHandler>();
     services.AddTransient<CookbookDetailRequestHandler>();
+    services.AddTransient<DeleteCookbookRequestHandler>();
+    services.AddTransient<DeleteRecipeRequestHandler>();
+    services.AddTransient<DeleteShoppingListRequestHandler>();
     services.AddTransient<HomeRequestHandler>();
     services.AddTransient<ImageRequestHandler>();
     services.AddTransient<LoginRequestHandler>();
     services.AddTransient<LogoutRequestHandler>();
+    services.AddTransient<NewCookbookPage>();
     services.AddTransient<NewCookbookRequestHandler>();
     services.AddTransient<NewRecipeRequestHandler>();
-    services.AddTransient<NewCookbookPage>();
     services.AddTransient<NewShoppingListRequestHandler>();
     services.AddTransient<NotFoundRequestHandler>();
     services.AddTransient<RecipeDetailRequestHandler>();
     services.AddTransient<RegisterRequestHandler>();
+    services.AddTransient<SearchRequestHandler>();
     services.AddTransient<SettingsRequestHandler>();
     services.AddTransient<ShoppingListDetailRequestHandler>();
     services.AddTransient<TagRequestHandler>();
@@ -237,6 +196,55 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
 
     return services.BuildServiceProvider();
 }
+
+void configureServerRoutes(Server.Server server)
+{
+    server.AddRequestHandler(provider.GetRequiredService<SearchRequestHandler>());
+    server.AddRequestHandler(provider.GetRequiredService<HomeRequestHandler>());
+    server.AddRequestHandler(provider.GetRequiredService<FaviconRequestHandler>());
+    server.AddRequestHandler(provider.GetRequiredService<ChefDetailRequestHandler>());
+    server.AddRequestHandler(provider.GetRequiredService<CookbookDetailRequestHandler>());
+    server.AddRequestHandler(provider.GetRequiredService<DeleteCookbookRequestHandler>());
+    server.AddRequestHandler(provider.GetRequiredService<DeleteRecipeRequestHandler>());
+    server.AddRequestHandler(provider.GetRequiredService<DeleteShoppingListRequestHandler>());
+    server.AddRequestHandler(provider.GetRequiredService<LoginRequestHandler>());
+    server.AddRequestHandler(provider.GetRequiredService<LogoutRequestHandler>());
+    server.AddRequestHandler(provider.GetRequiredService<NewCookbookRequestHandler>());
+    server.AddRequestHandler(provider.GetRequiredService<NewCookbookRequestHandler>());
+    server.AddRequestHandler(provider.GetRequiredService<NewRecipeRequestHandler>());
+    server.AddRequestHandler(provider.GetRequiredService<NewShoppingListRequestHandler>());
+    server.AddRequestHandler(provider.GetRequiredService<RecipeDetailRequestHandler>());
+    server.AddRequestHandler(provider.GetRequiredService<RegisterRequestHandler>());
+    server.AddRequestHandler(provider.GetRequiredService<SettingsRequestHandler>());
+    server.AddRequestHandler(provider.GetRequiredService<ShoppingListDetailRequestHandler>());
+    server.AddRequestHandler(provider.GetRequiredService<TagRequestHandler>());
+    server.AddRequestHandler(provider.GetRequiredService<ImageRequestHandler>());
+    server.AddRequestHandler(provider.GetRequiredService<StaticRequestHandler>());
+    server.AddRequestHandler(provider.GetRequiredService<NotFoundRequestHandler>());
+}
+
+Logger createLogger(IServiceProvider provider) => new LogLevelLogger(
+    new DateTimeLogger(
+        new SplitLogger(
+            new LogLevelFilter(
+                new ColorLogger(
+                    new ConsoleLogger()
+                ),
+                LogLevel.Info
+            ),
+            new LogLevelFilter(
+                new FileLogger(
+                    new Core.ValueObjects.File(
+                        configuration.ApplicationDirectory.Join(new Core.ValueObjects.Directory("logs")),
+                        FileName.From("rezeptverwaltung.log")
+                    )
+                ),
+                LogLevel.Trace
+            )
+        ),
+        provider.GetRequiredService<DateTimeProvider>()
+    )
+);
 
 internal record UIComponentProvider(IServiceProvider ServiceProvider) : ComponentProvider
 {

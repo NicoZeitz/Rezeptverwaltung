@@ -6,12 +6,12 @@ using System.Net;
 
 namespace Server.PageRenderer;
 
-public class NewCookbookPageRenderer
+public class NewShoppingListPageRenderer
 {
     private readonly ComponentProvider componentProvider;
     private readonly HTMLFileWriter htmlFileWriter;
 
-    public NewCookbookPageRenderer(
+    public NewShoppingListPageRenderer(
         ComponentProvider componentProvider,
         HTMLFileWriter htmlFileWriter)
     {
@@ -29,14 +29,14 @@ public class NewCookbookPageRenderer
         errorMessages ??= [];
 
         var header = componentProvider.GetComponent<Header>();
-        var newCookbookPage = componentProvider.GetComponent<NewCookbookPage>();
+        var newShoppingListPage = componentProvider.GetComponent<NewShoppingListPage>();
 
         header.CurrentChef = currentChef;
-        newCookbookPage.SlottedChildren[NewCookbookPage.HEADER_SLOT] = header;
-        newCookbookPage.Children = errorMessages.Select(errorMessage => new DisplayableComponent(errorMessage));
-        newCookbookPage.Recipes = recipes;
+        newShoppingListPage.SlottedChildren[NewShoppingListPage.HEADER_SLOT] = header;
+        newShoppingListPage.Children = errorMessages.Select(errorMessage => new DisplayableComponent(errorMessage));
+        newShoppingListPage.Recipes = recipes;
 
-        var htmlString = await newCookbookPage.RenderAsync();
+        var htmlString = await newShoppingListPage.RenderAsync();
         htmlFileWriter.WriteHtmlFile(response, htmlString, httpStatus);
     }
 

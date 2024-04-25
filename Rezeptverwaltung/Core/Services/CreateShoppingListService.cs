@@ -16,9 +16,9 @@ public class CreateShoppingListService
 
     public ShoppingList CreateShoppingList(
         Text title,
-        Visibility visibility,
         Chef chef,
-        IEnumerable<PortionedRecipe> recipes) // TODO: better ux
+        Visibility visibility,
+        IEnumerable<PortionedRecipe> recipes)
     {
         var shoppingList = new ShoppingList(
             Identifier.NewId(),

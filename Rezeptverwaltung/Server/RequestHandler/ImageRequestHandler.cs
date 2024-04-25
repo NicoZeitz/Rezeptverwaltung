@@ -82,7 +82,7 @@ public partial class ImageRequestHandler : RequestHandler
     private Task HandleRecipeImageRequest(HttpListenerRequest request, HttpListenerResponse response)
     {
         var currentChef = sessionService.GetCurrentChef(request);
-        var recipeId = Identifier.Parse(recipeImageUrlPathRegex().Match(request.Url?.AbsolutePath ?? "")!.Groups["recipe_id"]!.Value);
+        var recipeId = Identifier.Parse(recipeImageUrlPathRegex().Match(request.Url?.AbsolutePath ?? "")!.Groups["recipe_id"]!.Value)!.Value;
         var recipe = showRecipes.ShowSingleRecipe(recipeId, currentChef);
         return WriteImageForNullableEntity(request, response, recipe);
     }
