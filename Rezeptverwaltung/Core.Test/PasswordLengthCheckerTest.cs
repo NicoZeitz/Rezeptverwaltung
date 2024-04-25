@@ -9,9 +9,10 @@ public class PasswordLengthCheckerTest
     [Fact]
     public void TestPasswordWithLengthLessThanRequiredIsNotValid()
     {
-        var password = new Password("1234567890");
-        var passwordLength = password.Phrase.Length;
-        var checker = new PasswordLengthChecker(passwordLength + 1);
+        var password = new Password("randomPassword");
+        var minimumPasswordLength = password.Phrase.Length + 1;
+
+        var checker = new PasswordLengthChecker(minimumPasswordLength);
 
         var result = checker.CheckPassword(password);
 
@@ -22,9 +23,10 @@ public class PasswordLengthCheckerTest
     [Fact]
     public void TestPasswordWithSameLengthIsValid()
     {
-        var password = new Password("1234567890");
-        var passwordLength = password.Phrase.Length;
-        var checker = new PasswordLengthChecker(passwordLength);
+        var password = new Password("randomPassword");
+        var minimumPasswordLength = password.Phrase.Length;
+
+        var checker = new PasswordLengthChecker(minimumPasswordLength);
 
         var result = checker.CheckPassword(password);
 
@@ -35,9 +37,10 @@ public class PasswordLengthCheckerTest
     [Fact]
     public void TestPasswordWithLengthGreaterThanRequiredIsValid()
     {
-        var password = new Password("1234567890");
-        var passwordLength = password.Phrase.Length;
-        var checker = new PasswordLengthChecker(passwordLength - 1);
+        var password = new Password("randomPassword");
+        var minimumPasswordLength = password.Phrase.Length - 1;
+
+        var checker = new PasswordLengthChecker(minimumPasswordLength);
 
         var result = checker.CheckPassword(password);
 
