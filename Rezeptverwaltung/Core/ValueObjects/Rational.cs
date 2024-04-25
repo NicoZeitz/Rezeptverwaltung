@@ -11,4 +11,12 @@ public record struct Rational<NumberType>(NumberType Numerator, NumberType Denom
 
         return $"{Numerator}/{Denominator}";
     }
+
+    public static Rational<NumberType> operator +(Rational<NumberType> a, Rational<NumberType> b)
+    {
+        return new Rational<NumberType>(
+            a.Numerator * b.Denominator + b.Numerator * a.Denominator,
+            a.Denominator * b.Denominator
+        );
+    }
 };
