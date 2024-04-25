@@ -33,12 +33,12 @@ public class ChangeChefPasswordService
             return Result<Chef>.Error(new ErrorMessage("Das neue Passwort darf nicht das gleiche sein wie das alte Passwort!"));
         }
 
-        if (!duplicatePasswordChecker.IsSamePassword(password, passwordRepeat))
+        if (!duplicatePasswordChecker.IsSamePassword(newPassword, passwordRepeat))
         {
             return Result<Chef>.Error(new ErrorMessage("Die Passwörter stimmen nicht überein!"));
         }
 
-        if (!passwordHasher.VerifyPassword(passwordRepeat, chef.HashedPassword))
+        if (!passwordHasher.VerifyPassword(password, chef.HashedPassword))
         {
             return Result<Chef>.Error(new ErrorMessage("Falsches Passwort!"));
         }

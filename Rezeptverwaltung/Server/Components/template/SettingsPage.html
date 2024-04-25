@@ -16,7 +16,7 @@
                 👋 Hallo {{ current_chef.username | html.escape }}
             </h1>
             {{ if message }}
-            <span class="text-green-500 sm:col-span-2"> {{ message | html.escape  }} </span>
+            <span class="text-green-500 sm:col-span-2"> {{ message }} </span>
             {{ end }}
             <form
                 action="/settings"
@@ -139,7 +139,7 @@
                         id="new_password_repeat"
                     />
                     <div class="sm:col-start-2 flex flex-col gap-1 justify-self-center">
-                        <span class="text-red-500"> {{ change_password_errors | html.escape }} </span>
+                        <span class="text-red-500"> {{ change_password_errors }} </span>
                     </div>
                     <button
                         class="col-start-1 mt-3 justify-self-end rounded-md bg-green-500 px-5 py-2 shadow-md sm:col-span-2"
@@ -173,7 +173,7 @@
                         id="password"
                     />
                     <div class="sm:col-start-2 flex flex-col gap-1 justify-self-center">
-                        <span class="text-red-500"> {{ delete_profile_errors | html.escape }} </span>
+                        <span class="text-red-500"> {{ delete_profile_errors }} </span>
                     </div>
                     <button
                         class="col-start-1 mt-3 justify-self-end rounded-md bg-red-500 px-5 py-2 shadow-md sm:col-span-2"

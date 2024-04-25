@@ -40,13 +40,8 @@ public class SettingsChangePasswordPostData : SettingsPostData
         var chef = sessionService.GetCurrentChef(request);
         if (chef is null)
         {
-            return settingsPageRenderer.RenderPage(
-                request,
-                response,
-                null,
-                HttpStatusCode.BadRequest,
-                new Dictionary<string, IEnumerable<ErrorMessage>>()
-            );
+            response.StatusCode = (int)HttpStatusCode.BadRequest;
+            return Task.CompletedTask;
         }
         var result = changeChefPasswordService.ChangePassword(chef, OldPassword, NewPassword, NewPasswordRepeated);
         if (result.IsError)
