@@ -25,7 +25,7 @@ public class ShowRecipeTest
 
             var recipeRepositoryMock = new Mock<RecipeRepository>();
             recipeRepositoryMock
-                .Setup(library => library.FindAll())
+                .Setup(recipeRepository => recipeRepository.FindAll())
                 .Returns(allRecipes);
 
             var showRecipes = new ShowRecipes(recipeRepositoryMock.Object);
@@ -34,7 +34,7 @@ public class ShowRecipeTest
 
             recipeList.Should().Contain(publicRecipe);
             recipeList.Should().NotContain(privateRecipe);
-            recipeRepositoryMock.Verify(library => library.FindAll(), Times.Once);
+            recipeRepositoryMock.Verify(recipeRepository => recipeRepository.FindAll(), Times.Once);
         }
 
         [Fact]
@@ -52,7 +52,7 @@ public class ShowRecipeTest
 
             var recipeRepositoryMock = new Mock<RecipeRepository>();
             recipeRepositoryMock
-                .Setup(library => library.FindAll())
+                .Setup(recipeRepository => recipeRepository.FindAll())
                 .Returns(allRecipes);
 
             var showRecipes = new ShowRecipes(recipeRepositoryMock.Object);
@@ -61,7 +61,7 @@ public class ShowRecipeTest
 
             recipeList.Should().Contain(ownPublicRecipe);
             recipeList.Should().Contain(ownPrivateRecipe);
-            recipeRepositoryMock.Verify(library => library.FindAll(), Times.Once);
+            recipeRepositoryMock.Verify(recipeRepository => recipeRepository.FindAll(), Times.Once);
         }
 
         [Fact]
@@ -80,7 +80,7 @@ public class ShowRecipeTest
 
             var recipeRepositoryMock = new Mock<RecipeRepository>();
             recipeRepositoryMock
-                .Setup(library => library.FindAll())
+                .Setup(recipeRepository => recipeRepository.FindAll())
                 .Returns(allRecipes);
 
             var showRecipes = new ShowRecipes(recipeRepositoryMock.Object);
@@ -89,7 +89,7 @@ public class ShowRecipeTest
 
             recipeList.Should().Contain(otherPublicRecipe);
             recipeList.Should().NotContain(otherPrivateRecipe);
-            recipeRepositoryMock.Verify(library => library.FindAll(), Times.Once);
+            recipeRepositoryMock.Verify(recipeRepository => recipeRepository.FindAll(), Times.Once);
         }
     }
 
@@ -104,7 +104,7 @@ public class ShowRecipeTest
 
             var recipeRepositoryMock = new Mock<RecipeRepository>();
             recipeRepositoryMock
-                .Setup(library => library.FindByIdentifier(publicRecipe.Identifier))
+                .Setup(recipeRepository => recipeRepository.FindByIdentifier(publicRecipe.Identifier))
                 .Returns(publicRecipe);
 
             var showRecipes = new ShowRecipes(recipeRepositoryMock.Object);
@@ -112,7 +112,7 @@ public class ShowRecipeTest
             var recipe = showRecipes.ShowSingleRecipe(publicRecipe.Identifier, loggedInChef);
 
             recipe.Should().Be(publicRecipe);
-            recipeRepositoryMock.Verify(library => library.FindByIdentifier(publicRecipe.Identifier), Times.Once);
+            recipeRepositoryMock.Verify(recipeRepository => recipeRepository.FindByIdentifier(publicRecipe.Identifier), Times.Once);
         }
 
         [Fact]
@@ -124,7 +124,7 @@ public class ShowRecipeTest
 
             var recipeRepositoryMock = new Mock<RecipeRepository>();
             recipeRepositoryMock
-                .Setup(library => library.FindByIdentifier(privateRecipe.Identifier))
+                .Setup(recipeRepository => recipeRepository.FindByIdentifier(privateRecipe.Identifier))
                 .Returns(privateRecipe);
 
             var showRecipes = new ShowRecipes(recipeRepositoryMock.Object);
@@ -132,7 +132,7 @@ public class ShowRecipeTest
             var recipe = showRecipes.ShowSingleRecipe(privateRecipe.Identifier, loggedInChef);
 
             recipe.Should().BeNull();
-            recipeRepositoryMock.Verify(library => library.FindByIdentifier(privateRecipe.Identifier), Times.Once);
+            recipeRepositoryMock.Verify(recipeRepository => recipeRepository.FindByIdentifier(privateRecipe.Identifier), Times.Once);
         }
 
         [Fact]
@@ -144,7 +144,7 @@ public class ShowRecipeTest
 
             var recipeRepositoryMock = new Mock<RecipeRepository>();
             recipeRepositoryMock
-                .Setup(library => library.FindByIdentifier(ownPublicRecipe.Identifier))
+                .Setup(recipeRepository => recipeRepository.FindByIdentifier(ownPublicRecipe.Identifier))
                 .Returns(ownPublicRecipe);
 
             var showRecipes = new ShowRecipes(recipeRepositoryMock.Object);
@@ -152,7 +152,7 @@ public class ShowRecipeTest
             var recipe = showRecipes.ShowSingleRecipe(ownPublicRecipe.Identifier, loggedInChef);
 
             recipe.Should().Be(ownPublicRecipe);
-            recipeRepositoryMock.Verify(library => library.FindByIdentifier(ownPublicRecipe.Identifier), Times.Once);
+            recipeRepositoryMock.Verify(recipeRepository => recipeRepository.FindByIdentifier(ownPublicRecipe.Identifier), Times.Once);
         }
 
         [Fact]
@@ -164,7 +164,7 @@ public class ShowRecipeTest
 
             var recipeRepositoryMock = new Mock<RecipeRepository>();
             recipeRepositoryMock
-                .Setup(library => library.FindByIdentifier(ownPrivateRecipe.Identifier))
+                .Setup(recipeRepository => recipeRepository.FindByIdentifier(ownPrivateRecipe.Identifier))
                 .Returns(ownPrivateRecipe);
 
             var showRecipes = new ShowRecipes(recipeRepositoryMock.Object);
@@ -172,7 +172,7 @@ public class ShowRecipeTest
             var recipe = showRecipes.ShowSingleRecipe(ownPrivateRecipe.Identifier, loggedInChef);
 
             recipe.Should().Be(ownPrivateRecipe);
-            recipeRepositoryMock.Verify(library => library.FindByIdentifier(ownPrivateRecipe.Identifier), Times.Once);
+            recipeRepositoryMock.Verify(recipeRepository => recipeRepository.FindByIdentifier(ownPrivateRecipe.Identifier), Times.Once);
         }
     }
 
