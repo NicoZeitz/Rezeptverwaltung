@@ -41,9 +41,7 @@
                     />
                 </div>
                 {{ for error_message in children }}
-                <span class="text-red-500">
-                    {{ error_message | html.escape }}
-                </span>
+                <span class="text-red-500"> {{ error_message }} </span>
                 {{ end }}
                 <button
                     type="submit"

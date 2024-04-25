@@ -36,20 +36,11 @@ public class RegisterPostDataParser(ContentParserFactory contentParserFactory, H
             return GENERIC_ERROR_RESULT;
         }
 
-        if (htmlSanitizer.Sanitize(password.TextValue!) != password.TextValue!)
-        {
-            return GENERIC_ERROR_RESULT;
-        }
-        if (htmlSanitizer.Sanitize(passwordRepeated.TextValue!) != password.TextValue)
-        {
-            return GENERIC_ERROR_RESULT;
-        }
-
         return Result<RegisterPostData>.Successful(new RegisterPostData(
             new Username(htmlSanitizer.Sanitize(username.TextValue!)),
             new Name(htmlSanitizer.Sanitize(firstName.TextValue!), htmlSanitizer.Sanitize(lastName.TextValue!)),
-            new Password(htmlSanitizer.Sanitize(password.TextValue!)),
-            new Password(htmlSanitizer.Sanitize(passwordRepeated.TextValue!)),
+            new Password(password.TextValue!),
+            new Password(passwordRepeated.TextValue!),
             profileImage!
         ));
     }

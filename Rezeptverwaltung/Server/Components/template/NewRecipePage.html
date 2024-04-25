@@ -290,9 +290,7 @@
                     class="flex flex-col gap-1 justify-self-center sm:col-span-2"
                 >
                     {{ for error_message in children }}
-                    <span class="text-red-500">
-                        {{ error_message | html.escape }}
-                    </span>
+                    <span class="text-red-500"> {{ error_message }} </span>
                     {{ end }}
                 </div>
                 <button

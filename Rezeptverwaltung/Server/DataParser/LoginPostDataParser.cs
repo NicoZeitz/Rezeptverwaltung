@@ -22,7 +22,7 @@ public class LoginPostDataParser(ContentParserFactory contentParserFactory, HTML
 
         return Result<LoginPostData>.Successful(new LoginPostData(
             new Username(htmlSanitizer.Sanitize(username.TextValue!)),
-            new Password(htmlSanitizer.Sanitize(password.TextValue!))
+            new Password(password.TextValue!)
         ));
     }
 }

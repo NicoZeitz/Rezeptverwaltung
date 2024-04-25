@@ -99,23 +99,10 @@ public class SettingsPostDataParser : DataParser<SettingsPostData>
             return GENERIC_ERROR_RESULT;
         }
 
-        if (htmlSanitizer.Sanitize(oldPassword.TextValue!) != oldPassword.TextValue)
-        {
-            return GENERIC_ERROR_RESULT;
-        }
-        if (htmlSanitizer.Sanitize(newPassword.TextValue!) != newPassword.TextValue)
-        {
-            return GENERIC_ERROR_RESULT;
-        }
-        if (htmlSanitizer.Sanitize(newPasswordRepeat.TextValue!) != newPasswordRepeat.TextValue)
-        {
-            return GENERIC_ERROR_RESULT;
-        }
-
         return Result<SettingsPostData>.Successful(new SettingsChangePasswordPostData(
-            new Password(htmlSanitizer.Sanitize(oldPassword.TextValue!)),
-            new Password(htmlSanitizer.Sanitize(newPassword.TextValue!)),
-            new Password(htmlSanitizer.Sanitize(newPasswordRepeat.TextValue!)),
+            new Password(oldPassword.TextValue!),
+            new Password(newPassword.TextValue!),
+            new Password(newPasswordRepeat.TextValue!),
             changeChefPasswordService,
             sessionService,
             settingsPageRenderer
@@ -128,13 +115,9 @@ public class SettingsPostDataParser : DataParser<SettingsPostData>
         {
             return GENERIC_ERROR_RESULT;
         }
-        if (htmlSanitizer.Sanitize(password.TextValue!) != password.TextValue)
-        {
-            return GENERIC_ERROR_RESULT;
-        }
 
         return Result<SettingsPostData>.Successful(new SettingsDeleteProfilePostData(
-            new Password(htmlSanitizer.Sanitize(password.TextValue!)),
+            new Password(password.TextValue!),
             chefDeleteService,
             sessionService,
             settingsPageRenderer,
