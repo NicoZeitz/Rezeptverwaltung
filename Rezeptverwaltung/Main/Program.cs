@@ -164,6 +164,7 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     services.AddTransient<CookbookPostDataParser>();
     services.AddTransient<MimeTypeDeterminer>();
     services.AddTransient<NewRecipePageRenderer>();
+    services.AddTransient<HTMLSanitizer>();
     services.AddTransient<NewCookbookPageRenderer>();
     services.AddTransient<NotFoundPageRenderer>();
     services.AddTransient<RegisterPageRenderer>();
