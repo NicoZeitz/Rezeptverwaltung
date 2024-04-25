@@ -74,7 +74,7 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     services.AddTransient<PasswordHasher, Argon2PasswordHasher>();
 
     // Services
-    services.AddTransient<AddRationalsService<int>>();
+    services.AddTransient<CeilRationalService<int>>();
     services.AddTransient<ChangeChefDataService>();
     services.AddTransient<ChangeChefPasswordService>();
     services.AddTransient<CreateCookbookService>();

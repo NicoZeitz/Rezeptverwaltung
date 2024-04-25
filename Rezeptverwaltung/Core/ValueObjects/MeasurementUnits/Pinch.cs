@@ -8,4 +8,12 @@ public record class Pinch(uint Number) : MeasurementUnit
     public string DisplayAmount => Number.ToString();
     public override string ToString() => $"{DisplayAmount} {DisplayUnit}";
     public string display() => ToString();
+
+    public CombinedMeasurementUnit Combine(CombinedMeasurementUnit other, Rational<int> scalar)
+    {
+        return other with
+        {
+            Weight = other.Weight + (int)Number * scalar
+        };
+    }
 }

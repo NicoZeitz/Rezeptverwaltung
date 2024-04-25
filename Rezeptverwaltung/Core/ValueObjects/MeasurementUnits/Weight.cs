@@ -18,7 +18,7 @@ public record class Weight(uint Amount) : MeasurementUnit
     {
         get
         {
-            var unitMultiplier = (double)UnitEnumExtensions<WeightUnit>.GetEnumBelowValue(Amount)!;
+            var unitMultiplier = (double)(UnitEnumExtensions<WeightUnit>.GetEnumBelowValue(Amount) ?? WeightUnit.g);
             var normalizedAmount = Amount / unitMultiplier;
             return normalizedAmount.ToString("0.###");
         }
@@ -26,4 +26,12 @@ public record class Weight(uint Amount) : MeasurementUnit
 
     public override string ToString() => $"{DisplayAmount} {DisplayUnit}";
     public string display() => ToString();
+
+    public CombinedMeasurementUnit Combine(CombinedMeasurementUnit other, Rational<int> scalar)
+    {
+        return other with
+        {
+            Weight = other.Weight + (int)Amount * scalar
+        };  
+    }
 }

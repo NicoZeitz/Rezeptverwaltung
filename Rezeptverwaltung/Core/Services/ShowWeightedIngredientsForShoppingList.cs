@@ -1,51 +1,101 @@
+using core.Services;
 using Core.Entities;
+using Core.Interfaces;
 using Core.ValueObjects;
+using Core.ValueObjects.MeasurementUnits;
 
 namespace Core.Services;
 
 public class ShowWeightedIngredientsForShoppingList
 {
-    private readonly AddRationalsService<int> addRationalsService;
+    private readonly CeilRationalService<int> ceilRationalService;
     private readonly ShowPortionedRecipesFromShoppingList showPortionedRecipesFromShoppingList;
 
     public ShowWeightedIngredientsForShoppingList(
-        AddRationalsService<int> addRationalsService,
+        CeilRationalService<int> ceilRationalService,
         ShowPortionedRecipesFromShoppingList showPortionedRecipesFromShoppingList)
         : base()
     {
-        this.addRationalsService = addRationalsService;
+        this.ceilRationalService = ceilRationalService;
         this.showPortionedRecipesFromShoppingList = showPortionedRecipesFromShoppingList;
     }
 
     public IEnumerable<WeightedIngredient> ShowIngredients(ShoppingList shoppingList, Chef? viewer)
     {
         var recipesWithPortion = showPortionedRecipesFromShoppingList.ShowRecipes(shoppingList, viewer);
-        var uniqueRecipesWithPortion = DeduplicateRecipes(recipesWithPortion);
-        return SumQuantities(uniqueRecipesWithPortion);
-    }
 
-    private IEnumerable<(Portion, Recipe)> DeduplicateRecipes(IEnumerable<(Portion, Recipe)> recipesWithPortion)
-    {
-        var recipes = new Dictionary<Recipe, Portion>();
+        var uniqueRecipesWithPortion = new Dictionary<Recipe, Portion>();
 
         foreach (var (portion, recipe) in recipesWithPortion)
         {
-            if (recipes.TryGetValue(recipe, out var existingPortion))
+            if (uniqueRecipesWithPortion.TryGetValue(recipe, out var existingPortion))
             {
-                recipes[recipe] = new Portion(addRationalsService.AddRationals(existingPortion.Amount, portion.Amount));
+                uniqueRecipesWithPortion[recipe] = new Portion(existingPortion.Amount + portion.Amount);
             }
             else
             {
-                recipes[recipe] = portion;
+                uniqueRecipesWithPortion[recipe] = portion;
             }
         }
 
-        return recipesWithPortion;
+        var weightedIngredientWithPortion = new List<(Ingredient, MeasurementUnit, Rational<int>)>();
+
+        foreach (var (recipe, portion) in uniqueRecipesWithPortion)
+        {
+            var recipePersonAmount = portion.Amount / recipe.Portion.Amount;
+
+            foreach (var ingredient in recipe.WeightedIngredients)
+            {
+                weightedIngredientWithPortion.Add((ingredient.Ingredient, ingredient.PreparationQuantity, recipePersonAmount));
+            }
+        }
+
+        var weightedIngredients = new Dictionary<Ingredient, List<PortionedMeasurementUnits>>();
+
+        foreach (var (ingredient, preparationQuantity, recipePersonAmount) in weightedIngredientWithPortion)
+        {
+            var portionedMeasurementUnit = new PortionedMeasurementUnits(recipePersonAmount, preparationQuantity);
+
+            if (weightedIngredients.TryGetValue(ingredient, out var existingQuantities))
+            {
+                existingQuantities.Add(portionedMeasurementUnit);
+            }
+            else
+            {
+                weightedIngredients[ingredient] = [portionedMeasurementUnit];
+            }
+        }
+
+        var neutralCombinedMeasurementUnit = new CombinedMeasurementUnit(Rational<int>.Zero, Rational<int>.Zero);
+
+        foreach (var (ingredient, portionedMeasurementUnits) in weightedIngredients.OrderBy(weightedIngredient => weightedIngredient.Key))
+        {
+            var combinedMeasurementUnit = neutralCombinedMeasurementUnit;
+
+            foreach (var portionedMeasurementUnit in portionedMeasurementUnits)
+            {
+                combinedMeasurementUnit = portionedMeasurementUnit.MeasurementUnit.Combine(combinedMeasurementUnit, portionedMeasurementUnit.Portion);
+            }
+
+            if (combinedMeasurementUnit.Count != Rational<int>.Zero)
+            {
+                var pieces = ceilRationalService.CeilRational(combinedMeasurementUnit.Count);
+                yield return new WeightedIngredient(
+                    new Piece((uint)pieces),
+                    ingredient
+                );
+            }
+
+            if (combinedMeasurementUnit.Weight != Rational<int>.Zero)
+            {
+                var weight = ceilRationalService.CeilRational(combinedMeasurementUnit.Weight);
+                yield return new WeightedIngredient(
+                    new Weight((uint)weight),
+                    ingredient
+                );
+            }
+        }
     }
 
-    private IEnumerable<WeightedIngredient> SumQuantities(IEnumerable<(Portion, Recipe)> uniqueRecipesWithPortion)
-    {
-
-        return []; // TODO:
-    }
+    private record struct PortionedMeasurementUnits(Rational<int> Portion, MeasurementUnit MeasurementUnit);
 }

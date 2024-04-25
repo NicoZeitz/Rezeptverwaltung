@@ -1,3 +1,4 @@
+using core.Services;
 using Core.Data;
 using Core.Services.Serialization;
 using Core.ValueObjects;
@@ -13,16 +14,19 @@ namespace Server.DataParser;
 public class RecipePostDataParser : DataParser<NewRecipePostData>
 {
     private readonly MeasurementUnitSerializationManager measurementUnitSerializationManager;
+    private readonly ReduceFractionService<int> reduceFractionService;
     private readonly SessionService sessionService;
 
     public RecipePostDataParser(
         ContentParserFactory contentParserFactory,
         HTMLSanitizer htmlSanitizer,
         MeasurementUnitSerializationManager measurementUnitSerializationManager,
+        ReduceFractionService<int> reduceFractionService,
         SessionService sessionService)
         : base(contentParserFactory, htmlSanitizer)
     {
         this.measurementUnitSerializationManager = measurementUnitSerializationManager;
+        this.reduceFractionService = reduceFractionService;
         this.sessionService = sessionService;
     }
 
@@ -54,10 +58,10 @@ public class RecipePostDataParser : DataParser<NewRecipePostData>
             return GENERIC_ERROR_RESULT;
         }
 
-        var portion = new Portion(new Rational<int>(
+        var portion = new Portion(reduceFractionService.ReduceFraction(new Rational<int>(
             portionNumeratorValue,
             portionDenominatorValue
-        ));
+        )));
 
         if (!content.TryGetValue("duration", out var durationContent) || !durationContent!.IsText)
         {

@@ -1,3 +1,4 @@
+using core.Services;
 using Core.Data;
 using Core.ValueObjects;
 using Server.ContentParser;
@@ -10,14 +11,17 @@ namespace Server.DataParser;
 
 public class ShoppingListPostDataParser : DataParser<NewShoppingListPostData>
 {
+    private readonly ReduceFractionService<int> reduceFractionService;
     private readonly SessionService sessionService;
 
     public ShoppingListPostDataParser(
         ContentParserFactory contentParserFactory,
         HTMLSanitizer htmlSanitizer,
+        ReduceFractionService<int> reduceFractionService,
         SessionService sessionService)
         : base(contentParserFactory, htmlSanitizer)
     {
+        this.reduceFractionService = reduceFractionService;
         this.sessionService = sessionService;
     }
 
@@ -65,10 +69,10 @@ public class ShoppingListPostDataParser : DataParser<NewShoppingListPostData>
                     return GENERIC_ERROR_RESULT;
                 }
 
-                var portion = new Portion(new Rational<int>(
-                    portionDenominatorValue,
-                    portionNumeratorValue
-                ));
+                var portion = new Portion(reduceFractionService.ReduceFraction(new Rational<int>(
+                    portionNumeratorValue,
+                    portionDenominatorValue
+                )));
                 recipes.Add(new PortionedRecipe(recipeIdentifier.Value, portion));
                 index++;
             }

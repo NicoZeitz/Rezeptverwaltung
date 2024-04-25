@@ -120,15 +120,16 @@ public class ShoppingListDatabase : ShoppingListRepository
         while (reader.Read())
         {
             var id = Identifier.Parse(reader.GetString("id"))!.Value;
+            var portionedRecipe = new PortionedRecipe(
+                Identifier.Parse(reader.GetString("recipe_id"))!.Value,
+                new Portion(new Rational<int>(
+                    reader.GetInt32("portion_numerator"),
+                    reader.GetInt32("portion_denominator")
+                ))
+            );
+
             if (id == lastShoppingList?.Identifier)
             {
-                var portionedRecipe = new PortionedRecipe(
-                    Identifier.Parse(reader.GetString("recipe_id"))!.Value,
-                    new Portion(new Rational<int>(
-                        reader.GetInt32("portion_numerator"),
-                        reader.GetInt32("portion_denominator")
-                    ))
-                );
                 lastShoppingList.PortionedRecipes.Add(portionedRecipe);
                 continue;
             }
@@ -147,7 +148,7 @@ public class ShoppingListDatabase : ShoppingListRepository
                 title,
                 visibility,
                 creator,
-                []
+                [portionedRecipe]
             );
         }
 

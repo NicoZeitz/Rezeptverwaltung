@@ -1,4 +1,5 @@
 ﻿using Core.Interfaces;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Core.ValueObjects.MeasurementUnits;
 
@@ -17,7 +18,7 @@ public static class SpoonSizeExtensions
         SpoonSize.TEA => "Teelöffel",
         SpoonSize.DESSERT => "Dessertlöffel",
         SpoonSize.TABLE => "Löffel",
-        SpoonSize.SERVING => "Schöpfkelle",
+        SpoonSize.SERVING => "Servierlöffel",
         _ => throw new NotImplementedException(),
     };
 
@@ -26,7 +27,7 @@ public static class SpoonSizeExtensions
         "teelöffel" => SpoonSize.TEA,
         "dessertlöffel" => SpoonSize.DESSERT,
         "löffel" => SpoonSize.TABLE,
-        "schöpfkelle" => SpoonSize.SERVING,
+        "servierlöffel" => SpoonSize.SERVING,
         _ => null,
     };
 }
@@ -37,4 +38,20 @@ public record class Spoon(uint Amount, SpoonSize Size) : MeasurementUnit
     public string DisplayAmount => Amount.ToString();
     public override string ToString() => $"{DisplayAmount} {DisplayUnit}";
     public string display() => ToString();
+
+
+    public CombinedMeasurementUnit Combine(CombinedMeasurementUnit other, Rational<int> scalar)
+    {
+        return other with
+        {
+            Weight = other.Weight + (Size switch
+            {
+                SpoonSize.TEA => 10,
+                SpoonSize.DESSERT => 13,
+                SpoonSize.TABLE => 20,
+                SpoonSize.SERVING => 25,
+                _ => throw new NotImplementedException()
+            }) * scalar
+        };
+    }
 }
