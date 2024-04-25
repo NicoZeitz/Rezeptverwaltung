@@ -1,4 +1,5 @@
-﻿using Core.Entities;
+﻿using core.Services;
+using Core.Entities;
 using Core.Interfaces;
 using Core.Repository;
 using Core.Services;
@@ -73,6 +74,7 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     services.AddTransient<PasswordHasher, Argon2PasswordHasher>();
 
     // Services
+    services.AddTransient<AddRationalsService<int>>();
     services.AddTransient<ChangeChefDataService>();
     services.AddTransient<ChangeChefPasswordService>();
     services.AddTransient<CreateCookbookService>();
@@ -85,6 +87,7 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     services.AddTransient<ImageService, FileSystemImageService>();
     services.AddTransient<LoginChefService>();
     services.AddTransient<MeasurementUnitCombiner>();
+    services.AddTransient<ReduceFractionService<int>>();
     services.AddTransient<RegisterChefService>();
     services.AddTransient<ShoppingListEntriesCreator>();
     services.AddTransient<ShowChefs>();

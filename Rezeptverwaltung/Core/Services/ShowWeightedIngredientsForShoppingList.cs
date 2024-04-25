@@ -5,11 +5,15 @@ namespace Core.Services;
 
 public class ShowWeightedIngredientsForShoppingList
 {
+    private readonly AddRationalsService<int> addRationalsService;
     private readonly ShowPortionedRecipesFromShoppingList showPortionedRecipesFromShoppingList;
 
-    public ShowWeightedIngredientsForShoppingList(ShowPortionedRecipesFromShoppingList showPortionedRecipesFromShoppingList)
+    public ShowWeightedIngredientsForShoppingList(
+        AddRationalsService<int> addRationalsService,
+        ShowPortionedRecipesFromShoppingList showPortionedRecipesFromShoppingList)
         : base()
     {
+        this.addRationalsService = addRationalsService;
         this.showPortionedRecipesFromShoppingList = showPortionedRecipesFromShoppingList;
     }
 
@@ -28,7 +32,7 @@ public class ShowWeightedIngredientsForShoppingList
         {
             if (recipes.TryGetValue(recipe, out var existingPortion))
             {
-                recipes[recipe] = new Portion(existingPortion.Amount + portion.Amount);
+                recipes[recipe] = new Portion(addRationalsService.AddRationals(existingPortion.Amount, portion.Amount));
             }
             else
             {
