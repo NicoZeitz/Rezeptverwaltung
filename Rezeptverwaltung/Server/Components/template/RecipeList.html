@@ -10,7 +10,7 @@
             <picture>
                 <img
                     class="aspect-video object-cover"
-                    src="{{ recipe.image }}"
+                    src="{{ recipe.image | html.url_escape }}"
                     alt=""
                 />
             </picture>
@@ -18,7 +18,7 @@
                 <div
                     style="
                         grid-area: 1 / 1 / span 1 / span 1;
-                        background-image: url({{ recipe.image }});
+                        background-image: url({{ recipe.image | html.url_escape }});
                     "
                     class="bg-cover"
                 ></div>

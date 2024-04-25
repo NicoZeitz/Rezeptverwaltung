@@ -2,11 +2,12 @@ using System.Net;
 using Core.Data;
 using Core.ValueObjects;
 using Server.ContentParser;
+using Server.Service;
 using Server.ValueObjects.PostData;
 
 namespace Server.DataParser;
 
-public class RegisterPostDataParser(ContentParserFactory contentParserFactory) : DataParser<RegisterPostData>(contentParserFactory)
+public class RegisterPostDataParser(ContentParserFactory contentParserFactory, HTMLSanitizer htmlSanitizer) : DataParser<RegisterPostData>(contentParserFactory, htmlSanitizer)
 {
     protected override Result<RegisterPostData> ExtractDataFromContent(IDictionary<string, ContentData> content, HttpListenerRequest request)
     {
@@ -35,11 +36,20 @@ public class RegisterPostDataParser(ContentParserFactory contentParserFactory) :
             return GENERIC_ERROR_RESULT;
         }
 
+        if (htmlSanitizer.Sanitize(password.TextValue!) != password.TextValue!)
+        {
+            return GENERIC_ERROR_RESULT;
+        }
+        if (htmlSanitizer.Sanitize(passwordRepeated.TextValue!) != password.TextValue)
+        {
+            return GENERIC_ERROR_RESULT;
+        }
+
         return Result<RegisterPostData>.Successful(new RegisterPostData(
-            new Username(username.TextValue!),
-            new Name(firstName.TextValue!, lastName.TextValue!),
-            new Password(password.TextValue!),
-            new Password(passwordRepeated.TextValue!),
+            new Username(htmlSanitizer.Sanitize(username.TextValue!)),
+            new Name(htmlSanitizer.Sanitize(firstName.TextValue!), htmlSanitizer.Sanitize(lastName.TextValue!)),
+            new Password(htmlSanitizer.Sanitize(password.TextValue!)),
+            new Password(htmlSanitizer.Sanitize(passwordRepeated.TextValue!)),
             profileImage!
         ));
     }

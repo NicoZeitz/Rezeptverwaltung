@@ -4,7 +4,8 @@
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>
-            📖 {{ recipe.title }} von {{ recipe.chef }} — Rezeptverwaltung
+            📖 {{ recipe.title | html.escape }} von {{ recipe.chef | html.escape
+            }} — Rezeptverwaltung
         </title>
         <link rel="stylesheet" href="/assets/styles.css" />
         <link rel="favicon" href="/assets/favicon.ico" />
@@ -18,34 +19,42 @@
                 <picture class="aspect-[4/3] h-full w-full">
                     <img
                         class="h-full w-full rounded-t-xl object-cover sm:rounded-l-xl sm:rounded-r-none"
-                        src="{{ recipe_image }}"
-                        alt="Bild von {{ recipe.title }}"
+                        src="{{ recipe_image | html.url_escape }}"
+                        alt="Bild von {{ recipe.title | html.escape }}"
                     />
                 </picture>
                 <div class="flex flex-col gap-1 p-2">
                     <div class="flex">
-                        <h1 class="mr-auto text-3xl">{{ recipe.title }}</h1>
+                        <h1 class="mr-auto text-3xl">
+                            {{ recipe.title | html.escape }}
+                        </h1>
                         {{ if recipe.chef == current_chef?.username }}
                         <form
                             action="/recipe/{{ recipe.identifier }}/delete"
                             method="post"
                             enctype="application/x-www-form-urlencoded"
-                            class="rounded-md bg-red-500 px-2 py-1 text-white"
+                            display="flex items-start"
                         >
-                            <button type="submit">Löschen</button>
+                            <button
+                                class="rounded-md bg-red-500 px-3 py-2 text-white"
+                                type="submit"
+                            >
+                                Löschen
+                            </button>
                         </form>
                         {{ end }}
                     </div>
                     <p class="mb-3 text-lg text-gray-500">
                         von
                         <a href="/chef/{{ recipe.chef | html.url_escape }}"
-                            >{{ recipe.chef }}</a
+                            >{{ recipe.chef | html.escape }}</a
                         >
-                        | für {{ recipe.portion }} Portionen | Zubereitungszeit:
-                        {{ recipe.preparation_time }}
+                        | für {{ recipe.portion | html.escape }} Portionen |
+                        Zubereitungszeit: {{ recipe.preparation_time |
+                        html.escape }}
                     </p>
                     <pre class="flex-grow whitespace-pre-wrap text-lg">
-{{ recipe.description }}</pre
+{{ recipe.description | html.escape }}</pre
                     >
                     <ul class="flex flex-wrap gap-1">
                         {{ for tag in recipe.tags }}
@@ -53,7 +62,7 @@
                             <a
                                 href="/tag/{{ tag | html.url_escape }}"
                                 class="inline-block rounded-full bg-green-500 px-2 py-1 text-white"
-                                >{{ tag }}</a
+                                >{{ tag | html.escape }}</a
                             >
                         </li>
                         {{ end }}

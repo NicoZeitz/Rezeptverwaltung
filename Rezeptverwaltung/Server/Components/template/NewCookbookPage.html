@@ -61,8 +61,11 @@
                     >
                         <!-- <option disabled selected value class="hidden"></option> -->
                         {{ for recipe in recipes }}
-                        <option value="{{ recipe.identifier }}">
-                            {{ recipe.title }} von {{ recipe.chef }}
+                        <option
+                            value="{{ recipe.identifier | html.url_escape }}"
+                        >
+                            {{ recipe.title | html.escape }} von {{ recipe.chef
+                            | html.escape }}
                         </option>
                         {{ end }}
                     </select>

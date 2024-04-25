@@ -3,6 +3,7 @@ using Core.Services.Serialization;
 using Core.ValueObjects;
 using Core.ValueObjects.MeasurementUnits;
 using Server.ContentParser;
+using Server.Service;
 using Server.Session;
 using Server.ValueObjects.PostData;
 using System.Net;
@@ -16,9 +17,10 @@ public class RecipePostDataParser : DataParser<NewRecipePostData>
 
     public RecipePostDataParser(
         ContentParserFactory contentParserFactory,
+        HTMLSanitizer htmlSanitizer,
         MeasurementUnitSerializationManager measurementUnitSerializationManager,
         SessionService sessionService)
-        : base(contentParserFactory)
+        : base(contentParserFactory, htmlSanitizer)
     {
         this.measurementUnitSerializationManager = measurementUnitSerializationManager;
         this.sessionService = sessionService;
@@ -62,7 +64,7 @@ public class RecipePostDataParser : DataParser<NewRecipePostData>
             return GENERIC_ERROR_RESULT;
         }
 
-        var duration = Duration.Parse(durationContent.TextValue!);
+        var duration = Duration.Parse(htmlSanitizer.Sanitize(durationContent.TextValue!));
         if (duration is null)
         {
             return GENERIC_ERROR_RESULT;
@@ -87,7 +89,7 @@ public class RecipePostDataParser : DataParser<NewRecipePostData>
             var index = 0;
             while (content.TryGetValue("tags_" + index, out var tag) && tag!.IsText)
             {
-                tags.Add(new Tag(tag.TextValue!));
+                tags.Add(new Tag(htmlSanitizer.Sanitize(tag.TextValue!)));
                 index++;
             }
         }
@@ -101,15 +103,15 @@ public class RecipePostDataParser : DataParser<NewRecipePostData>
                 content.TryGetValue("ingredient_" + index + "_name", out var name) && name!.IsText)
             {
                 var measurementUnit = measurementUnitSerializationManager.DeserializeFrom(new SerializedMeasurementUnit(
-                    unit.TextValue!,
-                    amount.TextValue!
+                    htmlSanitizer.Sanitize(unit.TextValue!),
+                    htmlSanitizer.Sanitize(amount.TextValue!)
                 ));
                 if (measurementUnit is null)
                 {
                     return GENERIC_ERROR_RESULT;
                 }
 
-                var ingredient = new Ingredient(name.TextValue!);
+                var ingredient = new Ingredient(htmlSanitizer.Sanitize(name.TextValue!));
 
                 var weightedIngredient = new WeightedIngredient(
                     measurementUnit,
@@ -126,7 +128,7 @@ public class RecipePostDataParser : DataParser<NewRecipePostData>
             var index = 0;
             while (content.TryGetValue("preparation_step_" + index, out var preparationStepText) && preparationStepText!.IsText)
             {
-                var preparationStep = new PreparationStep(new Text(preparationStepText.TextValue!));
+                var preparationStep = new PreparationStep(new Text(htmlSanitizer.Sanitize(preparationStepText.TextValue!)));
                 preparationSteps.Add(preparationStep);
                 index++;
             }
@@ -142,8 +144,8 @@ public class RecipePostDataParser : DataParser<NewRecipePostData>
         }
 
         return Result<NewRecipePostData>.Successful(new NewRecipePostData(
-            new Text(title.TextValue!),
-            new Text(description.TextValue!),
+            new Text(htmlSanitizer.Sanitize(title.TextValue!)),
+            new Text(htmlSanitizer.Sanitize(description.TextValue!)),
             portion,
             duration.Value,
             visibility,

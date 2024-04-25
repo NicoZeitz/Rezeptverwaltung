@@ -1,8 +1,7 @@
 using Core.Data;
-using Core.Services.Serialization;
 using Core.ValueObjects;
-using Core.ValueObjects.MeasurementUnits;
 using Server.ContentParser;
+using Server.Service;
 using Server.Session;
 using Server.ValueObjects.PostData;
 using System.Net;
@@ -15,8 +14,9 @@ public class CookbookPostDataParser : DataParser<NewCookbookPostData>
 
     public CookbookPostDataParser(
         ContentParserFactory contentParserFactory,
+        HTMLSanitizer htmlSanitizer,
         SessionService sessionService)
-        : base(contentParserFactory)
+        : base(contentParserFactory, htmlSanitizer)
     {
         this.sessionService = sessionService;
     }
@@ -51,14 +51,14 @@ public class CookbookPostDataParser : DataParser<NewCookbookPostData>
             var index = 0;
             while (content.TryGetValue("recipe_" + index, out var recipeId) && recipeId!.IsText)
             {
-                recipes.Add(Identifier.Parse(recipeId.TextValue!));
+                recipes.Add(Identifier.Parse(htmlSanitizer.Sanitize(recipeId.TextValue!)));
                 index++;
             }
         }
 
         return Result<NewCookbookPostData>.Successful(new NewCookbookPostData(
-            new Text(title.TextValue!),
-            new Text(description.TextValue!),
+            new Text(htmlSanitizer.Sanitize(title.TextValue!)),
+            new Text(htmlSanitizer.Sanitize(description.TextValue!)),
             currentChef,
             visibility,
             recipes
