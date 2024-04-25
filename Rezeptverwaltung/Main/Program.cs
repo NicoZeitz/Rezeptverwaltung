@@ -105,6 +105,7 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     services.AddTransient<ParameterNameGenerator>();
 
     // Server Services
+    services.AddSingleton<SessionBackend<Chef>, InMemorySessionBackend<Chef>>();
     services.AddTransient<ContentParserFactory>();
     services.AddTransient<CookbookPostDataParser>();
     services.AddTransient<HTMLFileWriter>();
@@ -122,10 +123,10 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     services.AddTransient<RedirectService>();
     services.AddTransient<RegisterPageRenderer>();
     services.AddTransient<RegisterPostDataParser>();
-    services.AddSingleton<SessionBackend<Chef>, InMemorySessionBackend<Chef>>();
     services.AddTransient<SessionService, CookieSessionService>();
     services.AddTransient<SettingsPageRenderer>();
     services.AddTransient<SettingsPostDataParser>();
+    services.AddTransient<ShoppingListPostDataParser>();
     services.AddTransient<URLEncoder>();
 
     // Resource Loader

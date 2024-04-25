@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Neues Kochbuch erstellen — Rezeptverwaltung</title>
+        <title>Neue Einkaufsliste erstellen — Rezeptverwaltung</title>
         <link rel="stylesheet" href="/assets/styles.css" />
         <link rel="favicon" href="/assets/favicon.ico" />
     </head>
@@ -11,9 +11,9 @@
         {{ header }}
         <main class="grid max-w-full justify-items-center px-4 pt-10">
             <form
-                id="new-cookbook-form"
+                id="new-shopping-list-form"
                 class="grid w-[min(100%,80ch)] gap-x-4 gap-y-2"
-                action="/cookbook/new"
+                action="/shopping-list/new"
                 method="post"
                 enctype="application/x-www-form-urlencoded"
             >
@@ -29,17 +29,6 @@
                 />
                 <label
                     class="col-span-1 col-start-1 text-right"
-                    for="description"
-                    >Beschreibung:</label
-                >
-                <textarea
-                    class="rounded-md bg-gray-200 p-1"
-                    name="description"
-                    required
-                    id="description"
-                ></textarea>
-                <label
-                    class="col-span-1 col-start-1 text-right"
                     for="visibility"
                     >Privat:</label
                 >
@@ -48,7 +37,7 @@
                     type="checkbox"
                     id="visibility"
                 />
-                <div class="contents">
+                <!-- <div class="contents">
                     <label
                         class="col-span-1 col-start-1 text-right"
                         for="recipe-select"
@@ -68,32 +57,15 @@
                         </option>
                         {{ end }}
                     </select>
-                </div>
+                </div> -->
 
                 <button
                     class="col-span-2 col-start-1 mt-3 justify-self-center rounded-md bg-green-500 px-5 py-2 shadow-md"
                     type="submit"
                 >
-                    Kochbuch erstellen
+                    Einkaufsliste erstellen
                 </button>
-                <script type="text/javascript">
-                    const form = document.querySelector("#new-cookbook-form");
-                    const select = form.querySelector("#recipe-select");
-
-                    form.onsubmit = (event) => {
-                        const selected = Array.from(select.selectedOptions).map(
-                            (option) => option.value,
-                        );
-                        let index = 0;
-                        for (const option of select.selectedOptions) {
-                            const input = document.createElement("input");
-                            input.type = "hidden";
-                            input.name = "recipe_" + index++;
-                            input.value = option.value;
-                            form.appendChild(input);
-                        }
-                    };
-                </script>
+                <script type="text/javascript"></script>
             </form>
         </main>
     </body>
