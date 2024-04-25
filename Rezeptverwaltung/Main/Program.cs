@@ -31,6 +31,7 @@ server.AddRequestHandler(provider.GetRequiredService<SearchRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<NewCookbookRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<HomeRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<DeleteRecipeRequestHandler>());
+server.AddRequestHandler(provider.GetRequiredService<DeleteCookbookRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<RegisterRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<LoginRequestHandler>());
 server.AddRequestHandler(provider.GetRequiredService<LogoutRequestHandler>());
@@ -126,6 +127,7 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     services.AddTransient<DeleteShoppingListService>();
     services.AddTransient<CreateRecipeService>();
     services.AddTransient<DeleteRecipeService>();
+    services.AddTransient<DeleteCookbookRequestHandler>();
     services.AddTransient<LoginChefService>();
     services.AddTransient<RegisterChefService>();
     services.AddTransient<DeleteChefService>();
