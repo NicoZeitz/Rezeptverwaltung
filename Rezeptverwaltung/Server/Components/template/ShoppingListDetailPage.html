@@ -11,5 +11,61 @@
     </head>
     <body>
         {{ header }}
+
+        <main class="mx-auto grid max-w-[80ch] px-2 pb-4 pt-3">
+            <div class="flex">
+                <h1 class="mb-2 mr-auto text-3xl">
+                    {{ shopping_list.title | html.escape }}
+                </h1>
+                {{ if shopping_list.creator == current_chef?.username }}
+                <form
+                    action="/shopping-list/{{ shopping_list.identifier | html.url_escape }}/delete"
+                    method="post"
+                    enctype="application/x-www-form-urlencoded"
+                    display="flex items-start"
+                >
+                    <button
+                        class="rounded-md bg-red-500 px-3 py-2 text-white"
+                        type="submit"
+                    >
+                        Löschen
+                    </button>
+                </form>
+                {{ end }}
+            </div>
+            <h2 class="mb-2 mt-5 text-xl">Einkaufsliste:</h2>
+            {{ if array.size(ingredients) == 0 }}
+            <p>Keine Einträge für die Einkaufsliste</p>
+            {{ else }}
+            <table
+                style="width: fit-content; height: fit-content"
+                class="grid flex-shrink-0 grid-cols-2 gap-x-2"
+            >
+                <thead class="contents">
+                    <tr class="col-span-2 grid grid-cols-subgrid">
+                        <th class="col-span-1 col-start-1 p-1">Menge</th>
+                        <th class="col-span-1 col-start-2 p-1">Zutat</th>
+                    </tr>
+                </thead>
+                <tbody class="contents">
+                    {{ for weighted_ingredient in ingredients }}
+                    <tr class="col-span-2 grid grid-cols-subgrid">
+                        <td class="col-span-1 col-start-1 p-1 text-right">
+                            {{ weighted_ingredient.preparation_quantity }}
+                        </td>
+                        <td class="col-span-1 col-start-2 p-1">
+                            {{ weighted_ingredient.ingredient }}
+                        </td>
+                    </tr>
+                    {{ end }}
+                </tbody>
+            </table>
+            {{ end }}
+            <h2 class="mb-2 mt-5 text-xl">Rezepte:</h2>
+            {{ if string.empty(children) }}
+            <p>Keine Rezepte für die Einkaufsliste</p>
+            {{ else }} {{ for child in children }} {{ child }} {{ end }} {{ end
+            }}
+        </main>
     </body>
 </html>

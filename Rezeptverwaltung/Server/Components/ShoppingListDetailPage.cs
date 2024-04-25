@@ -10,7 +10,6 @@ public class ShoppingListDetailPage(TemplateLoader templateLoader) : ContainerCo
 {
     public const string HEADER_SLOT = "Header";
 
-    public IEnumerable<(Portion, Recipe)> Recipes { get; set; } = [];
     public IEnumerable<WeightedIngredient> Ingredients { get; set; } = [];
     public ShoppingList? ShoppingList { get; set; }
     public Chef? CurrentChef { get; set; }
@@ -18,15 +17,15 @@ public class ShoppingListDetailPage(TemplateLoader templateLoader) : ContainerCo
     public override async Task<string> RenderAsync()
     {
         return await templateLoader
-           .LoadTemplate("ShoppingListDetailPage.html")
-           .RenderAsync(new
-           {
-               ShoppingList,
-               CurrentChef,
-               Recipes,
-               Ingredients,
-               Header = await GetRenderedSlottedChild(HEADER_SLOT),
-           })
-           .AsTask();
+            .LoadTemplate("ShoppingListDetailPage.html")
+            .RenderAsync(new
+            {
+                ShoppingList,
+                CurrentChef,
+                Ingredients,
+                Header = await GetRenderedSlottedChild(HEADER_SLOT),
+                Children = await GetRenderedChildren()
+            })
+            .AsTask();
     }
 }

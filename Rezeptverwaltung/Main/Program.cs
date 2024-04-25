@@ -89,8 +89,10 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     services.AddTransient<ShoppingListEntriesCreator>();
     services.AddTransient<ShowChefs>();
     services.AddTransient<ShowCookbooks>();
+    services.AddTransient<ShowPortionedRecipesFromShoppingList>();
     services.AddTransient<ShowRecipes>();
     services.AddTransient<ShowShoppingLists>();
+    services.AddTransient<ShowWeightedIngredientsForShoppingList>();
     var measurementUnitSerializationManager = new MeasurementUnitSerializationManager();
     measurementUnitSerializationManager.RegisterSerializer(new CupSerializer());
     measurementUnitSerializationManager.RegisterSerializer(new PieceSerializer());

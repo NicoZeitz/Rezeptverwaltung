@@ -1,40 +1,13 @@
-<ul
-    class="grid w-full list-none grid-cols-[repeat(auto-fill,minmax(250px,1fr))] justify-items-stretch gap-5"
->
+<ul class="flex w-full list-none flex-wrap gap-5">
     {{ for shopping_list in shopping_lists }}
     <li class="contents">
         <a
             href="/shopping-list/{{ shopping_list.identifier | html.url_escape }}"
-            class="relative overflow-clip rounded-lg bg-white shadow-lg"
+            class="rounded-lg bg-white shadow-lg"
         >
-            <div class="grid">
-                <h2
-                    style="
-                        grid-area: 1 / 1 / span 1 / span 1;
-                        display: -webkit-box;
-                        max-width: 750px;
-                        -webkit-line-clamp: 1;
-                        -webkit-box-orient: vertical;
-                    "
-                    class="overflow-hidden rounded-t-md bg-white/95 px-2 py-1 align-middle text-xl backdrop-blur-3xl"
-                >
-                    {{ shopping_list.title | html.escape }}
-                </h2>
-            </div>
-            <div class="px-3 py-1">
-                <p
-                    style="
-                        display: -webkit-box;
-                        max-width: 400px;
-                        -webkit-line-clamp: 3;
-                        -webkit-box-orient: vertical;
-                        overflow: hidden;
-                    "
-                    class="h-[4.75rem]"
-                >
-                    {{ shopping_list.description | html.escape }}
-                </p>
-            </div>
+            <h2 class="px-4 py-3 align-middle text-xl backdrop-blur-3xl">
+                {{ shopping_list.title | html.escape }}
+            </h2>
         </a>
     </li>
     {{end}}

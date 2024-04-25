@@ -61,7 +61,7 @@ public class ShoppingListDatabase : ShoppingListRepository
                 title,
                 visibility,
                 creator,
-                recipe_id
+                recipe_id,
                 portion_numerator,
                 portion_denominator
             FROM shopping_list
@@ -80,7 +80,7 @@ public class ShoppingListDatabase : ShoppingListRepository
                 title,
                 visibility,
                 creator,
-                recipe_id
+                recipe_id,
                 portion_numerator,
                 portion_denominator
             FROM shopping_list
