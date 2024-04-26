@@ -88,7 +88,6 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     services.AddTransient<LoginChefService>();
     services.AddTransient<ReduceFractionService<int>>();
     services.AddTransient<RegisterChefService>();
-    services.AddTransient<ShoppingListEntriesCreator>();
     services.AddTransient<ShowChefs>();
     services.AddTransient<ShowCookbooks>();
     services.AddTransient<ShowPortionedRecipesFromShoppingList>();
