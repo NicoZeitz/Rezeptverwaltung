@@ -86,7 +86,6 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
     services.AddTransient<DeleteShoppingListService>();
     services.AddTransient<ImageService, FileSystemImageService>();
     services.AddTransient<LoginChefService>();
-    services.AddTransient<MeasurementUnitCombiner>();
     services.AddTransient<ReduceFractionService<int>>();
     services.AddTransient<RegisterChefService>();
     services.AddTransient<ShoppingListEntriesCreator>();
