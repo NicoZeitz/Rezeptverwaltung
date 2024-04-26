@@ -21,7 +21,7 @@ public record struct Rational<NumberType>(NumberType Numerator, NumberType Denom
 
     public static Rational<NumberType> operator *(Rational<NumberType> rational, NumberType scalar)
     {
-        return new Rational<NumberType>(rational.Numerator *  scalar, rational.Denominator);
+        return new Rational<NumberType>(rational.Numerator * scalar, rational.Denominator);
     }
 
     public static Rational<NumberType> operator *(NumberType scalar, Rational<NumberType> rational)

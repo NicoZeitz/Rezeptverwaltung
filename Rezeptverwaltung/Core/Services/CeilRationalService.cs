@@ -11,7 +11,7 @@ public class CeilRationalService<NumberType>
         var hasRemainder = rational.Numerator % rational.Denominator != NumberType.Zero;
         var flooredValue = (rational.Numerator / rational.Denominator);
 
-        if(hasRemainder)
+        if (hasRemainder)
         {
             return flooredValue + NumberType.One;
         }

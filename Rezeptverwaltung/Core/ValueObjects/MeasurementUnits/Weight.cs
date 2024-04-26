@@ -32,6 +32,6 @@ public record class Weight(uint Amount) : MeasurementUnit
         return other with
         {
             Weight = other.Weight + (int)Amount * scalar
-        };  
+        };
     }
 }

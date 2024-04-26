@@ -1,5 +1,4 @@
 ﻿using Core.Interfaces;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Core.ValueObjects.MeasurementUnits;
 
