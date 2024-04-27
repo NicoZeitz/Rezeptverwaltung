@@ -3,7 +3,6 @@ using Core.ValueObjects;
 using Server.Components;
 using Server.Resources;
 using Server.Service;
-using Server.Session;
 using System.Net;
 
 namespace Server.RequestHandler;
@@ -13,21 +12,18 @@ public class SettingsPageRenderer
     private readonly ComponentProvider componentProvider;
     private readonly HTMLFileWriter htmlFileWriter;
     private readonly NotFoundRequestHandler notFoundRequestHandler;
-    private readonly SessionService sessionService;
     private readonly TemplateLoader templateLoader;
 
     public SettingsPageRenderer(
         ComponentProvider componentProvider,
         HTMLFileWriter htmlFileWriter,
         NotFoundRequestHandler notFoundRequestHandler,
-        SessionService sessionService,
         TemplateLoader templateLoader)
         : base()
     {
         this.componentProvider = componentProvider;
         this.htmlFileWriter = htmlFileWriter;
         this.notFoundRequestHandler = notFoundRequestHandler;
-        this.sessionService = sessionService;
         this.templateLoader = templateLoader;
     }
 
