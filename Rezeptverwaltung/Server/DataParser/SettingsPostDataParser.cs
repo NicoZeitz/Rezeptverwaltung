@@ -14,7 +14,7 @@ public class SettingsPostDataParser : DataParser<SettingsPostData>
 {
     private readonly ChangeChefPasswordService changeChefPasswordService;
     private readonly DeleteChefService chefDeleteService;
-    private readonly ChangeChefDataService changeChefDataService;
+    private readonly ChangeChefDetailsService changeChefDataService;
     private readonly ImageTypeMimeTypeConverter imageTypeMimeTypeConverter;
     private readonly SessionService sessionService;
     private readonly SettingsPageRenderer settingsPageRenderer;
@@ -26,7 +26,7 @@ public class SettingsPostDataParser : DataParser<SettingsPostData>
         SessionService sessionService,
         SettingsPageRenderer settingsPageRenderer,
         DeleteChefService chefDeleteService,
-        ChangeChefDataService changeChefDataService,
+        ChangeChefDetailsService changeChefDataService,
         HTMLSanitizer htmlSanitizer,
         ImageTypeMimeTypeConverter imageTypeMimeTypeConverter,
         RedirectService redirectService)

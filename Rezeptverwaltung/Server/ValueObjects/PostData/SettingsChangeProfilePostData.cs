@@ -15,7 +15,7 @@ public class SettingsChangeProfilePostData : SettingsPostData
     public string? LastName { get; }
     public ContentData? ProfileImage { get; }
 
-    private readonly ChangeChefDataService changeChefDataService;
+    private readonly ChangeChefDetailsService changeChefDataService;
     private readonly SessionService sessionService;
     private readonly SettingsPageRenderer settingsPageRenderer;
     private readonly ImageTypeMimeTypeConverter imageTypeMimeTypeConverter;
@@ -24,7 +24,7 @@ public class SettingsChangeProfilePostData : SettingsPostData
         string? firstName,
         string? lastName,
         ContentData? profileImage,
-        ChangeChefDataService changeChefDataService,
+        ChangeChefDetailsService changeChefDataService,
         SessionService sessionService,
         SettingsPageRenderer settingsPageRenderer,
         ImageTypeMimeTypeConverter imageTypeMimeTypeConverter
@@ -51,7 +51,7 @@ public class SettingsChangeProfilePostData : SettingsPostData
         }
 
         var image = GetImage();
-        changeChefDataService.ChangeData(chef, FirstName, LastName, image);
+        changeChefDataService.ChangeChefNameAndImage(chef, FirstName, LastName, image);
 
         return settingsPageRenderer.RenderPage(
             request,

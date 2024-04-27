@@ -75,7 +75,7 @@ IServiceProvider configureServices(ApplicationConfiguration configuration)
 
     // Services
     services.AddTransient<CeilRationalService<int>>();
-    services.AddTransient<ChangeChefDataService>();
+    services.AddTransient<ChangeChefDetailsService>();
     services.AddTransient<ChangeChefPasswordService>();
     services.AddTransient<CreateCookbookService>();
     services.AddTransient<CreateRecipeService>();
