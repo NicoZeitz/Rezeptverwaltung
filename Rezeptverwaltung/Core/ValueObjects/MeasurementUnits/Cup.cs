@@ -13,6 +13,7 @@ public record class Cup(uint Number) : MeasurementUnit
     {
         return other with
         {
+            // Böse magische Zahl zur Umrechnung!
             Weight = other.Weight + 200 * scalar
         };
     }

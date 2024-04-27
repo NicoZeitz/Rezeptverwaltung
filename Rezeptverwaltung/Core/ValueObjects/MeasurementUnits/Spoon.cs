@@ -45,6 +45,7 @@ public record class Spoon(uint Amount, SpoonSize Size) : MeasurementUnit
         {
             Weight = other.Weight + (Size switch
             {
+                // Viele böse magische Zahlen zur Umrechnung!
                 SpoonSize.TEA => 10,
                 SpoonSize.DESSERT => 13,
                 SpoonSize.TABLE => 20,
