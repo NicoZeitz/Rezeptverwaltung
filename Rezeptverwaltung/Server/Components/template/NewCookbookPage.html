@@ -63,8 +63,7 @@
                         <option
                             value="{{ recipe.identifier | html.url_escape }}"
                         >
-                            {{ recipe.title | html.escape }} von {{ recipe.chef
-                            | html.escape }}
+                            {{ recipe.title | html.escape }} von {{ recipe.chef | html.escape }}
                         </option>
                         {{ end }}
                     </select>
